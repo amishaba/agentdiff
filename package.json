@@ -1,0 +1,55 @@
+{
+  "name": "agentdiff",
+  "version": "0.1.0",
+  "description": "Compare two versions of a Mastra agent and report how its behaviour changed.",
+  "license": "MIT",
+  "author": "amisha@getomni.ai",
+  "keywords": [
+    "mastra",
+    "ai-agent",
+    "agent-testing",
+    "llm",
+    "regression",
+    "evaluation",
+    "cli",
+    "diff"
+  ],
+  "type": "module",
+  "bin": {
+    "agentdiff": "bin/agentdiff.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "example",
+    "tsconfig.json",
+    ".env.example",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node bin/agentdiff.mjs",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^1.2.22",
+    "ai": "^4.3.19",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "diff": "^7.0.0",
+    "tsx": "^4.20.3",
+    "zod": "^3.25.76"
+  },
+  "peerDependencies": {
+    "@mastra/core": ">=0.10.0"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.2",
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  }
+}
