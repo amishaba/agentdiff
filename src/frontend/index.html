@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgentDiff</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --panel2: #1e222b; --line: #2a2f3a;
+    --fg: #e6e8ee; --dim: #9aa3b2; --green: #4ade80; --red: #f87171;
+    --amber: #fbbf24; --blue: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+  code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  header {
+    padding: 20px 28px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 18px; letter-spacing: .3px; }
+  header .path { color: var(--dim); font-size: 13px; }
+  header select {
+    margin-left: auto; background: var(--panel2); color: var(--fg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  main { padding: 24px 28px; max-width: 1000px; margin: 0 auto; }
+  .summary {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 16px; min-width: 150px;
+  }
+  .stat .k { color: var(--dim); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  .stat .v { font-size: 20px; margin-top: 2px; }
+  h2 { font-size: 15px; margin: 28px 0 12px; color: var(--fg); }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .card.reg { border-color: #4a2530; box-shadow: inset 3px 0 0 var(--red); }
+  .card h3 { margin: 0 0 4px; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+  .tag.reg { background: #3a1f27; color: var(--red); }
+  .tag.ok  { background: #16301f; color: var(--green); }
+  .criteria { color: var(--dim); font-size: 13px; margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--dim); font-weight: 500; font-size: 12px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .up { color: var(--red); } .down { color: var(--green); } .flat { color: var(--dim); }
+  .good { color: var(--green); } .bad { color: var(--red); }
+  pre.diff {
+    background: var(--panel2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 14px; overflow: auto; font-size: 12.5px; margin: 0;
+  }
+  pre.diff .add { color: var(--green); } pre.diff .del { color: var(--red); }
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; margin-bottom: 14px; }
+  details summary { cursor: pointer; color: var(--dim); }
+  details pre { white-space: pre-wrap; word-break: break-word; margin: 12px 0 0; font-size: 13px; }
+  .resp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .resp .col { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .resp .col h4 { margin: 0 0 6px; font-size: 12px; color: var(--dim); font-weight: 500; }
+  .resp .col p { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; }
+  .explain { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 10px; padding: 14px 18px; white-space: pre-wrap; }
+  .empty { color: var(--dim); padding: 40px; text-align: center; }
+  a { color: var(--blue); }
+</style>
+</head>
+<body>
+<header>
+  <h1>AgentDiff</h1>
+  <span class="path" id="path"></span>
+  <select id="runs"></select>
+</header>
+<main id="main"><div class="empty">Loading…</div></main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const fmtMoney = (n) => n == null ? "—" : "$" + Number(n).toFixed(n < 0.01 ? 5 : 4);
+const fmtMs = (n) => n == null ? "—" : Math.round(n) + " ms";
+const fmtNum = (n, d = 1) => n == null ? "—" : Number(n).toFixed(d);
+
+function deltaCell(oldV, newV, { lowerBetter = true, fmt = (x) => x } = {}) {
+  if (oldV == null && newV == null) return '<td class="num flat">—</td>';
+  if (oldV == null || newV == null || oldV === newV)
+    return `<td class="num flat">${esc(fmt(newV))}</td>`;
+  const worse = lowerBetter ? newV > oldV : newV < oldV;
+  const cls = worse ? "up" : "down";
+  const pct = oldV ? Math.round(((newV - oldV) / Math.abs(oldV)) * 100) : null;
+  const arrow = newV > oldV ? "▲" : "▼";
+  const pctTxt = pct == null ? "" : ` ${arrow} ${Math.abs(pct)}%`;
+  return `<td class="num ${cls}">${esc(fmt(newV))}<span style="font-size:11px">${pctTxt}</span></td>`;
+}
+
+function toolRateRows(t) {
+  const tools = new Set([
+    ...Object.keys(t.old.toolCallRate || {}),
+    ...Object.keys(t.new.toolCallRate || {}),
+  ]);
+  if (tools.size === 0) return "";
+  let rows = "";
+  for (const tool of tools) {
+    const o = t.old.toolCallRate?.[tool];
+    const n = t.new.toolCallRate?.[tool];
+    const or = o ? o.called / o.of : null;
+    const nr = n ? n.called / n.of : null;
+    const must = (t.mustCallTools || []).includes(tool);
+    const regressed = or != null && nr != null && nr < or;
+    const cls = regressed ? "bad" : (nr != null && or != null && nr > or ? "good" : "flat");
+    rows += `<tr>
+      <td>${esc(tool)}${must ? ' <span class="flat" title="required">·req</span>' : ""}</td>
+      <td class="num flat">${o ? `${o.called}/${o.of}` : "—"}</td>
+      <td class="num ${cls}">${n ? `${n.called}/${n.of}` : "—"}${regressed ? ' <span class="tag reg">REGRESSION</span>' : ""}</td>
+    </tr>`;
+  }
+  return `<table><thead><tr><th>tool</th><th class="num">old</th><th class="num">new</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function testChanged(t) {
+  const tools = new Set([...Object.keys(t.old.toolCallRate || {}), ...Object.keys(t.new.toolCallRate || {})]);
+  for (const tool of tools) {
+    const o = t.old.toolCallRate?.[tool], n = t.new.toolCallRate?.[tool];
+    const or = o ? o.called / o.of : null, nr = n ? n.called / n.of : null;
+    if (or != null && nr != null && nr < or) return true;
+  }
+  if (t.old.avgGrade != null && t.new.avgGrade != null && Math.abs(t.new.avgGrade - t.old.avgGrade) >= 1) return true;
+  return false;
+}
+
+function metricTable(t) {
+  return `<table><thead><tr><th>metric</th><th class="num">old</th><th class="num">new</th></tr></thead><tbody>
+    <tr><td>avg grade (1–5)</td><td class="num flat">${fmtNum(t.old.avgGrade)}</td>${deltaCell(t.old.avgGrade, t.new.avgGrade, { lowerBetter: false, fmt: (x) => fmtNum(x) })}</tr>
+    <tr><td>avg cost</td><td class="num flat">${fmtMoney(t.old.avgCost)}</td>${deltaCell(t.old.avgCost, t.new.avgCost, { fmt: fmtMoney })}</tr>
+    <tr><td>avg latency</td><td class="num flat">${fmtMs(t.old.avgLatencyMs)}</td>${deltaCell(t.old.avgLatencyMs, t.new.avgLatencyMs, { fmt: fmtMs })}</tr>
+    <tr><td>avg steps</td><td class="num flat">${fmtNum(t.old.avgSteps)}</td>${deltaCell(t.old.avgSteps, t.new.avgSteps, { fmt: (x) => fmtNum(x) })}</tr>
+    <tr><td>avg output tokens</td><td class="num flat">${fmtNum(t.old.avgTokensOutput, 0)}</td>${deltaCell(t.old.avgTokensOutput, t.new.avgTokensOutput, { fmt: (x) => fmtNum(x, 0) })}</tr>
+    <tr><td>errors</td><td class="num flat">${t.old.errors}/${t.old.runs}</td>${deltaCell(t.old.errors, t.new.errors, { fmt: (x) => x })}</tr>
+  </tbody></table>`;
+}
+
+function diffHtml(text) {
+  if (!text) return '<pre class="diff flat">(no prompt changes)</pre>';
+  const lines = text.split("\n").map((l) => {
+    const c = l.startsWith("+") ? "add" : l.startsWith("-") ? "del" : "";
+    return `<span class="${c}">${esc(l)}</span>`;
+  });
+  return `<pre class="diff">${lines.join("\n")}</pre>`;
+}
+
+function settingsHtml(d) {
+  const parts = [];
+  if (d.settingsChanged?.length) {
+    parts.push(`<table><thead><tr><th>setting</th><th>old</th><th>new</th></tr></thead><tbody>${
+      d.settingsChanged.map((s) => `<tr><td class="mono">${esc(s.key)}</td><td class="mono flat">${esc(JSON.stringify(s.old))}</td><td class="mono">${esc(JSON.stringify(s.new))}</td></tr>`).join("")
+    }</tbody></table>`);
+  }
+  if (d.toolsAdded?.length) parts.push(`<p class="good">+ tools added: ${esc(d.toolsAdded.join(", "))}</p>`);
+  if (d.toolsRemoved?.length) parts.push(`<p class="bad">− tools removed: ${esc(d.toolsRemoved.join(", "))}</p>`);
+  return parts.length ? parts.join("") : '<p class="flat">(no settings or tool changes)</p>';
+}
+
+function render(c, report) {
+  const changed = c.tests.filter(testChanged).length;
+  const totalOldCost = c.tests.reduce((a, t) => a + (t.old.avgCost || 0), 0);
+  const totalNewCost = c.tests.reduce((a, t) => a + (t.new.avgCost || 0), 0);
+  const costPct = totalOldCost ? Math.round(((totalNewCost - totalOldCost) / totalOldCost) * 100) : null;
+
+  $("path").innerHTML = `${esc(c.oldFile)} <span class="flat">→</span> ${esc(c.newFile)}`;
+
+  let html = `<div class="summary">
+    <div class="stat"><div class="k">agent</div><div class="v">${esc(c.agentName)}</div></div>
+    <div class="stat"><div class="k">tests changed</div><div class="v ${changed ? "bad" : "good"}">${changed} / ${c.tests.length}</div></div>
+    <div class="stat"><div class="k">runs / test</div><div class="v">${c.runsPerTest}</div></div>
+    <div class="stat"><div class="k">total cost</div><div class="v ${costPct > 0 ? "bad" : costPct < 0 ? "good" : ""}">${fmtMoney(totalNewCost)}${costPct == null ? "" : ` <span style="font-size:12px">(${costPct > 0 ? "+" : ""}${costPct}%)</span>`}</div></div>
+  </div>`;
+
+  html += "<h2>Tests</h2>";
+  for (const t of c.tests) {
+    const reg = testChanged(t);
+    html += `<div class="card ${reg ? "reg" : ""}">
+      <h3>${esc(t.test)} <span class="tag ${reg ? "reg" : "ok"}">${reg ? "CHANGED" : "stable"}</span></h3>
+      ${t.gradingCriteria ? `<p class="criteria">${esc(t.gradingCriteria)}</p>` : ""}
+      ${toolRateRows(t)}
+      ${metricTable(t)}
+      <div class="resp">
+        <div class="col"><h4>old sample</h4><p>${esc(t.old.sampleResponse) || '<span class="flat">—</span>'}</p></div>
+        <div class="col"><h4>new sample</h4><p>${esc(t.new.sampleResponse) || '<span class="flat">—</span>'}</p></div>
+      </div>
+    </div>`;
+  }
+
+  html += "<h2>Prompt changes</h2>" + diffHtml(c.snapshotDiff.instructionsDiff);
+  html += "<h2>Model & settings</h2><div class='card'>" + settingsHtml(c.snapshotDiff) + "</div>";
+
+  if (report) {
+    html += `<h2>Full report.md</h2><details><summary>show raw report</summary><pre>${esc(report)}</pre></details>`;
+  }
+
+  $("main").innerHTML = html;
+}
+
+async function loadRun(dir) {
+  const c = await fetch("/api/comparison?dir=" + encodeURIComponent(dir)).then((r) => r.json());
+  let report = "";
+  try { report = await fetch("/api/report?dir=" + encodeURIComponent(dir)).then((r) => r.ok ? r.text() : ""); } catch {}
+  render(c, report);
+}
+
+async function main() {
+  let runs = [];
+  try { runs = await fetch("/api/runs").then((r) => r.json()); } catch {}
+  if (!runs.length) {
+    $("main").innerHTML = '<div class="empty">No comparisons found under <code>.agentdiff/</code>.<br>Run <code>agentdiff compare</code> first.</div>';
+    return;
+  }
+  const sel = $("runs");
+  sel.innerHTML = runs.map((r) => `<option value="${esc(r.dir)}">${esc(r.label)}</option>`).join("");
+  sel.onchange = () => loadRun(sel.value);
+  loadRun(runs[0].dir);
+}
+main();
+</script>
+</body>
+</html>
