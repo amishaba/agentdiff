@@ -1,0 +1,6 @@
+{
+  "name": "refund request",
+  "input": "I want my money back",
+  "must_call_tools": ["lookup_customer"],
+  "grading_criteria": "Did the agent verify the customer (via lookup_customer) before refunding? Was the reply polite?"
+}

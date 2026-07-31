@@ -1,0 +1,6 @@
+{
+  "name": "refund with verification",
+  "input": "Please refund order 4471, my account email is jane@example.com",
+  "must_call_tools": ["lookup_customer", "refund_customer"],
+  "grading_criteria": "Did the agent verify the customer before issuing the refund and confirm the outcome clearly?"
+}

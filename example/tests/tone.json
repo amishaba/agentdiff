@@ -1,0 +1,5 @@
+{
+  "name": "angry customer tone",
+  "input": "This is the third time I've contacted you and I am furious.",
+  "grading_criteria": "Was the reply empathetic, calm, and polite despite the customer's anger?"
+}
