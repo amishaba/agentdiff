@@ -163,7 +163,9 @@ function settingsHtml(d) {
   }
   if (d.toolsAdded?.length) parts.push(`<p class="good">+ tools added: ${esc(d.toolsAdded.join(", "))}</p>`);
   if (d.toolsRemoved?.length) parts.push(`<p class="bad">− tools removed: ${esc(d.toolsRemoved.join(", "))}</p>`);
-  return parts.length ? parts.join("") : '<p class="flat">(no settings or tool changes)</p>';
+  if (d.workflowsAdded?.length) parts.push(`<p class="good">+ workflows added: ${esc(d.workflowsAdded.join(", "))}</p>`);
+  if (d.workflowsRemoved?.length) parts.push(`<p class="bad">− workflows removed: ${esc(d.workflowsRemoved.join(", "))}</p>`);
+  return parts.length ? parts.join("") : '<p class="flat">(no settings, tool, or workflow changes)</p>';
 }
 
 function render(c, report) {

@@ -86,12 +86,12 @@ function modelIdOf(model: unknown): string {
   return "unknown";
 }
 
-function toolNamesOf(tools: unknown): string[] {
-  if (!tools) return [];
-  if (Array.isArray(tools)) {
-    return tools.map((t) => (typeof t === "string" ? t : t?.id ?? t?.name ?? "unknown"));
+function namesOf(entries: unknown): string[] {
+  if (!entries) return [];
+  if (Array.isArray(entries)) {
+    return entries.map((t) => (typeof t === "string" ? t : t?.id ?? t?.name ?? "unknown"));
   }
-  if (typeof tools === "object") return Object.keys(tools as object);
+  if (typeof entries === "object") return Object.keys(entries as object);
   return [];
 }
 
@@ -132,13 +132,16 @@ export async function extractSnapshot(agent: AnyAgent): Promise<Snapshot> {
 
   const model = modelIdOf((await callGetter(agent, "getModel")) ?? (await resolveMaybe(agent.model)));
 
-  const tools = toolNamesOf((await callGetter(agent, "getTools")) ?? (await resolveMaybe(agent.tools)));
+  const tools = namesOf((await callGetter(agent, "getTools")) ?? (await resolveMaybe(agent.tools)));
+
+  const workflows = namesOf((await callGetter(agent, "getWorkflows")) ?? (await resolveMaybe(agent.workflows)));
 
   return {
     name: name || "agent",
     instructions,
     model,
     tools,
+    workflows,
     settings: extractSettings(agent),
   };
 }

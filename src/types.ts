@@ -36,6 +36,8 @@ export const SnapshotSchema = z.object({
   instructions: z.string(),
   model: z.string(),
   tools: z.array(z.string()),
+  // Some Mastra agents orchestrate via workflows instead of (or alongside) tools.
+  workflows: z.array(z.string()).default([]),
   settings: z.record(z.unknown()),
 });
 export type Snapshot = z.infer<typeof SnapshotSchema>;
@@ -101,6 +103,8 @@ export interface SnapshotDiff {
   instructionsDiff: string; // unified-ish diff text
   toolsAdded: string[];
   toolsRemoved: string[];
+  workflowsAdded: string[];
+  workflowsRemoved: string[];
   settingsChanged: { key: string; old: unknown; new: unknown }[];
 }
 

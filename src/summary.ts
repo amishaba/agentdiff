@@ -83,15 +83,19 @@ export function buildExplainerContext(c: Comparison): string {
   lines.push(c.snapshotDiff.instructionsDiff.trim() || "(no change)");
   lines.push("");
 
-  lines.push("## Tool / settings changes");
+  lines.push("## Tool / workflow / settings changes");
   if (c.snapshotDiff.toolsAdded.length) lines.push(`Tools added: ${c.snapshotDiff.toolsAdded.join(", ")}`);
   if (c.snapshotDiff.toolsRemoved.length) lines.push(`Tools removed: ${c.snapshotDiff.toolsRemoved.join(", ")}`);
+  if (c.snapshotDiff.workflowsAdded.length) lines.push(`Workflows added: ${c.snapshotDiff.workflowsAdded.join(", ")}`);
+  if (c.snapshotDiff.workflowsRemoved.length) lines.push(`Workflows removed: ${c.snapshotDiff.workflowsRemoved.join(", ")}`);
   for (const s of c.snapshotDiff.settingsChanged) {
     lines.push(`Setting ${s.key}: ${JSON.stringify(s.old)} -> ${JSON.stringify(s.new)}`);
   }
   if (
     !c.snapshotDiff.toolsAdded.length &&
     !c.snapshotDiff.toolsRemoved.length &&
+    !c.snapshotDiff.workflowsAdded.length &&
+    !c.snapshotDiff.workflowsRemoved.length &&
     !c.snapshotDiff.settingsChanged.length
   ) {
     lines.push("(no change)");

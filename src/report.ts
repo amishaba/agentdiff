@@ -90,10 +90,18 @@ export function buildReport(c: Comparison, explanation: string): string {
   L.push("");
 
   const sd = c.snapshotDiff;
-  if (sd.toolsAdded.length || sd.toolsRemoved.length || sd.settingsChanged.length) {
-    L.push("## Tool & setting changes");
+  if (
+    sd.toolsAdded.length ||
+    sd.toolsRemoved.length ||
+    sd.workflowsAdded.length ||
+    sd.workflowsRemoved.length ||
+    sd.settingsChanged.length
+  ) {
+    L.push("## Tool, workflow & setting changes");
     if (sd.toolsAdded.length) L.push(`- Tools added: ${sd.toolsAdded.join(", ")}`);
     if (sd.toolsRemoved.length) L.push(`- Tools removed: ${sd.toolsRemoved.join(", ")}`);
+    if (sd.workflowsAdded.length) L.push(`- Workflows added: ${sd.workflowsAdded.join(", ")}`);
+    if (sd.workflowsRemoved.length) L.push(`- Workflows removed: ${sd.workflowsRemoved.join(", ")}`);
     for (const s of sd.settingsChanged) {
       L.push(`- ${s.key}: ${JSON.stringify(s.old)} → ${JSON.stringify(s.new)}`);
     }

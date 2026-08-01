@@ -25,8 +25,9 @@ export async function baselineCommand(opts: { config?: string } = {}): Promise<v
 
   const snapshot = await extractSnapshot(agent);
   await writeJson(path.join(BASELINE_DIR, "snapshot.json"), snapshot);
+  const wf = snapshot.workflows.length ? `, workflows=[${snapshot.workflows.join(", ")}]` : "";
   console.log(
-    chalk.dim(`  snapshot: model=${snapshot.model}, tools=[${snapshot.tools.join(", ")}]`),
+    chalk.dim(`  snapshot: model=${snapshot.model}, tools=[${snapshot.tools.join(", ")}]${wf}`),
   );
 
   const total = tests.length * config.runsPerTest;

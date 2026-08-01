@@ -41,6 +41,7 @@ export async function generateTestsCommand(opts: { config?: string; count?: stri
   const agent = await importAgent(rootDir, agentPath, config.agent);
   const snapshot = await extractSnapshot(agent);
   console.log(chalk.dim(`  tools: [${snapshot.tools.join(", ") || "none"}]`));
+  if (snapshot.workflows.length) console.log(chalk.dim(`  workflows: [${snapshot.workflows.join(", ")}]`));
   console.log(chalk.dim(`  asking the model for ${count} scenario(s)...`));
 
   let scenarios;

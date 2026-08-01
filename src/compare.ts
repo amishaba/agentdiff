@@ -65,6 +65,12 @@ export function diffSnapshots(oldSnap: Snapshot, newSnap: Snapshot): SnapshotDif
   const toolsAdded = newSnap.tools.filter((t) => !oldTools.has(t));
   const toolsRemoved = oldSnap.tools.filter((t) => !newTools.has(t));
 
+  const oldWorkflows = new Set(oldSnap.workflows);
+  const newWorkflows = new Set(newSnap.workflows);
+
+  const workflowsAdded = newSnap.workflows.filter((w) => !oldWorkflows.has(w));
+  const workflowsRemoved = oldSnap.workflows.filter((w) => !newWorkflows.has(w));
+
   const keys = new Set([...Object.keys(oldSnap.settings), ...Object.keys(newSnap.settings)]);
   const settingsChanged: SnapshotDiff["settingsChanged"] = [];
   for (const key of keys) {
@@ -79,6 +85,8 @@ export function diffSnapshots(oldSnap: Snapshot, newSnap: Snapshot): SnapshotDif
     instructionsDiff: diffInstructions(oldSnap.instructions, newSnap.instructions),
     toolsAdded,
     toolsRemoved,
+    workflowsAdded,
+    workflowsRemoved,
     settingsChanged,
   };
 }
