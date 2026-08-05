@@ -1,6 +1,6 @@
 # AgentDiff
 
-in my experience, prompt wording affects agent behaviour more than expected. adding a line like "be concise" can result in the agent calling fewer tools (the model you are on matters asw). I made this mostly to see what actually changes between two versions of an agent. Built on [Mastra](https://mastra.ai).
+prompt wording affects agent behaviour more than expected. adding a line like "be concise" can result in the agent calling fewer tools (the model you are on matters asw). I made this mostly to see what actually changes between two versions of an agent. Built on [Mastra](https://mastra.ai).
 
 It shows you how an agent's behaviour changed between two versions: tool and workflow call rates, cost, latency, steps, an AI grade per test, and a diff of the prompt and settings, plus a short explanation of what likely caused any regression.
 
