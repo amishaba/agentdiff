@@ -31,6 +31,9 @@
 .review .tests-table .num { color: var(--text-2); }
 .review .cell-change { color: var(--text-2); max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .review .tests-table .chev { width: 28px; color: var(--muted); padding-left: 0; }
+.review .tests-table .chev svg { display: block; transition: transform .12s, color .12s; }
+.review .tests-table tr:hover .chev, .review .tests-table tr.selected .chev { color: var(--ink); }
+.review .tests-table tr:hover .chev svg { transform: translateX(2px); }
 .review .delta { font: 500 12px var(--mono); font-variant-numeric: tabular-nums; margin-left: 4px; color: var(--muted); }
 .review .delta.down { color: var(--down); }
 .review .delta.up { color: var(--up); }
@@ -48,6 +51,27 @@
 .review .path-diff li.handoff .step-type { color: var(--handoff); }
 .review .path-diff li.check .step-type { color: var(--check); }
 .review .path-diff .step em { font-style: normal; opacity: .65; }
+.review .run-strip { display: inline-grid; gap: 3px; vertical-align: middle; }
+.review .rs-row { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.review .rs-side { font: 11px var(--sans); color: var(--muted); }
+.review .rs-cells { display: flex; gap: 2px; }
+.review .rs-cells > * { flex: none; width: 7px; height: 7px; border-radius: 2px; box-shadow: inset 0 0 0 1px var(--rule-strong); }
+.review .rs-cells > [data-mark="hit"] { background: var(--k); box-shadow: none; }
+.review .rs-row:first-child [data-mark="hit"] { background: var(--dim); }
+.review .rs-cells > [data-mark="error"] { background: repeating-linear-gradient(45deg, var(--muted) 0 1px, transparent 1px 3px); }
+.review .rs-n { min-width: 38px; text-align: left; font: 12px var(--mono); color: var(--text-2); }
+.review .run-strip.open { display: grid; gap: 6px; }
+.review .run-strip.open .rs-row { justify-content: flex-start; gap: 10px; }
+.review .run-strip.open .rs-side { width: 26px; }
+.review .run-strip.open .rs-cells { flex-wrap: wrap; gap: 3px; }
+.review .run-strip.open .rs-cells > * { width: 18px; height: 18px; border-radius: 4px; }
+.review .run-strip.open button:hover { outline: 2px solid var(--ink); outline-offset: 1px; }
+.review .panel-body > .run-view { padding-top: 0; outline: none; }
+.review .run-view-bar { position: sticky; top: -4px; z-index: 1; display: flex; align-items: center; gap: 10px; padding: 12px 0; background: var(--surface); border-bottom: 1px solid var(--rule); }
+.review .run-back { font-size: 13px; font-weight: 500; color: var(--ink); padding: 4px 8px 4px 6px; margin-left: -6px; border-radius: 6px; }
+.review .run-back:hover { background: var(--wash); }
+.review .run-view-where { font-size: 12.5px; color: var(--dim); white-space: nowrap; }
+.review .run-view-bar .panel-nav { margin-left: auto; }
 .review .path-legend { display: flex; gap: 14px; margin: 8px 0 0; font-size: 11.5px; color: var(--muted); }
 .review .path-legend .del { color: var(--del); }
 .review .path-legend .add { color: var(--add); }

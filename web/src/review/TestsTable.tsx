@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import type { Dataset, RunRecord, RunRef, TestComparison, Version } from "../data/types.ts";
 import type { GradeChange } from "../../../src/compare/signals.ts";
 import { CHANGE_KINDS, type ChangeKind } from "../../../src/compare/change-kind.ts";
@@ -8,8 +9,10 @@ import { pathDiff, usualPath, type TableRow } from "./groups.ts";
 import { fmtMoney, fmtMs } from "../data/derive.ts";
 import { WrappableName } from "../components/WrappableName.tsx";
 import { DiffLines } from "./DiffLines.tsx";
+import { RunStrip } from "./RunStrip.tsx";
 import { Icon } from "../components/Icon.tsx";
 import { SidePanel } from "../components/SidePanel.tsx";
+import { TraceBody } from "../components/TraceBody.tsx";
 
 export type Filter = "all" | "changed" | ChangeKind;
 
@@ -21,7 +24,7 @@ export function TestsTable({
   changed,
   filter,
   setFilter,
-  onOpen,
+  onReplay,
 }: {
   data: Dataset;
   rows: TableRow[];
@@ -29,7 +32,7 @@ export function TestsTable({
   changed: number;
   filter: Filter;
   setFilter: (f: Filter) => void;
-  onOpen: (ref: RunRef) => void;
+  onReplay?: (ref: RunRef) => void;
 }) {
   const c = data.comparison;
   const [query, setQuery] = useState("");
@@ -90,6 +93,7 @@ export function TestsTable({
             {shown.map((x) => (
               <TestRow
                 key={x.test.test}
+                data={data}
                 row={x}
                 selected={x.test.test === selected}
                 onSelect={() => setSelected(x.test.test)}
@@ -97,7 +101,23 @@ export function TestsTable({
             ))}
           </tbody>
         </table>
-        {!shown.length && <p className="tt-empty">No tests match this filter.</p>}
+        {!shown.length && (
+          <div className="tt-empty">
+            <p>
+              No tests match {q ? `“${query.trim()}”` : "this filter"}
+              {q && filter !== "all" ? ` in ${filters.find(([id]) => id === filter)?.[1]}` : ""}.
+            </p>
+            <button
+              className="dashboard-button"
+              onClick={() => {
+                setQuery("");
+                setFilter("all");
+              }}
+            >
+              Show all {c.tests.length} tests
+            </button>
+          </div>
+        )}
       </div>
       <p className="t-hint">Click a test to see its tool path, replies and runs.</p>
       {current && (
@@ -108,7 +128,7 @@ export function TestsTable({
           onPrev={at > 0 ? () => step(-1) : undefined}
           onNext={at >= 0 && at < shown.length - 1 ? () => step(1) : undefined}
           onClose={() => setSelected(null)}
-          onOpen={onOpen}
+          onReplay={onReplay}
         />
       )}
     </>
@@ -134,7 +154,18 @@ function Score({ grade }: { grade: GradeChange | null }) {
   );
 }
 
-function TestRow({ row: x, selected, onSelect }: { row: TableRow; selected: boolean; onSelect: () => void }) {
+function TestRow({
+  data,
+  row: x,
+  selected,
+  onSelect,
+}: {
+  data: Dataset;
+  row: TableRow;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const runs = (v: Version) => data.traces[v].filter((r) => r.test === x.test.test);
   return (
     <tr className={selected ? "selected" : undefined} onClick={onSelect}>
       <td>
@@ -152,7 +183,15 @@ function TestRow({ row: x, selected, onSelect }: { row: TableRow; selected: bool
       <td className="cell-change" title={x.shift?.metric || undefined}>
         {x.shift?.title ?? "–"}
       </td>
-      <td className="num">{x.shift?.old ? `${x.shift.old} → ${x.shift.new}` : "–"}</td>
+      <td className="num">
+        {x.shift?.hit ? (
+          <RunStrip shift={x.shift} kind={x.kind} old={runs("old")} neu={runs("new")} />
+        ) : x.shift?.old ? (
+          `${x.shift.old} → ${x.shift.new}`
+        ) : (
+          "–"
+        )}
+      </td>
       <td className="num">
         <Score grade={x.grade} />
       </td>
@@ -166,7 +205,10 @@ function TestRow({ row: x, selected, onSelect }: { row: TableRow; selected: bool
   );
 }
 
-/** One test in a side panel: what changed, the two usual paths as one diff, the replies, and every run. */
+/**
+ * One test in a side panel: what changed, the two usual paths as one diff, the replies, and every run.
+ * A run opens its trace in the same panel, with a way back to the test; a recorded incident goes to `onReplay`.
+ */
 export function TestPanel({
   data,
   row: x,
@@ -174,7 +216,7 @@ export function TestPanel({
   onPrev,
   onNext,
   onClose,
-  onOpen,
+  onReplay,
 }: {
   data: Dataset;
   row: TableRow;
@@ -182,7 +224,7 @@ export function TestPanel({
   onPrev?: () => void;
   onNext?: () => void;
   onClose: () => void;
-  onOpen: (ref: RunRef) => void;
+  onReplay?: (ref: RunRef) => void;
 }) {
   const t = x.test;
   const runs = (v: Version) => data.traces[v].filter((r) => r.test === t.test).sort((a, b) => a.run - b.run);
@@ -199,6 +241,40 @@ export function TestPanel({
     return text ? (text.length > 600 ? text.slice(0, 600) + "…" : text) : null;
   };
   const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  const [trace, setTrace] = useState<RunRef | null>(null);
+  // A trace belongs to the test it was opened from: moving to another test shows that test.
+  const order = [...sides[0].runs, ...sides[1].runs];
+  const at = trace?.test === t.test ? order.findIndex((r) => r.version === trace.version && r.run === trace.run) : -1;
+  const traced = at >= 0 ? order[at] : null;
+  const result =
+    traced &&
+    runResult(
+      data,
+      t,
+      traced,
+      o,
+      data.grades.find((g) => g.test === t.test && g.version === traced.version && g.run === traced.run)?.score,
+    );
+  const scrolled = useRef(0);
+  const body = () => document.querySelector<HTMLElement>(".side-panel .panel-body");
+  const openRun = (ref: RunRef) => {
+    if (onReplay && order.some((r) => r.replay)) return onReplay(ref);
+    if (!traced) scrolled.current = body()?.scrollTop ?? 0;
+    flushSync(() => setTrace(ref));
+    body()?.scrollTo({ top: 0 });
+    document.querySelector<HTMLElement>(".side-panel .run-view")?.focus({ preventScroll: true });
+  };
+  const backToTest = () => {
+    flushSync(() => setTrace(null));
+    body()?.scrollTo({ top: scrolled.current });
+    document.querySelector<HTMLElement>(".side-panel")?.focus({ preventScroll: true });
+  };
+  const step = (by: number) => {
+    const r = order[at + by];
+    if (r) openRun({ test: r.test, version: r.version, run: r.run });
+  };
+
   return (
     <SidePanel
       id={t.test}
@@ -215,127 +291,183 @@ export function TestPanel({
       onNext={onNext}
       onClose={onClose}
     >
-      {t.input && (
-        <section>
-          <h3>Input</h3>
-          <p className="panel-input">{t.input}</p>
-        </section>
-      )}
-      <dl className="panel-stats">
-        {x.shift?.old && (
-          <div>
-            <dt>{x.shift.metric}</dt>
-            <dd>
-              {x.shift.old} → {x.shift.new}
-            </dd>
-          </div>
-        )}
-        <div>
-          <dt>score</dt>
-          <dd>
-            <Score grade={x.grade} />
-          </dd>
-        </div>
-        <div>
-          <dt>latency</dt>
-          <dd>
-            {fmtMs(t.old.avgLatencyMs)} → {fmtMs(t.new.avgLatencyMs)}
-          </dd>
-        </div>
-        <div>
-          <dt>cost per run</dt>
-          <dd>
-            {fmtMoney(t.old.avgCost)} → {fmtMoney(t.new.avgCost)}
-          </dd>
-        </div>
-      </dl>
-      {!!tripped.length && (
-        <p className="panel-note">
-          Old runs stopped by{" "}
-          {tripped.map((r, i) => (
-            <span key={r.id}>
-              {i ? ", " : ""}
-              <code>{r.id}</code> in {r.runs}/{r.of}
+      {traced ? (
+        <section
+          className="run-view"
+          tabIndex={-1}
+          aria-label={`${traced.version} agent, run ${traced.run}`}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") backToTest();
+            else if (e.key === "ArrowLeft") step(-1);
+            else if (e.key === "ArrowRight") step(1);
+            else return;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <div className="run-view-bar">
+            <button className="run-back" onClick={backToTest} title="Back to the test (Esc)">
+              ← Back to test
+            </button>
+            <span className="run-view-where">
+              {cap(traced.version)} agent · run {traced.run} of{" "}
+              {traced.version === "old" ? sides[0].runs.length : sides[1].runs.length}
             </span>
-          ))}
-          , a guardrail the new agent doesn't have.
-        </p>
-      )}
-      <section>
-        <div className="panel-sec-head">
-          <h3>Tool path</h3>
-          <span>
-            usual path · old {o ? `${o.runs}/${o.of}` : "–"} runs · new {n ? `${n.runs}/${n.of}` : "–"} runs
-          </span>
-        </div>
-        {!o || !n ? (
-          <p className="panel-note">Every run of the {!o ? "old" : "new"} agent errored.</p>
-        ) : (
-          <>
-            <ol className="path-diff">
-              {lines.map((l, i) => (
-                <li key={i} className={`${l.type}${l.sign === "-" ? " del" : l.sign === "+" ? " add" : ""}`}>
-                  <span className="mark">{l.sign === "-" ? "−" : l.sign === "+" ? "+" : ""}</span>
-                  <span className="step-type">{l.type}</span>
-                  <span className="step">
-                    {l.check ? (
-                      <>
-                        {l.text.split(": ")[0]} <em>{l.text.split(": ")[1]}</em>
-                      </>
-                    ) : (
-                      l.text
-                    )}
-                    {l.sign === " " && l.old !== l.new ? (
-                      <em>
-                        {" "}
-                        ×{l.old} → ×{l.new}
-                      </em>
-                    ) : Math.max(l.old, l.new) > 1 ? (
-                      <em> ×{Math.max(l.old, l.new)}</em>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <p className="path-legend">
-              <span className="del">− old agent only</span>
-              <span className="add">+ new agent only</span>
-              <span>unmarked: both</span>
-            </p>
-          </>
-        )}
-      </section>
-      <section>
-        <h3>Final reply</h3>
-        <div className="panel-replies">
-          {sides.map((s) => {
-            const text = reply(s.path);
-            return (
-              <div key={s.who}>
-                <span>{cap(s.who)}</span>
-                <p className={text ? undefined : "none"}>
-                  {text ??
-                    (s.path?.run.tool_calls.length
-                      ? "no final text: anything it sent went through its tool calls (open a run below)"
-                      : "no reply")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-      {!!(related.lines.length + related.other.length) && (
-        <section>
-          <h3>Edits that mention it</h3>
-          <DiffLines lines={related.lines} />
-          {related.other.map((e) => (
-            <div key={e} className="edit-other">
-              {e}
+            {result && (
+              <span className="badge" data-kind={result.tone}>
+                {result.label}
+              </span>
+            )}
+            <div className="panel-nav">
+              <button onClick={() => step(-1)} disabled={at <= 0} aria-label="Previous run" title="Previous run (←)">
+                ←
+              </button>
+              <button
+                onClick={() => step(1)}
+                disabled={at >= order.length - 1}
+                aria-label="Next run"
+                title="Next run (→)"
+              >
+                →
+              </button>
             </div>
-          ))}
+          </div>
+          <TraceBody data={data} test={t} run={traced} />
         </section>
+      ) : (
+        <>
+          {t.input && (
+            <section>
+              <h3>Input</h3>
+              <p className="panel-input">{t.input}</p>
+            </section>
+          )}
+          <dl className="panel-stats">
+            {x.shift?.old && (
+              <div>
+                <dt>{x.shift.metric}</dt>
+                <dd>
+                  {x.shift.old} → {x.shift.new}
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt>score</dt>
+              <dd>
+                <Score grade={x.grade} />
+              </dd>
+            </div>
+            <div>
+              <dt>latency</dt>
+              <dd>
+                {fmtMs(t.old.avgLatencyMs)} → {fmtMs(t.new.avgLatencyMs)}
+              </dd>
+            </div>
+            <div>
+              <dt>cost per run</dt>
+              <dd>
+                {fmtMoney(t.old.avgCost)} → {fmtMoney(t.new.avgCost)}
+              </dd>
+            </div>
+          </dl>
+          {!!tripped.length && (
+            <p className="panel-note">
+              Old runs stopped by{" "}
+              {tripped.map((r, i) => (
+                <span key={r.id}>
+                  {i ? ", " : ""}
+                  <code>{r.id}</code> in {r.runs}/{r.of}
+                </span>
+              ))}
+              , a guardrail the new agent doesn't have.
+            </p>
+          )}
+          {x.shift?.hit && (
+            <section>
+              <div className="panel-sec-head">
+                <h3>Run by run</h3>
+                <span>{x.shift.metric} · click a run to open its trace</span>
+              </div>
+              <RunStrip shift={x.shift} kind={x.kind} old={sides[0].runs} neu={sides[1].runs} onOpen={openRun} />
+            </section>
+          )}
+          <section>
+            <div className="panel-sec-head">
+              <h3>Tool path</h3>
+              <span>
+                usual path · old {o ? `${o.runs}/${o.of}` : "–"} runs · new {n ? `${n.runs}/${n.of}` : "–"} runs
+              </span>
+            </div>
+            {!o || !n ? (
+              <p className="panel-note">Every run of the {!o ? "old" : "new"} agent errored.</p>
+            ) : (
+              <>
+                <ol className="path-diff">
+                  {lines.map((l, i) => (
+                    <li key={i} className={`${l.type}${l.sign === "-" ? " del" : l.sign === "+" ? " add" : ""}`}>
+                      <span className="mark">{l.sign === "-" ? "−" : l.sign === "+" ? "+" : ""}</span>
+                      <span className="step-type">{l.type}</span>
+                      <span className="step">
+                        {l.check ? (
+                          <>
+                            {l.text.split(": ")[0]} <em>{l.text.split(": ")[1]}</em>
+                          </>
+                        ) : (
+                          l.text
+                        )}
+                        {l.sign === " " && l.old !== l.new ? (
+                          <em>
+                            {" "}
+                            ×{l.old} → ×{l.new}
+                          </em>
+                        ) : Math.max(l.old, l.new) > 1 ? (
+                          <em> ×{Math.max(l.old, l.new)}</em>
+                        ) : null}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="path-legend">
+                  <span className="del">− old agent only</span>
+                  <span className="add">+ new agent only</span>
+                  <span>unmarked: both</span>
+                </p>
+              </>
+            )}
+          </section>
+          <section>
+            <h3>Final reply</h3>
+            <div className="panel-replies">
+              {sides.map((s) => {
+                const text = reply(s.path);
+                return (
+                  <div key={s.who}>
+                    <span>{cap(s.who)}</span>
+                    <p className={text ? undefined : "none"}>
+                      {text ??
+                        (s.path?.run.tool_calls.length
+                          ? "no final text: anything it sent went through its tool calls (open a run below)"
+                          : "no reply")}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+          {!!(related.lines.length + related.other.length) && (
+            <section>
+              <h3>Edits that mention it</h3>
+              <DiffLines lines={related.lines} />
+              {related.other.map((e) => (
+                <div key={e} className="edit-other">
+                  {e}
+                </div>
+              ))}
+            </section>
+          )}
+          <RunsTable data={data} test={t} old={sides[0].runs} neu={sides[1].runs} oldPath={o} onOpen={openRun} />
+        </>
       )}
-      <RunsTable data={data} test={t} old={sides[0].runs} neu={sides[1].runs} oldPath={o} onOpen={onOpen} />
     </SidePanel>
   );
 }
@@ -363,7 +495,7 @@ function runResult(
         : { label: "Different path", tone: "different" };
 }
 
-/** Every run of the test, old and new side by side by run number, each one opening its full trace. */
+/** Every run of the test, old and new side by side by run number, each one opening its full trace in the panel. */
 function RunsTable({
   data,
   test: t,
@@ -391,7 +523,7 @@ function RunsTable({
             className="run-open"
             onClick={() => onOpen({ test: r.test, version: r.version, run: r.run })}
             aria-label={`Open ${who} run ${r.run}`}
-            title="Open this run's full trace"
+            title="Show this run's full trace"
           >
             <span className="badge" data-kind={result.tone}>
               {result.label}

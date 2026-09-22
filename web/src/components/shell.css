@@ -88,9 +88,11 @@
 .stat-value small { font-size: 13px; font-weight: 400; color: var(--dim); letter-spacing: 0; margin-left: 8px; }
 .stat-sub { font-size: 12px; color: var(--muted); margin-top: auto; }
 
-/* The side panel a table row opens (components/SidePanel.tsx). */
-.side-panel-backdrop { z-index: 34; background: rgba(24, 24, 27, .12); }
-.side-panel { z-index: 35; width: min(720px, 92vw); box-shadow: -16px 0 40px -20px rgba(24, 24, 27, .25); outline: none; }
+/* The side panel a table row opens (components/SidePanel.tsx). Under .drawer-backdrop, so a replay opened from it dims it like the page. */
+.drawer.side-panel { z-index: 35; box-shadow: -16px 0 40px -16px rgba(24, 24, 27, .3); outline: none; animation: panel-in .18s cubic-bezier(.2, .8, .2, 1); }
+.drawer-backdrop { animation: backdrop-in .18s ease-out; }
+@keyframes panel-in { from { transform: translateX(24px); opacity: 0; } }
+@keyframes backdrop-in { from { opacity: 0; } }
 .panel-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 16px 20px 14px; border-bottom: 1px solid var(--rule); }
 .panel-title { min-width: 0; }
 .panel-title h2 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; margin: 8px 0 2px; }
@@ -132,15 +134,19 @@
 .row-link { text-align: left; }
 .row-link b { font-size: 13px; font-weight: 500; }
 .tt-empty { margin: 0; padding: 28px; text-align: center; color: var(--dim); }
+.tt-empty p { margin: 0 0 12px; }
 .t-hint { margin: 8px 2px 0; font-size: 12px; color: var(--muted); }
 .kv-list { list-style: none; margin: 0; padding: 4px 0; }
 .kv-list li { padding: 7px 16px; overflow-wrap: anywhere; }
 .kv-list li + li { border-top: 1px solid var(--rule-row); }
 .stat-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.data-table tbody tr.selected { background: #f4f6fb; box-shadow: inset 2px 0 0 var(--k-different); }
-.data-table.rows-open tbody tr { cursor: pointer; }
-.data-table.rows-open tbody tr:hover { background: #fafafb; }
+.data-table.rows-open tbody tr { cursor: pointer; transition: background-color .12s, box-shadow .12s; }
+.data-table.rows-open tbody tr:hover { background: #f6f6f8; }
 .data-table.rows-open tbody tr:hover .row-link b { text-decoration: underline; text-decoration-color: var(--underline); text-underline-offset: 3px; }
+.data-table.rows-open .row-link:focus-visible { outline: none; }
+.data-table.rows-open tbody tr:has(.row-link:focus-visible) { background: #f6f6f8; box-shadow: inset 2px 0 0 var(--ink); }
+.data-table tbody tr.selected, .data-table.rows-open tbody tr.selected:hover { background: #eef3fe; box-shadow: inset 2px 0 0 var(--k-different); }
+.data-table tbody tr.selected .row-link b { color: var(--k-different); }
 
 /* A key/value list inside a panel or card. */
 .kv { margin: 0; display: grid; gap: 1px; background: var(--rule-row); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }

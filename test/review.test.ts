@@ -1,10 +1,12 @@
 // What the comparisons page derives from a saved comparison.
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { readFileSync } from "node:fs";
 import { discoveryFindings, factsOf, promptChanges, runStatus, verdict } from "../web/src/review/model.ts";
 import { foldedSteps } from "../web/src/review/tree.ts";
-import { pathDiff, shiftGroups, tableRows } from "../web/src/review/groups.ts";
+import { pathDiff, runMarks, shiftGroups, tableRows } from "../web/src/review/groups.ts";
 import type { RunRecord } from "../src/types.ts";
+import type { Dataset } from "../web/src/data/types.ts";
 import { comparison, run, side, snapshot, test } from "./helpers.ts";
 
 const path = (...seq: string[]) => [{ seq, runs: 3 }];
@@ -158,6 +160,46 @@ describe("shiftGroups", () => {
       ],
     );
     assert.deepEqual(rows[1].related, groups[1].related, "each row carries its group's edits");
+  });
+});
+
+describe("runMarks", () => {
+  it("marks each run in run order, and an errored run that didn't count as an error", () => {
+    const runs = [
+      run(["send"], { run: 3 }),
+      run([], { run: 1, final_response: null }),
+      run([], { run: 2, final_response: null, error: "timeout" }),
+    ];
+    const replied = tableRows(
+      comparison({
+        tests: [
+          test({ old: side({}, { replied: { runs: 0, of: 5 } }), new: side({}, { replied: { runs: 5, of: 5 } }) }),
+        ],
+      }),
+      { old: [], new: [] },
+    )[0].shift!.hit!;
+    assert.deepEqual(
+      runMarks(runs, replied).map((m) => [m.run.run, m.mark]),
+      [
+        [1, "miss"],
+        [2, "error"],
+        [3, "hit"],
+      ],
+    );
+  });
+  it("fills as many squares as the rate beside it says, in every recorded example", () => {
+    for (const name of ["sms", "booking", "support", "clinic"]) {
+      const data = JSON.parse(readFileSync(`web/fixtures/examples/${name}.json`, "utf8")) as Dataset;
+      for (const row of tableRows(data.comparison, data.traces)) {
+        const hit = row.shift?.hit;
+        if (!row.shift || !hit) continue;
+        for (const v of ["old", "new"] as const) {
+          const runs = data.traces[v].filter((r) => r.test === row.test.test);
+          const hits: number = runMarks(runs, hit).filter((m) => m.mark === "hit").length;
+          assert.equal(`${hits}`, row.shift[v].split("/")[0], `${name} · ${row.test.test} · ${v}`);
+        }
+      }
+    }
   });
 });
 

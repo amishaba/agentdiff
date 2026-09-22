@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { listRuns, loadDataset } from "../data/load.ts";
 import { isSampleWorkspace } from "../data/navigation.ts";
-import { sortedTests } from "../data/derive.ts";
 import { failedSides } from "../../../src/compare/signals.ts";
 import { dashboardTab, dashboardTabs, type DashboardTab } from "../data/dashboard.ts";
 import { AppShell } from "./AppShell.tsx";
@@ -9,7 +8,6 @@ import { Icon } from "./Icon.tsx";
 import type { Dataset, RunRef, RunSummary } from "../data/types.ts";
 import type { DashboardJob } from "../../../src/dashboard/jobs/types.ts";
 import { RunToolbar } from "./RunToolbar.tsx";
-import { TraceDrawer } from "./TraceDrawer.tsx";
 import { RunProvenance } from "./RunProvenance.tsx";
 import { Braintrust } from "./Braintrust.tsx";
 import { ReplayPair } from "./ReplayPair.tsx";
@@ -95,7 +93,6 @@ export function Dashboard() {
     history.replaceState(null, "", url);
   }, []);
 
-  const tests = useMemo(() => (data ? sortedTests(data.comparison) : []), [data]);
   const c = data?.comparison;
   const failed = c ? failedSides(c) : [];
   const onCompared = useCallback(
@@ -174,7 +171,7 @@ export function Dashboard() {
             </div>
           )}
           {failed.length > 0 && <ComparisonFailure sides={failed} />}
-          {data && c && !failed.length && <Review key={data.dir} data={data} onOpen={setOpen} />}
+          {data && c && !failed.length && <Review key={data.dir} data={data} onReplay={setOpen} />}
           {data && <RunProvenance data={data} />}
         </div>
         {/* Keep the inbox mounted across sections and comparisons so active replay jobs and unsaved reviews survive. */}
@@ -192,14 +189,8 @@ export function Dashboard() {
         </div>
       </>
       {drawer && <RunDrawer busy={jobs.busy} onStart={jobs.start} onClose={() => setDrawer(false)} />}
-      {/* A recorded incident opens old and new side by side. */}
-      {data &&
-        open &&
-        ([...data.traces.old, ...data.traces.new].some((r) => r.test === open.test && r.replay) ? (
-          <ReplayPair data={data} sel={open} onClose={() => setOpen(null)} />
-        ) : (
-          <TraceDrawer data={data} tests={tests} sel={open} onSelect={setOpen} onClose={() => setOpen(null)} />
-        ))}
+      {/* A recorded incident opens old and new side by side; other runs open in their test's panel. */}
+      {data && open && <ReplayPair data={data} sel={open} onClose={() => setOpen(null)} />}
     </AppShell>
   );
 }

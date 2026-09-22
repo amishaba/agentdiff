@@ -12,8 +12,11 @@ import "./review.css";
 
 type Tab = "tests" | "changes" | "discovery" | "details";
 
-/** The comparisons page: headline numbers, then every test in one table, most serious first. */
-export function Review({ data, onOpen }: { data: Dataset; onOpen: (ref: RunRef) => void }) {
+/**
+ * The comparisons page: headline numbers, then every test in one table, most serious first.
+ * `onReplay` opens a recorded incident's old and new runs side by side; other runs open in the test's panel.
+ */
+export function Review({ data, onReplay }: { data: Dataset; onReplay?: (ref: RunRef) => void }) {
   const c = data.comparison;
   const rows = useMemo(() => tableRows(c, data.traces), [c, data.traces]);
   const findings = useMemo(() => discoveryFindings(c), [c]);
@@ -118,7 +121,7 @@ export function Review({ data, onOpen }: { data: Dataset; onOpen: (ref: RunRef) 
           changed={changed}
           filter={filter}
           setFilter={setFilter}
-          onOpen={onOpen}
+          onReplay={onReplay}
         />
       </div>
       <div role="tabpanel" hidden={tab !== "changes"}>

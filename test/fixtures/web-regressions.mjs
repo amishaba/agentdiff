@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { currentMode, loadDataset } from "../../web/src/data/load.ts";
 import { RunToolbar } from "../../web/src/components/RunToolbar.tsx";
 import { RunProvenance } from "../../web/src/components/RunProvenance.tsx";
-import { TraceDrawer } from "../../web/src/components/TraceDrawer.tsx";
+import { TraceBody } from "../../web/src/components/TraceBody.tsx";
 import { ComparisonFailure } from "../../web/src/components/ComparisonFailure.tsx";
 
 const render = (component, props) => renderToStaticMarkup(createElement(component, props));
@@ -22,7 +22,7 @@ const data = await loadDataset();
 assert.equal(data.comparison.agentName, "support-agent", "the examples page loads the example named in the URL");
 const tests = data.comparison.tests;
 const noop = () => {};
-// A run record for the discovery drawer check below.
+// A run record for the discovery trace check below.
 const record = {
   ...data.traces.old[0],
   test: "research",
@@ -32,23 +32,9 @@ const record = {
 };
 for (const version of ["old", "new"]) {
   for (const r of data.traces[version]) {
-    const drawer = render(TraceDrawer, {
-      data,
-      tests,
-      sel: { test: r.test, version, run: r.run },
-      onSelect: noop,
-      onClose: noop,
-    });
-    for (const text of [
-      "tool calls",
-      "final response",
-      "tokens in / out",
-      "latency",
-      "est. cost",
-      "previous run",
-      "next run",
-    ])
-      assert.ok(drawer.includes(text), `missing trace feature: ${text}`);
+    const trace = render(TraceBody, { data, test: tests.find((t) => t.test === r.test), run: { ...r, version } });
+    for (const text of ["tool calls", "final response", "tokens in / out", "latency", "est. cost"])
+      assert.ok(trace.includes(text), `missing trace feature: ${text}`);
   }
 }
 const picker = render(RunToolbar, {
@@ -146,7 +132,7 @@ for (const local of [false, true]) {
   }
 }
 
-// A discovery run opens in the same trace drawer as a suite run.
+// A discovery run shows the same trace as a suite run.
 const probe = {
   name: "file lookup order",
   hypothesis: "The edited instruction changes tool order.",
@@ -192,19 +178,11 @@ const cases = [probe.control, probe.variant].map((input, i) => ({
     },
   ],
 }));
-const discoveryDrawer = render(TraceDrawer, {
-  data,
-  tests: [],
-  records: cases.flatMap((c) => [...c.old, ...c.new]),
-  context: "Discovery · e001",
-  sel: cases[1].new[0],
-  onSelect: noop,
-  onClose: noop,
-});
-assert.ok(discoveryDrawer.includes("Read it now"));
-assert.ok(discoveryDrawer.includes("saved output"));
-assert.ok(discoveryDrawer.includes("values may be clipped"));
-assert.ok(!discoveryDrawer.includes("required but never called"));
+const discoveryTrace = render(TraceBody, { data, run: cases[1].new[0] });
+assert.ok(discoveryTrace.includes("Read it now"));
+assert.ok(discoveryTrace.includes("saved output"));
+assert.ok(discoveryTrace.includes("values may be clipped"));
+assert.ok(!discoveryTrace.includes("required but never called"));
 
 const failedComparison = render(ComparisonFailure, {
   sides: [{ side: "new", runs: 5, error: "Provider unavailable" }],
@@ -216,7 +194,7 @@ assert.ok(failedComparison.includes("Provider unavailable"));
 const { Review } = await import("../../web/src/review/Review.tsx");
 const { TestPanel } = await import("../../web/src/review/TestsTable.tsx");
 const { shiftGroups, tableRows } = await import("../../web/src/review/groups.ts");
-const review = render(Review, { data, onOpen: noop });
+const review = render(Review, { data });
 assert.match(review, /<h1>\d+ of \d+ tests? behaves? differently<\/h1>/);
 const groups = shiftGroups(data.comparison, data.traces);
 for (const g of groups)
@@ -233,7 +211,6 @@ const panel = render(TestPanel, {
   row: tableRows(data.comparison, data.traces)[0],
   position: "1 of 7",
   onClose: noop,
-  onOpen: noop,
 });
 for (const text of [
   "Tool path",

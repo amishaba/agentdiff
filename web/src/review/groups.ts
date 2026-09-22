@@ -28,6 +28,8 @@ export interface Shift {
   metric: string;
   /** Tools the shift is about, for finding the edits that mention them. */
   tools: string[];
+  /** Whether one run counts toward old and new; absent when the traces can't say (a judge's answers, a score). */
+  hit?: (r: RunRecord) => boolean;
 }
 
 /** A check one version runs and the other doesn't, and how many runs it tripped in. */
@@ -61,6 +63,10 @@ const fmt = (r?: { called: number; of: number }, of = 0) => (r ? `${r.called}/${
 /** The signals that held up in both halves of the runs, or every signal when the runs weren't split. */
 const settledOf = (t: TestComparison) => new Set(t.confirmation ? t.confirmation.confirmed : changeSignals(t));
 
+/** Counted the way stats.ts counts toolCallRate and replied, so a run strip adds up to the rate beside it. */
+const calls = (tool: string) => (r: RunRecord) => r.tool_calls.some((c) => c.tool === tool);
+const replied = (r: RunRecord) => !r.error && !!r.final_response?.trim();
+
 /** The one shift a test is listed under: rules the test wrote first, then replies, checks, tools and grade. */
 export function mainShift(c: Comparison, t: TestComparison): Shift {
   const settled = settledOf(t);
@@ -75,6 +81,7 @@ export function mainShift(c: Comparison, t: TestComparison): Shift {
         new: f.newRate,
         metric: `${f.tool} called`,
         tools: [f.tool],
+        hit: calls(f.tool),
       };
   for (const r of toolRegressions(t))
     if (settled.has(`required:${r.tool}`))
@@ -85,6 +92,7 @@ export function mainShift(c: Comparison, t: TestComparison): Shift {
         new: r.newRate,
         metric: `${r.tool} called`,
         tools: [r.tool],
+        hit: calls(r.tool),
       };
   if (settled.has("path"))
     for (const e of actedEarly(t, writeTools))
@@ -95,12 +103,27 @@ export function mainShift(c: Comparison, t: TestComparison): Shift {
         new: fmt(t.new.toolCallRate[e.tool], runs),
         metric: `${e.tool} called`,
         tools: [e.tool, ...e.skipped],
+        hit: calls(e.tool),
       };
   const reply = replyShift(t);
   if (reply && settled.has("reply"))
     return reply.started
-      ? { key: "reply:started", title: "Replies where it used to send nothing", ...reply, metric: "replied", tools: [] }
-      : { key: "reply:stopped", title: "Sends nothing where it used to reply", ...reply, metric: "replied", tools: [] };
+      ? {
+          key: "reply:started",
+          title: "Replies where it used to send nothing",
+          ...reply,
+          metric: "replied",
+          tools: [],
+          hit: replied,
+        }
+      : {
+          key: "reply:stopped",
+          title: "Sends nothing where it used to reply",
+          ...reply,
+          metric: "replied",
+          tools: [],
+          hit: replied,
+        };
   for (const row of shownCheckRows(t))
     if (row.shifted && settled.has(`check:${row.id}`)) {
       const option = row.kind === "choice" ? row.new.slice(0, row.new.lastIndexOf(" ")) : "";
@@ -140,6 +163,7 @@ export function mainShift(c: Comparison, t: TestComparison): Shift {
       new: fmt(t.new.toolCallRate[first], runs),
       metric: `${first} called`,
       tools: moved,
+      hit: calls(first),
     };
   }
   const g = gradeChange(t);
@@ -286,6 +310,16 @@ export function usualPath(runs: RunRecord[]): { steps: string[]; runs: number; o
   }
   const [key, same] = [...counts].sort((a, b) => b[1].length - a[1].length)[0];
   return { steps: key ? key.split("\n") : [], runs: same.length, of: runs.length, run: same[0] };
+}
+
+/** How one run shows on a run strip: it counts toward the shift's rate, it doesn't, or it errored without counting. */
+export type RunMark = "hit" | "miss" | "error";
+
+/** Each run in run order, marked for a shift, so the strip shows which runs make up "0/10 → 10/10". */
+export function runMarks(runs: RunRecord[], hit: (r: RunRecord) => boolean): { run: RunRecord; mark: RunMark }[] {
+  return [...runs]
+    .sort((a, b) => a.run - b.run)
+    .map((run) => ({ run, mark: hit(run) ? "hit" : run.error ? "error" : "miss" }));
 }
 
 export type StepType = "tool" | "check" | "handoff";

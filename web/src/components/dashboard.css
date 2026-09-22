@@ -19,14 +19,13 @@
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); flex-shrink: 0; margin-top: 6px; }
 .status-dot.complete { background: var(--green); }
 .status-dot.error { background: var(--red); }
-.trace-drawer { width: min(520px,100vw); }
-.trace-drawer .call > summary { cursor: pointer; }
-.trace-drawer .call > summary::after { content: "+"; color: var(--dim); }
-.trace-drawer .call[open] > summary::after { content: "−"; }
-.trace-drawer .call .io { grid-template-columns: repeat(2,minmax(0,1fr)); }
-.trace-drawer .call .io > div { min-width: 0; background: var(--card-footer); padding: 10px; border: 1px solid var(--rule-inner); border-radius: 8px; }
-.trace-drawer .call .io .label { margin-bottom: 6px; }
-.trace-drawer .metrics .mv { font-size: 14px; overflow-wrap: anywhere; }
+.trace-body .call > summary { cursor: pointer; }
+.trace-body .call > summary::after { content: "+"; color: var(--dim); }
+.trace-body .call[open] > summary::after { content: "−"; }
+.trace-body .call .io { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.trace-body .call .io > div { min-width: 0; background: var(--card-footer); padding: 10px; border: 1px solid var(--rule-inner); border-radius: 8px; }
+.trace-body .call .io .label { margin-bottom: 6px; }
+.trace-body .metrics .mv { font-size: 14px; overflow-wrap: anywhere; }
 /* Execution actions use the same compact controls as the approved dashboard. */
 .dashboard-button.primary { color: #fff; background: var(--ink); border-color: var(--ink); }
 .dashboard-button.primary:hover { background: #3f3f46; }

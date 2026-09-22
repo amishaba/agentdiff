@@ -1,18 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { currentExample, loadExample } from "../data/examples.ts";
 import { AppShell } from "./AppShell.tsx";
-import { TraceDrawer } from "./TraceDrawer.tsx";
 import { RunProvenance } from "./RunProvenance.tsx";
 import { Review } from "../review/Review.tsx";
-import { sortedTests } from "../data/derive.ts";
-import type { Dataset, RunRef } from "../data/types.ts";
+import type { Dataset } from "../data/types.ts";
 
 /** A recorded comparison, shown on the same page as your own runs. */
 export function Examples() {
   const example = currentExample();
   const [data, setData] = useState<Dataset | null>(null);
   const [error, setError] = useState("");
-  const [open, setOpen] = useState<RunRef | null>(null);
   useEffect(() => {
     const previous = document.title;
     document.title = `agentdiff · ${example.title}`;
@@ -33,7 +30,6 @@ export function Examples() {
       cancelled = true;
     };
   }, [example.name]);
-  const tests = useMemo(() => (data ? sortedTests(data.comparison) : []), [data]);
   return (
     <AppShell
       place={{ kind: "example", name: example.name }}
@@ -50,11 +46,8 @@ export function Examples() {
           Loading the recording…
         </p>
       )}
-      {data && <Review data={data} onOpen={setOpen} />}
+      {data && <Review data={data} />}
       {data && <RunProvenance data={data} />}
-      {data && open && (
-        <TraceDrawer data={data} tests={tests} sel={open} onSelect={setOpen} onClose={() => setOpen(null)} />
-      )}
     </AppShell>
   );
 }
