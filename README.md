@@ -16,6 +16,8 @@ so prompt wording changes what an agent does more than you’d expect. adding a 
 
 i made agentdiff mostly to see what actually changes between two versions of an agent.
 
+Also, it's pretty easy to go online and find people talking to their instinct, muse, grok, dot, poke, pickle or what have you, and the agent saying stuff like 'you're right, and i shouldn't have…' even after super explicit, clear instructions. While we don't have insight into what these agents have in their prompts, i can imagine the frequent changes being made to these high-growth, early-stage products could be to blame. agentdiff has also helped me understand and benchmark some of that.
+
 ## one line, ten runs
 
 the example on [my site](https://agent-diff.vercel.app/?view=report&example=sms) is an sms travel agent. the first version changes a flight only after the traveler replies YES to that exact proposal. the second, trying to reduce friction, says: for other fares, be proactive, complete the change without back-and-forth.
