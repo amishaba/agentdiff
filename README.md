@@ -2,7 +2,7 @@
 
 regression testing for AI agents.
 
-[![ci](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml) · **live examples: [agentblame.vercel.app](https://agentblame.vercel.app/)**
+[![ci](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml) · **live examples: [agentblame.vercel.app](https://agent-diff.vercel.app/)**
 
 ## why i built this
 
@@ -18,13 +18,13 @@ i made agentdiff mostly to see what actually changes between two versions of an 
 
 ## one line, ten runs
 
-the example on [my site](https://agentblame.vercel.app/?view=report&example=sms) is an sms travel agent. the first version changes a flight only after the traveler replies YES to that exact proposal. the second, trying to reduce friction, says: for other fares, be proactive, complete the change without back-and-forth.
+the example on [my site](https://agent-diff.vercel.app/?view=report&example=sms) is an sms travel agent. the first version changes a flight only after the traveler replies YES to that exact proposal. the second, trying to reduce friction, says: for other fares, be proactive, complete the change without back-and-forth.
 
 > in 10 of 10 runs, the new version moved the traveler’s flight before they said yes. the old one never did.
 
 it reads like a small ux tweak. it took away the agent’s main guardrail.
 
-[![The SMS travel desk example, "Reply faster, cut Jev costs": 11 of 16 tests behave differently. The new agent calls change_flight without a YES in 10 of 10 runs, and replies to STOP, thanks and tapbacks where the old agent's opt_out and should_reply guardrails sent nothing. 10 runs per test.](./docs/review.png)](https://agentblame.vercel.app/?view=report&example=sms)
+[![The SMS travel desk example, "Reply faster, cut Jev costs": 11 of 16 tests behave differently. The new agent calls change_flight without a YES in 10 of 10 runs, and replies to STOP, thanks and tapbacks where the old agent's opt_out and should_reply guardrails sent nothing. 10 runs per test.](./docs/review.png)](https://agent-diff.vercel.app/?view=report&example=sms)
 
 ## quick start
 
@@ -50,7 +50,7 @@ more: [how a comparison works](./docs/how-it-works.md) (the seven stages, the la
 
 a new agent has no old version to compare against, and no tests yet. `agentdiff scenarios` reads the prompt and tools and writes a suite: earlier turns of the conversation, the situation, what every tool answers, and what should happen. `agentdiff check --trial` runs each test once to catch the ones that expect the wrong thing, then `agentdiff check` runs them all 10 times by default and says which tests the agent breaks a rule on, scores low on, or handles differently from run to run.
 
-the [clinic example](https://agentblame.vercel.app/?view=report&example=clinic) started this way: 95 tests written from its prompt, then a "faster booking" edit that booked appointments before the patient confirmed in 13 of 44 runs.
+the [clinic example](https://agent-diff.vercel.app/?view=report&example=clinic) started this way: 95 tests written from its prompt, then a "faster booking" edit that booked appointments before the patient confirmed in 13 of 44 runs.
 
 ## what it catches
 
@@ -124,7 +124,7 @@ npx agentdiff              # asks for your keys, then runs the example
 
 The example agents call OpenAI themselves, so they need `OPENAI_API_KEY` even with `AGENTDIFF_OFFLINE=1`. The SMS example is 320 agent runs (16 tests, 10 runs each, two versions) and takes about 30 minutes.
 
-The [live examples](https://agentblame.vercel.app/?view=report) are real recordings of these.
+The [live examples](https://agent-diff.vercel.app/?view=report) are real recordings of these.
 
 ## license
 

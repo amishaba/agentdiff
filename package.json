@@ -8,7 +8,7 @@
     "type": "git",
     "url": "git+https://github.com/amishaba/agentdiff.git"
   },
-  "homepage": "https://agentblame.vercel.app",
+  "homepage": "https://agent-diff.vercel.app",
   "bugs": {
     "url": "https://github.com/amishaba/agentdiff/issues"
   },
