@@ -2,7 +2,7 @@
 
 regression testing for AI agents.
 
-[![ci](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml) · **live examples: [agentblame.vercel.app](https://agent-diff.vercel.app/)**
+[![ci](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/amishaba/agentdiff/actions/workflows/ci.yml) · **live examples: [agent-diff.vercel.app](https://agent-diff.vercel.app/)**
 
 ## why i built this
 
