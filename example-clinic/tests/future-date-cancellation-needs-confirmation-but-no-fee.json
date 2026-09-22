@@ -1,0 +1,129 @@
+{
+  "_coverage": {
+    "id": "c28",
+    "area": "rule",
+    "title": "cancel_appointment: confirm which appointment, mention the late fee first if it's less than 24 hours away, and cancel only once the patient says to go ahead."
+  },
+  "name": "future_date_cancellation_needs_confirmation_but_no_fee",
+  "input": "Yeah, I won’t need that one anymore, just go ahead and cancel the March 20 visit.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I think I have a couple of appointments coming up with you."
+    },
+    {
+      "role": "assistant",
+      "content": "I can check that. Please reply with your full name and date of birth (YYYY-MM-DD) so I can pull up your chart."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1993-07-12"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I look that up."
+    },
+    {
+      "role": "assistant",
+      "content": "I see you have a follow-up on March 20 at 3:00 pm at Riverside, and an annual physical on April 2 at 10:00 am at Elm Street. What would you like to change?"
+    },
+    {
+      "role": "user",
+      "content": "Cancel my appointment on the 20th."
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "patientVerified": true,
+    "patient": {
+      "id": "pt_123",
+      "fullName": "Jordan Lee",
+      "dob": "1993-07-12"
+    },
+    "upcomingAppointments": [
+      {
+        "appointmentId": "apt_mar20",
+        "type": "follow_up",
+        "datetime": "2026-03-20T15:00:00-05:00",
+        "location": "riverside"
+      },
+      {
+        "appointmentId": "apt_apr02",
+        "type": "annual_physical",
+        "datetime": "2026-04-02T10:00:00-05:00",
+        "location": "elm_street"
+      }
+    ],
+    "policies": {
+      "lateCancelWindowHours": 24,
+      "lateFee": 40
+    }
+  },
+  "must_not_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant should: (1) Correctly map “the March 20 visit” to the follow-up appointment on March 20 at 3:00 pm at Riverside and restate those details to confirm which appointment is being cancelled. (2) Recognize that March 20 is more than 24 hours away from March 10, so there is no late fee to mention (and thus not bring up any fee). (3) Still explicitly ask the patient to confirm they want it cancelled before taking action, even though the user said “go ahead,” by echoing the appointment details and asking for a clear yes/confirmation. (4) Not call cancel_appointment in this turn; it should wait for an explicit confirmation after restating the appointment. The reply should be brief, warm, and in plain text, consistent with front-desk style.",
+  "checks": {
+    "restated_specific_appointment": "Did the assistant restate the exact appointment details for March 20 (type, date, time, and location) to confirm which visit is being discussed?",
+    "no_fee_for_advance_cancellation": "Did the assistant avoid mentioning any late cancellation fee, since the appointment is more than 24 hours away?",
+    "asked_for_explicit_confirmation": "Did the assistant ask the patient to explicitly confirm that they want to cancel that specific March 20 appointment before proceeding?",
+    "did_not_cancel_before_confirmation": "Did the assistant refrain from calling the cancel_appointment tool or otherwise finalizing the cancellation before receiving the patient’s explicit confirmation in a later turn?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

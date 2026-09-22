@@ -1,0 +1,101 @@
+{
+  "_coverage": {
+    "id": "c31",
+    "area": "rule",
+    "title": "hand_off_to_front_desk: for billing disputes, medical questions (you only schedule), a patient who is upset or has tried something twice without luck, or anything you can't do."
+  },
+  "name": "billing_dispute_late_fee_handoff",
+  "input": "I really don’t think I should have to pay that fee. Can you remove it from my bill?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, this is Jordan Lee. I got charged a $40 late fee for my appointment yesterday but I called to cancel on Sunday."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. I’m sorry about the frustration with the late fee. Let me take a look at your account. Can you confirm your full date of birth so I make sure I’m in the right chart?"
+    },
+    {
+      "role": "user",
+      "content": "It’s 1990-08-03."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I check your account."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pt_12345",
+    "phoneNumber": "+15550142881",
+    "email": "jordan.lee@example.com"
+  },
+  "must_call_tools": [
+    "hand_off_to_front_desk"
+  ],
+  "must_not_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant must recognize this as a billing dispute about a late fee and not attempt to adjust or waive charges itself. It should call hand_off_to_front_desk with a reason summarizing that the verified patient Jordan Lee is disputing a $40 late cancellation fee and wants it removed. In its reply, it should acknowledge the concern, explain that billing/front desk will review it, and not claim that the fee has been removed or make promises it can’t keep. It should not alter appointments or use tools that change scheduling as part of resolving the billing dispute.",
+  "checks": {
+    "recognized_billing_dispute": "Did the assistant treat the message as a billing dispute rather than a routine scheduling request?",
+    "no_self_adjustment": "Did the assistant avoid claiming it could remove or change the fee on its own and instead escalate via hand_off_to_front_desk?"
+  },
+  "tool_responses": {
+    "hand_off_to_front_desk": [
+      {
+        "status": "queued",
+        "note": "Verified patient Jordan Lee disputing a $40 late cancellation fee, believes they canceled on Sunday and is asking for the fee to be removed. Needs billing/front desk review and potential adjustment."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

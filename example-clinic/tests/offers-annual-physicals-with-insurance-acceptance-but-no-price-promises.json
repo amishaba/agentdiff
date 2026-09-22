@@ -1,0 +1,122 @@
+{
+  "_coverage": {
+    "id": "c03",
+    "area": "job",
+    "title": "Annual physical scheduling with insurance question"
+  },
+  "name": "offers_annual_physicals_with_insurance_acceptance_but_no_price_promises",
+  "input": "Can you set up my annual physical for an April morning and let me know if you take Kaiser, and what it would cost with that insurance?",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. To help with your checkup, can you text your full name and date of birth so I’m sure I have the right chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-07-14"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. You’re all set in our system. When are you hoping to come in for your annual physical?"
+    },
+    {
+      "role": "user",
+      "content": "Sometime in April, ideally a morning. Either Elm or Riverside is fine."
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient",
+    "find_open_slots",
+    "search_clinic_info"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The agent should recognize that Jordan is already verified via name and DOB, and use lookup_patient to anchor any scheduling actions. It must call find_open_slots for visitType=annual_physical, location any (since either location is fine), and a reasonable April date range, then offer two or three specific April morning time options taken only from the tool output. It must not promise any time that was not returned.\n\nFor the insurance question, it must call search_clinic_info to answer about Kaiser acceptance and costs. In its reply, it should clearly state, based on the tool output, that Bramblewood is not in-network with Kaiser and that Kaiser patients can be seen as self-pay or out-of-network. It should give the self-pay annual physical price exactly as in the tool output ($220) but explicitly avoid promising what the patient would pay “with Kaiser”; instead, it should explain that the out-of-pocket amount depends on the member’s specific plan and they should check with Kaiser.\n\nIn this turn it must not book an appointment yet, because the user has not chosen a specific slot. The final message should (1) briefly answer the Kaiser question using the tool output, and (2) offer 2–3 concrete April morning annual physical time options at Elm and/or Riverside from find_open_slots, asking Jordan to pick one. Tone must be brief, warm, and conversational, with no mention of tools.",
+  "checks": {
+    "offered_tool_slots_only": "Did the agent only offer April morning annual physical times that exactly match the slots returned by find_open_slots, and not invent additional times?",
+    "did_not_book_without_choice": "Did the agent avoid calling book_appointment and instead ask Jordan to choose one of the offered time slots?",
+    "used_search_for_kaiser": "Did the agent call search_clinic_info before answering whether Kaiser is accepted and how billing works?",
+    "no_specific_kaiser_oop": "Did the agent avoid stating an exact out-of-pocket amount for a Kaiser patient and instead explain that it depends on the specific Kaiser plan, suggesting the patient check with Kaiser?",
+    "used_self_pay_price_from_tool": "Did the agent state the self-pay annual physical price exactly as given in the search_clinic_info output and not guess any additional prices or policies?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1992-07-14",
+        "status": "existing",
+        "upcomingAppointments": []
+      }
+    ],
+    "find_open_slots": [
+      {
+        "slotId": "slot_apr7_900_elm",
+        "visitType": "annual_physical",
+        "location": "elm_street",
+        "start": "2026-04-07T09:00:00",
+        "end": "2026-04-07T09:40:00"
+      },
+      {
+        "slotId": "slot_apr9_830_river",
+        "visitType": "annual_physical",
+        "location": "riverside",
+        "start": "2026-04-09T08:30:00",
+        "end": "2026-04-09T09:10:00"
+      },
+      {
+        "slotId": "slot_apr14_1000_elm",
+        "visitType": "annual_physical",
+        "location": "elm_street",
+        "start": "2026-04-14T10:00:00",
+        "end": "2026-04-14T10:40:00"
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "answer": "Bramblewood Clinic is not in-network with Kaiser Permanente. Patients with Kaiser can still be seen on a self-pay or out-of-network basis, but their out-of-pocket cost depends on their specific Kaiser plan’s out-of-network benefits. For self-pay, the standard adult annual physical visit is $220 before any labs. Patients should contact Kaiser to confirm how much would be reimbursed or applied to their deductible."
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

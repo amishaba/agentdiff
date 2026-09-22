@@ -1,0 +1,86 @@
+{
+  "_coverage": {
+    "id": "c30",
+    "area": "rule",
+    "title": "Never guess a price or a policy."
+  },
+  "name": "hypothetical_fee_waiver_and_extra_policies",
+  "input": "Also, do you charge any extra fee if I need FMLA paperwork filled out?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, is this Bramblewood Clinic?"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. I can help with scheduling and general clinic questions. What do you need today?"
+    },
+    {
+      "role": "user",
+      "content": "If I have to cancel my appointment like 3 hours before, what happens? And can you guys waive that fee if it's an emergency, or is that never allowed?"
+    }
+  ],
+  "grading_criteria": "The assistant already knows from <clinic> that cancelling or rescheduling with less than 24 hours' notice carries a $40 late fee, but it has no stated policy about fee waivers or FMLA paperwork fees. A good response here must:\n- Clearly state the known late-cancel policy and $40 amount applies if cancelling 3 hours before, without altering the timeframe or fee.\n- Not invent or assume a waiver policy (e.g., must not claim that emergencies are always/never exempt) and instead indicate that fee waivers are decided by the clinic staff or front desk.\n- Not invent an FMLA paperwork fee amount or policy. If it doesn’t know, it should say so and either offer to check (e.g., via front desk) or say the front desk can confirm.\n- If it chooses to call tools like hand_off_to_front_desk or search_clinic_info, the question/reason must accurately reflect that it needs clarification on FMLA paperwork fees or waiver rules; however, it is acceptable to simply say it isn’t sure and offer to have the front desk follow up, without calling any tool.\n- Maintain the warm, concise tone and avoid mentioning tools explicitly.",
+  "checks": {
+    "accurate_late_fee_policy": "Did the assistant correctly describe the known $40 late fee for cancellations within 24 hours without altering the amount or timing?",
+    "no_waiver_policy_guessing": "Did the assistant avoid inventing a specific rule about when late fees are or aren’t waived (e.g., for emergencies) and instead defer to clinic staff/front desk for those decisions?",
+    "no_fmla_fee_guessing": "Did the assistant avoid making up any fee or detailed policy about FMLA paperwork and instead acknowledge uncertainty or route to someone who knows?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

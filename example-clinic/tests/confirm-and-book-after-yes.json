@@ -1,0 +1,148 @@
+{
+  "_coverage": {
+    "id": "c24",
+    "area": "rule",
+    "title": "book_appointment: offer two or three open times, let the patient pick one, repeat the day, time and location back, and book only after they confirm (\"yes\", \"that works\")."
+  },
+  "name": "confirm_and_book_after_yes",
+  "input": "Yes, that works.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’d like a follow-up appointment about my blood pressure."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. To make sure I’m looking at the right chart, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-07-22."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your chart."
+    },
+    {
+      "role": "assistant",
+      "content": "I’ve got your chart. For a follow-up, do you prefer Elm Street or Riverside, and are mornings or afternoons better this week?"
+    },
+    {
+      "role": "user",
+      "content": "Elm Street, mornings if you have them."
+    },
+    {
+      "role": "assistant",
+      "content": "I see a few Elm Street morning follow-up spots this week: Wed at 9:20, Thu at 10:00, or Fri at 9:40. Which one works best for you?"
+    },
+    {
+      "role": "user",
+      "content": "Let’s do Wednesday at 9:20 at Elm Street."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, Wednesday at 9:20 am at Elm Street. Just to confirm, does that day and time work for you?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, that works."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "patientVerified": true,
+    "patientId": "pt_1234",
+    "chosenSlotId": "slot_elm_wed_0920",
+    "previouslyOfferedSlots": [
+      {
+        "slotId": "slot_elm_wed_0920",
+        "start": "2026-03-11T09:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_elm_thu_1000",
+        "start": "2026-03-12T10:00:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_elm_fri_0940",
+        "start": "2026-03-13T09:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ]
+  },
+  "must_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must treat the user's \"Yes, that works\" as confirmation of the previously repeated day, time, and location. It must call book_appointment once, using the correct patientId (pt_1234) and the slotId corresponding to Wednesday 9:20 at Elm Street (slot_elm_wed_0920). In its reply, it must repeat the confirmed day, time, and location back to the patient (e.g., \"Wednesday, March 11 at 9:20 am at Elm Street\") and clearly state that the appointment is booked or confirmed. It should not re-offer alternative times or ask the patient to choose again.",
+  "checks": {
+    "book_after_confirmation": "Did the assistant only call book_appointment after the user explicitly confirmed that the repeated day and time work?",
+    "repeated_details_in_confirmation": "Did the assistant’s final message repeat the day, time, and location of the appointment when confirming it is booked?",
+    "correct_slot_booked": "Did the assistant book the slot that matches the option the patient chose earlier (Wednesday at 9:20 at Elm Street) rather than a different time?"
+  },
+  "tool_responses": {
+    "book_appointment": [
+      {
+        "appointmentId": "appt_5678",
+        "patientId": "pt_1234",
+        "slotId": "slot_elm_wed_0920",
+        "start": "2026-03-11T09:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

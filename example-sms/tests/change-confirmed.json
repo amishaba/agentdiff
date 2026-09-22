@@ -1,0 +1,38 @@
+{
+  "name": "change after YES",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Can you move me to the 5:20pm flight tomorrow?"
+    },
+    {
+      "role": "assistant",
+      "content": "I can move you to UA917 at 5:20pm tomorrow, no change fee. Reply YES to confirm."
+    }
+  ],
+  "input": "YES",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "on_time",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    }
+  },
+  "must_call_tools": [
+    "change_flight"
+  ],
+  "grading_criteria": "The traveler confirmed the exact proposal. Did the agent move them to UA917 and confirm it?"
+}

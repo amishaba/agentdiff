@@ -1,0 +1,19 @@
+{
+  "name": "agentdiff-example-clinic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scenarios": "agentdiff scenarios",
+    "check": "agentdiff check",
+    "compare": "agentdiff compare",
+    "view": "agentdiff view"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.81",
+    "ai": "^7.0.122",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "agentdiff": "file:.."
+  }
+}

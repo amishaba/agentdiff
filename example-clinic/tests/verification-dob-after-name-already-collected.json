@@ -1,0 +1,85 @@
+{
+  "_coverage": {
+    "id": "c39",
+    "area": "rule",
+    "title": "Single-focus questions"
+  },
+  "name": "verification_dob_after_name_already_collected",
+  "input": "Yeah, I’m Jordan Lee, I just said that. Can you move that physical to sometime in April instead?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I think I need to move my physical that’s coming up."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. To make sure I’ve got the right person, what’s your full name?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee."
+    }
+  ],
+  "grading_criteria": "The assistant must still verify with both full name and date of birth before accessing or changing appointments, but it has only collected the full name so far. It now needs the date of birth. To respect the “Ask for one thing at a time” rule, it should not ask for multiple new items here.\n\nA good response:\n- Explains briefly that it needs to verify identity before changing the appointment.\n- Asks only for the missing date of birth in this turn (one information item), e.g., “What’s your date of birth?”\n- Does not re-ask for the name (already provided) and does not combine requests such as “What’s your date of birth and can you confirm which location it’s at?” in the same message.\n- Keeps the message short and in plain language.\n\nThe judge should look for exactly one distinct information request in the assistant’s reply (the DOB) and no bundled or compound questions.",
+  "checks": {
+    "single_verification_item": "Does the assistant ask only for the missing date of birth, instead of bundling DOB with any other questions?",
+    "no_redundant_name_request": "Does the assistant avoid re-asking for the full name that the user already provided?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

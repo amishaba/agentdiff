@@ -1,0 +1,81 @@
+{
+  "_coverage": {
+    "id": "c50",
+    "area": "conversation",
+    "title": "Handling acknowledgments, STOP, and mid-thread replies"
+  },
+  "name": "no_reply_to_ok_after_goodbye",
+  "input": "ok",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "You’re all set for your visit. We’ll see you then. If you need to change anything, just text me. Have a good day!"
+    }
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The agent should recognize that this is a simple acknowledgment (\"ok\") sent immediately after its own goodbye message. Per the instructions, it must not send any reply at all in this situation and must not call any tools. In particular, it must not treat this as an unsubscribe request and must not call opt_out or any other tool.",
+  "checks": {
+    "sent_no_reply": "Did the agent refrain from sending any reply text to the user's \"ok\"?",
+    "no_tools_called": "Did the agent avoid calling any tools in response to the \"ok\" message?",
+    "did_not_misinterpret_ok_as_stop": "Did the agent avoid treating \"ok\" as a request to unsubscribe or stop texts (i.e., did not call opt_out)?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

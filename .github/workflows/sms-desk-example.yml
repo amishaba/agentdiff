@@ -1,0 +1,94 @@
+name: sms-desk-example
+
+# Records the SMS travel desk against real models, v1 → v2: conversation tests
+# through an OpenAI Agents SDK agent with rule and Jev guardrails, Jev triage,
+# and a Jev draft review. Jev also grades the runs and answers the outcome
+# checks. The report goes to the job summary and the comparison folder is kept
+# as an artifact.
+# Paid: it calls real models. It runs only when started by hand.
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: Runs per test
+        default: "10"
+
+concurrency:
+  group: sms-desk-example-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+      AGENTDIFF_MODEL: gpt-5.4
+      AGENTDIFF_GRADER: jev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Install example
+        working-directory: example-sms
+        run: npm install
+
+      # A few Jev calls on fixed messages, before spending on the full recording.
+      - name: Check the desk's Jev gates
+        working-directory: example-sms
+        run: ../node_modules/.bin/tsx check-gates.ts
+
+      - name: Compare v1 and v2, every stage
+        working-directory: example-sms
+        env:
+          RUNS: ${{ inputs.runs || '10' }}
+        run: |
+          sed "s/runsPerTest: 10/runsPerTest: $RUNS/" agentdiff.config.ts > record.config.ts
+          grep -q "runsPerTest: $RUNS" record.config.ts
+          npx agentdiff compare --config record.config.ts
+
+      - name: Check the runs
+        working-directory: example-sms
+        run: |
+          node --input-type=module <<'EOF'
+          import { readdirSync, readFileSync } from "node:fs";
+          const dir = ".agentdiff/" + readdirSync(".agentdiff").filter(d => d.startsWith("compare-")).sort().at(-1);
+          const runs = ["old-runs", "runs"].flatMap(side => readdirSync(`${dir}/${side}`).map(f => JSON.parse(readFileSync(`${dir}/${side}/${f}`, "utf8"))));
+          const errored = runs.filter(r => r.error);
+          for (const r of errored) console.log(`errored: ${r.test} (${r.version} run ${r.run}): ${r.error}`);
+          console.log(`${runs.length - errored.length}/${runs.length} runs finished`);
+          if (!runs.length || errored.length > runs.length * 0.1) throw new Error("too many runs errored");
+          for (const v of ["old", "new"]) {
+            const side = runs.filter(r => r.version === v && !r.error);
+            const silent = side.filter(r => !r.final_response?.trim()).length;
+            const tripped = side.flatMap(r => r.decisions ?? []).filter(d => d.source === "guardrail" && d.answer.probability >= 0.5).map(d => d.id);
+            const unplaced = side.flatMap(r => r.decisions ?? []).filter(d => d.after == null).length;
+            console.log(`${v}: ${silent}/${side.length} runs sent no reply · guardrails tripped: ${JSON.stringify(tripped.reduce((a, id) => ({ ...a, [id]: (a[id] ?? 0) + 1 }), {}))} · unplaced checks: ${unplaced}`);
+          }
+          if (!runs.some(r => r.version === "old" && r.decisions?.some(d => d.source === "guardrail"))) throw new Error("the old desk's guardrails were never recorded");
+          EOF
+
+      - name: Report
+        if: always()
+        working-directory: example-sms
+        run: |
+          dir=$(ls -d .agentdiff/compare-* 2>/dev/null | sort | tail -1)
+          if [ -n "$dir" ] && [ -f "$dir/report.md" ]; then cat "$dir/report.md" >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sms-desk-example
+          path: example-sms/.agentdiff/
+          include-hidden-files: true
+          if-no-files-found: ignore

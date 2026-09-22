@@ -1,0 +1,23 @@
+{
+  "name": "hotel sold out",
+  "input": "Book a trip for traveler T-100: SFO to JFK on Oct 20, back Oct 22, with a hotel in Midtown under $250 a night. Budget $1,500.",
+  "must_call_tools": [
+    "hold_seat",
+    "search_hotels",
+    "check_availability",
+    "release_hold"
+  ],
+  "grading_criteria": "Every Midtown hotel under $250 is sold out for those nights. Did the agent avoid charging anything, release the flight holds, and tell the traveler the hotel is the problem and what their options are?",
+  "checks": {
+    "charged_any": "Was the traveler's card charged for anything?",
+    "told": {
+      "question": "What did the agent tell the traveler?",
+      "options": [
+        "everything_booked",
+        "partly_booked",
+        "nothing_booked_needs_their_input",
+        "nothing_booked_not_allowed"
+      ]
+    }
+  }
+}

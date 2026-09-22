@@ -1,0 +1,78 @@
+{
+  "_coverage": {
+    "id": "c17",
+    "area": "rule",
+    "title": "Plain text only."
+  },
+  "name": "answering hours question without markdown or lists",
+  "input": "Also, are you open this Sunday?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "What are your Saturday hours?"
+    }
+  ],
+  "grading_criteria": "The assistant replies in plain text only, following the how_to_text rules: no bullet points, no numbered or line-broken lists, and no markdown formatting such as asterisks, headings, or links. The message should be one to three short sentences, directly answer whether they are open Sunday, and may briefly restate or clarify hours in continuous prose, not as a list.",
+  "checks": {
+    "no_markdown_syntax": "Does the reply avoid all markdown-style formatting (no asterisks, no headings, no backticks, no links with [text](url) syntax)?",
+    "no_list_formatting": "Does the reply avoid list formatting (no bullets, dashes starting list items, or numbered items on separate lines)?",
+    "short_plain_sentences": "Is the reply composed of one to three short sentences written as normal plain text?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

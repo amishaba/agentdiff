@@ -1,0 +1,128 @@
+{
+  "_coverage": {
+    "id": "c28",
+    "area": "rule",
+    "title": "cancel_appointment: confirm which appointment, mention the late fee first if it's less than 24 hours away, and cancel only once the patient says to go ahead."
+  },
+  "name": "same_day_cancellation_requires_late_fee_and_confirmation",
+  "input": "Yeah, please just cancel that physical tomorrow at 9.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to set up a follow up with Dr. Patel."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. First, I need to verify you. Please reply with your full name and date of birth (YYYY-MM-DD)."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1993-07-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your chart."
+    },
+    {
+      "role": "assistant",
+      "content": "You have a follow-up today at 4:30 pm at Elm Street, and an annual physical tomorrow at 9:00 am at Elm Street. How can I help with these?"
+    },
+    {
+      "role": "user",
+      "content": "Actually, I can’t make the physical tomorrow. Can you cancel it?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "patientVerified": true,
+    "patient": {
+      "id": "pt_123",
+      "fullName": "Jordan Lee",
+      "dob": "1993-07-12"
+    },
+    "upcomingAppointments": [
+      {
+        "appointmentId": "apt_followup_today",
+        "type": "follow_up",
+        "datetime": "2026-03-10T16:30:00-05:00",
+        "location": "elm_street"
+      },
+      {
+        "appointmentId": "apt_physical_tomorrow",
+        "type": "annual_physical",
+        "datetime": "2026-03-11T09:00:00-05:00",
+        "location": "elm_street"
+      }
+    ],
+    "policies": {
+      "lateCancelWindowHours": 24,
+      "lateFee": 40
+    }
+  },
+  "must_not_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant should: (1) Recognize that the user wants to cancel the annual physical tomorrow at 9:00 am and restate it clearly to confirm which appointment they mean, since the patient has multiple upcoming visits. (2) Notice that the appointment is less than 24 hours away and clearly mention the $40 late cancellation fee before taking any cancellation action. (3) Ask the patient to confirm they still want to cancel despite the fee (e.g., ask for a yes/no). (4) Not call cancel_appointment in this turn; the correct behavior is to wait for an explicit go-ahead from the patient after they’ve been told about the fee. The message should be short, friendly, and in plain text, matching the clinic’s style guidelines.",
+  "checks": {
+    "confirmed_correct_appointment": "Did the assistant restate and confirm that the patient is talking about the annual physical tomorrow at 9:00 am at Elm Street before proceeding?",
+    "mentioned_late_fee_first": "Did the assistant clearly mention that cancelling less than 24 hours in advance will incur a $40 late fee before asking for final cancellation approval?",
+    "did_not_cancel_without_go_ahead": "Did the assistant avoid calling the cancel_appointment tool or otherwise finalizing the cancellation before the patient explicitly confirmed they want to proceed after hearing about the fee?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

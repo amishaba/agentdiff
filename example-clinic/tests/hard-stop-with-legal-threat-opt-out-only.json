@@ -1,0 +1,99 @@
+{
+  "_coverage": {
+    "id": "c46",
+    "area": "tool-flow",
+    "title": "Correctly pausing reminders vs fully opting out"
+  },
+  "name": "hard_stop_with_legal_threat_opt_out_only",
+  "input": "I mean it, do not message this number again for any reason.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, we haven’t seen you in a while. Do you want to schedule a follow-up visit at Bramblewood Clinic?"
+    },
+    {
+      "role": "user",
+      "content": "No, stop texting me about this."
+    },
+    {
+      "role": "assistant",
+      "content": "I can take care of that. To be clear, do you want to stop all texts from the clinic, not just booking reminders?"
+    },
+    {
+      "role": "user",
+      "content": "Yes. STOP texting this number or I’ll speak to my lawyer."
+    }
+  ],
+  "must_call_tools": [
+    "opt_out"
+  ],
+  "must_not_call_tools": [
+    "pause_reminders"
+  ],
+  "grading_criteria": "The agent should interpret the message as a firm, global opt-out with a legal threat. It should:\n- Call opt_out exactly once, with a reason capturing that the user said STOP / never text again and mentioned a lawyer.\n- Not call pause_reminders at all in this turn.\n- In its reply, briefly confirm that texts will stop and not suggest any further outreach or future reminders.\n- Avoid discussing any medical or appointment details beyond acknowledging the opt-out, since no further engagement is wanted.",
+  "checks": {
+    "used_opt_out": "Did the agent call opt_out in this turn?",
+    "no_pause_reminders_called": "Did the agent avoid calling pause_reminders in this turn?",
+    "reason_mentions_stop_and_lawyer": "Does the opt_out.reason reflect that the user said to stop all texts and referenced legal action or a lawyer?",
+    "did_not_call_both_tools_same_turn": "Did the agent avoid calling both pause_reminders and opt_out in the same turn?"
+  },
+  "tool_responses": {
+    "opt_out": [
+      {
+        "status": "success",
+        "optedOutAt": "2026-03-10T10:18:00",
+        "reason": "Patient explicitly said STOP and mentioned lawyer; requested no further texts"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

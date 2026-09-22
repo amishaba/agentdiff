@@ -1,0 +1,96 @@
+/* The comparison page: summary tiles, section tabs, one test table grouped by shift. Scoped to .review. */
+.review { --down: #c2410c; --up: #15803d; --tool: #a16207; --handoff: #2563eb; --check: #be185d; }
+.review code { font: 12px var(--mono); }
+
+/* kind dots, the bar and the legend; the colours themselves are in shell.css */
+.review .kind-dot, .review .kind-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--k); flex: none; }
+
+/* page header */
+.review .r-head { margin-bottom: 18px; }
+.review h1 { font-size: 20px; line-height: 1.3; letter-spacing: -0.015em; font-weight: 600; margin: 0 0 8px; }
+.review .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: 12.5px; color: var(--dim); }
+.review .meta .files { color: var(--text-2); background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 2px 8px; }
+.review .meta > span + span::before { content: ""; display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: var(--muted); margin: 0 12px 2px -10px; }
+.review .warn { margin: 10px 0 0; font-size: 12.5px; color: var(--down); background: var(--k-worse-bg); border: 1px solid #fed7aa; border-radius: 6px; padding: 6px 10px; display: inline-block; }
+
+/* summary tiles */
+.review .kpis { display: grid; grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+.review .kind-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.review .kind-bar span { background: var(--k); min-width: 4px; }
+.review .kind-legend { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 2px 4px; }
+.review .kind-legend button { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); padding: 3px 6px; border-radius: 5px; }
+.review .kind-legend button:hover { background: var(--wash); }
+.review .kind-legend b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* section tabs */
+
+/* table toolbar */
+
+/* the test table: one flat row per test */
+.review .tests-table td { padding-block: 9px; }
+.review .tests-table .num { color: var(--text-2); }
+.review .cell-change { color: var(--text-2); max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review .tests-table .chev { width: 28px; color: var(--muted); padding-left: 0; }
+.review .delta { font: 500 12px var(--mono); font-variant-numeric: tabular-nums; margin-left: 4px; color: var(--muted); }
+.review .delta.down { color: var(--down); }
+.review .delta.up { color: var(--up); }
+
+/* a test in the side panel: its path diff, replies and runs */
+
+.review .path-diff { list-style: none; margin: 0; padding: 4px 0; border: 1px solid var(--rule); border-radius: 8px; font: 12.5px/1.5 var(--mono); }
+.review .path-diff li { display: grid; grid-template-columns: 22px 64px minmax(0, 1fr); align-items: baseline; padding: 2px 10px 2px 0; color: var(--dim); }
+.review .path-diff .mark { text-align: center; font-weight: 600; }
+.review .path-diff li.del { background: var(--del-wash); color: var(--del); }
+.review .path-diff li.add { background: var(--add-wash); color: var(--add); }
+.review .path-diff li.del .step, .review .path-diff li.add .step { font-weight: 500; }
+.review .path-diff .step-type { font-size: 11px; color: var(--muted); }
+.review .path-diff li.tool .step-type { color: var(--tool); }
+.review .path-diff li.handoff .step-type { color: var(--handoff); }
+.review .path-diff li.check .step-type { color: var(--check); }
+.review .path-diff .step em { font-style: normal; opacity: .65; }
+.review .path-legend { display: flex; gap: 14px; margin: 8px 0 0; font-size: 11.5px; color: var(--muted); }
+.review .path-legend .del { color: var(--del); }
+.review .path-legend .add { color: var(--add); }
+
+.review .panel-replies { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.review .panel-replies > div { border: 1px solid var(--rule); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+.review .panel-replies span { font-size: 11.5px; font-weight: 600; color: var(--dim); }
+.review .panel-replies p { margin: 6px 0 0; font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review .panel-replies p.none { color: var(--muted); }
+.review .panel-help { margin: -2px 0 10px; font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+.review .runs-table { width: 100%; border-collapse: collapse; font-size: 12.5px; border: 1px solid var(--rule); border-radius: 8px; }
+.review .runs-table th { text-align: left; font-size: 11.5px; font-weight: 500; color: var(--dim); padding: 6px 10px; background: var(--card-footer); border-bottom: 1px solid var(--rule); }
+.review .runs-table thead tr:first-child th[colspan] { border-left: 1px solid var(--rule); color: var(--ink); font-weight: 600; }
+.review .runs-table thead tr:last-child th:nth-child(3n + 1) { border-left: 1px solid var(--rule); }
+.review .runs-table td { padding: 4px 10px; border-top: 1px solid var(--rule-row); }
+.review .runs-table td:nth-child(3n + 2) { border-left: 1px solid var(--rule); }
+.review .runs-table .num { text-align: right; font: 12px var(--mono); color: var(--text-2); white-space: nowrap; }
+.review .runs-table th.num { font: 500 11.5px var(--sans); color: var(--dim); }
+.review .run-n { font: 12px var(--mono); color: var(--muted); width: 44px; }
+.review .run-open { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); border-radius: 6px; }
+.review .run-open:hover { color: var(--ink); }
+.review .run-open:hover .badge { border-color: var(--ink); }
+
+/* the other tabs */
+.review .panel-lead { margin: 0; font-size: 13px; color: var(--dim); }
+.review .edits-agent { font: 500 11.5px var(--mono); color: var(--dim); margin-bottom: 6px; }
+.review .edit-other { font: 12px/1.5 var(--mono); color: var(--text-2); padding: 3px 0 3px 30px; overflow-wrap: anywhere; }
+
+.review .raw-diff { margin: 0; font: 12px/1.6 var(--mono); padding: 12px 16px; overflow-x: auto; white-space: pre-wrap; background: var(--card-footer); }
+.review .raw-diff .d { color: var(--del); }
+.review .raw-diff .a { color: var(--add); }
+
+
+/* discovery */
+.review .disc-cases { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.review .disc-case { padding: 12px 16px 14px; min-width: 0; }
+.review .disc-case + .disc-case { border-left: 1px solid var(--rule-row); }
+.review .disc-case-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.review .disc-msg { font-size: 13px; margin: 0 0 4px; overflow-wrap: anywhere; }
+.review .disc-ctx { font: 12px var(--mono); color: var(--text-2); margin: 0 0 4px; overflow-wrap: anywhere; }
+.review .disc-case dl { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 10px; margin: 8px 0 0; font-size: 12.5px; }
+.review .disc-case dt { font-size: 11.5px; color: var(--muted); }
+.review .disc-case dd { margin: 0; overflow-wrap: anywhere; color: var(--text-2); font-family: var(--mono); font-size: 12px; }
+.review .disc-case dd span { color: var(--muted); margin-left: 4px; }
+.review .disc-case dd.moved { color: var(--ink); font-weight: 500; }
+.review .disc-case dd.disc-expected { font-family: var(--sans); font-size: 12.5px; color: var(--dim); line-height: 1.5; }

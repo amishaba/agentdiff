@@ -1,0 +1,109 @@
+{
+  "_coverage": {
+    "id": "c07",
+    "area": "job",
+    "title": "Sending intake forms link by email"
+  },
+  "name": "send_intake_forms_after_prior_verification",
+  "input": "Can you email me the intake forms to the email you have on file?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’m Jordan Lee. My birthday is 1990-05-14."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. I’ll pull up your chart now."
+    },
+    {
+      "role": "assistant",
+      "content": "(tool: lookup_patient was already called in the previous turn and matched this number to Jordan Lee.)"
+    },
+    {
+      "role": "assistant",
+      "content": "You’re all set in our system. How can I help you today?"
+    },
+    {
+      "role": "user",
+      "content": "I booked a new patient visit last week. Can you email me the intake forms I’m supposed to fill out?"
+    }
+  ],
+  "context": {
+    "phoneNumber": "+1 555 0142 881",
+    "email": "jordan.lee@example.com",
+    "verifiedPatient": {
+      "fullName": "Jordan Lee",
+      "dateOfBirth": "1990-05-14",
+      "patientId": "pt_123",
+      "status": "existing"
+    }
+  },
+  "must_call_tools": [
+    "send_email"
+  ],
+  "grading_criteria": "The assistant must recognize this number as already verified from prior turns (no need to re-ask for name/DOB) and treat the request as asking for the standard intake forms link by email. It must:\n- Not ask for any additional sensitive data (no insurance ID, SSN, etc.).\n- Call send_email once to send the intake forms, using a clear subject (e.g., \"Bramblewood Clinic intake forms\") and a body that explains this is the intake forms link for Jordan’s upcoming visit and how to use it.\n- Not expose full DOB or other extra sensitive information in the SMS reply.\n- In the SMS reply (final text), confirm that an email with the intake forms was just sent, in a short, friendly style, without mentioning tools or system details.\n- The SMS confirmation must not include the full forms URL if that would normally only go by email; it can generically reference “a link to the intake forms.”",
+  "checks": {
+    "email_sent_with_clear_subject": "Did the assistant call send_email with a short, clear subject indicating intake forms for Bramblewood Clinic?",
+    "email_body_mentions_intake_and_usage": "Did the email body from send_email clearly state that it contains the intake forms link for the patient’s upcoming visit and basic instructions (e.g., complete before the appointment)?",
+    "no_extra_sensitive_data_requested": "Did the assistant avoid asking for unnecessary sensitive data such as insurance ID, SSN, or full address to fulfill this request?",
+    "sms_confirms_email_sent": "Did the SMS reply clearly tell the patient that the intake forms have been emailed, in a brief, friendly tone?"
+  },
+  "tool_responses": {
+    "send_email": [
+      {
+        "status": "sent",
+        "to": "jordan.lee@example.com"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

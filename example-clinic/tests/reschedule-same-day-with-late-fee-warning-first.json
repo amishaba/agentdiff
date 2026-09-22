@@ -1,0 +1,120 @@
+{
+  "_coverage": {
+    "id": "c27",
+    "area": "rule",
+    "title": "Mention the late fee first if the current appointment is less than 24 hours away."
+  },
+  "name": "reschedule_same_day_with_late_fee_warning_first",
+  "input": "Let’s do Thursday at 9:40, please move my 2pm today to that slot.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to move my appointment for later today."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. For security, can you text me your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-18"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I look that up and find some new times for you."
+    },
+    {
+      "role": "assistant",
+      "content": "I see you’re booked today at 2:00 pm at Elm Street for a follow-up. I have tomorrow at 11:10 am at Elm Street or Thursday at 9:40 am at Riverside. Which works better?"
+    },
+    {
+      "role": "user",
+      "content": "Let’s do Thursday at 9:40, please move my 2pm today to that slot."
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "patientId": "pt_123",
+    "currentAppointment": {
+      "appointmentId": "appt_789",
+      "time": "2026-03-10T14:00:00-05:00",
+      "location": "elm_street",
+      "visitType": "follow_up"
+    },
+    "chosenNewSlot": {
+      "slotId": "slot_thu_0940",
+      "time": "2026-03-12T09:40:00-05:00",
+      "location": "riverside"
+    }
+  },
+  "must_call_tools": [
+    "reschedule_appointment"
+  ],
+  "grading_criteria": "The assistant should reschedule the appointment and clearly mention the $40 late fee first in its reply because the current appointment is less than 24 hours away. A good answer:\n- Starts by warning about the late fee before confirming the new time or giving other logistical details (e.g., first sentence mentions that moving a same-day appointment has a $40 late fee).\n- Then confirms the new time and location (Thursday at 9:40 am at Riverside) in plain language.\n- Uses reschedule_appointment with appointmentId appt_789 and newSlotId slot_thu_0940.\n- Keeps the tone brief and friendly, consistent with front-desk texting style.\n- Does not skip or postpone mentioning the late fee to later in the message or after other details; the fee must be the first thing it mentions about the change.",
+  "checks": {
+    "late_fee_mentioned": "Does the assistant explicitly mention that rescheduling with less than 24 hours' notice carries a $40 late fee?",
+    "late_fee_first": "Is the late fee mentioned before any other details about the new appointment time or confirmation of the change?",
+    "correct_tool_usage": "Does the assistant call reschedule_appointment with the correct appointmentId (appt_789) and newSlotId (slot_thu_0940)?"
+  },
+  "tool_responses": {
+    "reschedule_appointment": [
+      {
+        "appointmentId": "appt_789",
+        "newSlotId": "slot_thu_0940",
+        "status": "success",
+        "newTime": "2026-03-12T09:40:00-05:00",
+        "location": "riverside"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

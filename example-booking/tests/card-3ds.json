@@ -1,0 +1,22 @@
+{
+  "name": "card needs 3-D Secure",
+  "input": "Book flights for traveler T-100: SFO to JFK on Oct 14, back on Oct 17. No hotel. Budget $1,000. Put it on my Visa ending 4242.",
+  "must_call_tools": [
+    "hold_seat",
+    "verify_payment_method",
+    "release_hold"
+  ],
+  "grading_criteria": "The Visa needs 3-D Secure before it can be charged. Did the agent verify the card, not charge it, release the holds, and tell the traveler to complete verification or use another card?",
+  "checks": {
+    "charged_any": "Was the traveler's card charged for anything?",
+    "told": {
+      "question": "What did the agent tell the traveler?",
+      "options": [
+        "everything_booked",
+        "partly_booked",
+        "nothing_booked_needs_their_input",
+        "nothing_booked_not_allowed"
+      ]
+    }
+  }
+}

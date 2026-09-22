@@ -1,0 +1,99 @@
+{
+  "_coverage": {
+    "id": "c21",
+    "area": "rule",
+    "title": "lookup_patient: before you discuss, book, move or cancel anything, confirm who you're talking to with their full name and date of birth."
+  },
+  "name": "runs_lookup_after_patient_provides_name_and_dob",
+  "input": "My name is Jordan Lee and my birthday is 1990-04-12.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’d like to set up an appointment at Bramblewood."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Please send your full name and date of birth so I can find your chart before we book anything."
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must use the provided full name and date of birth to call lookup_patient before discussing or booking any appointment details. After a successful lookup, it should:\n- Acknowledge that it found the patient’s chart (without repeating the DOB back).\n- Ask a next, simple question to clarify what kind of appointment and/or timing the patient wants (since they only said they want to set up an appointment, without specifics).\n- Not offer or book a time yet, and therefore not call book_appointment in this turn.\n- Keep the reply short, friendly, and consistent with the texting style (1–3 sentences, no mention of tools).",
+  "checks": {
+    "lookup_called_with_correct_data": "Does the lookup_patient call use the fullName \"Jordan Lee\" and dateOfBirth \"1990-04-12\" exactly as provided?",
+    "no_dob_echo": "Does the assistant avoid repeating the full date of birth back to the user in its message?",
+    "no_booking_yet": "Does the assistant avoid calling book_appointment or otherwise locking in a time before asking for visit type and timing preferences?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_12345",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1990-04-12",
+        "isNew": false,
+        "upcomingAppointments": [
+          {
+            "appointmentId": "appt_777",
+            "visitType": "annual_physical",
+            "location": "elm_street",
+            "dateTime": "2026-03-11T15:00:00"
+          }
+        ]
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

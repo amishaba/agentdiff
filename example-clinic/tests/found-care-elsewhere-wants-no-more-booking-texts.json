@@ -1,0 +1,98 @@
+{
+  "_coverage": {
+    "id": "c32",
+    "area": "rule",
+    "title": "pause_reminders: when the patient says they don't want to book, found care elsewhere, or you texted the wrong person."
+  },
+  "name": "found_care_elsewhere_wants_no_more_booking_texts",
+  "input": "Honestly, I already found another primary care doctor and got my physical done there. I don’t plan to book here, so please stop asking about appointments.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. We have availability this week if you’d like to book your annual physical. Would you like to find a time?"
+    },
+    {
+      "role": "user",
+      "content": "Not right now, maybe later."
+    },
+    {
+      "role": "assistant",
+      "content": "No problem. When would be a better time for me to check back in about scheduling, like in a few weeks or a few months?"
+    },
+    {
+      "role": "user",
+      "content": "Honestly, I already found another primary care doctor and got my physical done there. I don’t plan to book here, so please stop asking about appointments."
+    }
+  ],
+  "must_call_tools": [
+    "pause_reminders"
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should recognize that the patient clearly states they have found another doctor, completed their physical elsewhere, and do not plan to book at Bramblewood, and that they want the appointment prompts to stop. It must:\n- Call pause_reminders exactly once, with a reason indicating they found care elsewhere / do not wish to book.\n- Not call opt_out in this turn.\n- Not try to offer alternative appointments or ask about rescheduling/waitlist.\n- Respond briefly, acknowledging that they’ve found care elsewhere, confirming that booking reminders will stop, and keeping a friendly tone.\n- Not pressure the patient to reconsider or ask again about booking.",
+  "checks": {
+    "called_pause_reminders": "Did the assistant call pause_reminders to stop booking reminders after the patient said they found another doctor and do not plan to book?",
+    "avoided_opt_out": "Did the assistant avoid calling opt_out, since the patient only wanted appointment prompts to stop and did not request an end to all texts?",
+    "no_more_booking_pressure": "Did the assistant avoid offering new appointments or pushing to schedule after the patient declined and found care elsewhere?"
+  },
+  "tool_responses": {
+    "pause_reminders": [
+      {
+        "status": "success",
+        "pausedAt": "2026-03-10T10:15:30Z",
+        "reason": "patient_found_care_elsewhere_and_does_not_plan_to_book"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

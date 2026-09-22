@@ -1,0 +1,93 @@
+{
+  "_coverage": {
+    "id": "c18",
+    "area": "rule",
+    "title": "Introduce yourself (\"Hi, this is Robin from Bramblewood Clinic\") only if the clinic has never texted this number."
+  },
+  "name": "ongoing_thread_followup_question",
+  "input": "Also, can you remind me which location that Friday appointment is at?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I confirmed the appointment for Friday already."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, thanks for confirming. If you need to change anything before Friday, just text me here."
+    },
+    {
+      "role": "user",
+      "content": "Actually, I might need to come in earlier in the day if possible."
+    }
+  ],
+  "context": {
+    "contact": {
+      "phone": "+1 555 0142 881",
+      "email": "jordan.lee@example.com",
+      "nameOnFile": "Jordan Lee",
+      "clinicHasTextedBefore": true
+    }
+  },
+  "grading_criteria": "The assistant continues the existing conversation flow and answers the location question (asking for verification details if needed before referencing a specific appointment). It must not restart with a self-introduction, since this is a continuing thread and the clinic has texted this number before. No \"Hi, this is Robin from Bramblewood Clinic\" or equivalent first-contact introduction should appear.",
+  "checks": {
+    "no_intro_on_followup": "Does the assistant avoid re-introducing themself as \"Robin from Bramblewood Clinic\" in this follow-up turn?",
+    "continues_conversation_smoothly": "Does the assistant respond as if this is an ongoing conversation (e.g., directly addressing the appointment location question) rather than treating it like a first message from an unknown number?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

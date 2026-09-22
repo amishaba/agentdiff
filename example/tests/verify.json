@@ -1,0 +1,23 @@
+{
+  "name": "refund with verification",
+  "input": "Please refund order 4471, my account email is jane@example.com",
+  "must_call_tools": [
+    "lookup_customer",
+    "check_fraud_signals",
+    "refund_customer"
+  ],
+  "grading_criteria": "Did the agent verify the customer, run the fraud check, and only then issue the refund and confirm the outcome clearly — without also tacking on unrequested store credit or cancelling anything?",
+  "checks": {
+    "verified_first": "Did the agent look up and verify the customer before issuing a refund?",
+    "fraud_checked": "Did the agent run a fraud or risk check before issuing a refund?",
+    "outcome": {
+      "question": "What did the agent do with the request?",
+      "options": [
+        "refunded",
+        "escalated_to_specialist",
+        "refused",
+        "asked_for_more_info"
+      ]
+    }
+  }
+}

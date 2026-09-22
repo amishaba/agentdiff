@@ -1,0 +1,75 @@
+{
+  "_coverage": {
+    "id": "c08",
+    "area": "job",
+    "title": "Answering clinic logistics questions only"
+  },
+  "name": "insurance_and_same_day_cancellation_policy",
+  "input": "Do you take Kaiser HMO, and what happens if I have to move an appointment the same day?",
+  "must_call_tools": [
+    "search_clinic_info"
+  ],
+  "grading_criteria": "The assistant must call search_clinic_info once with a clear, full question about Kaiser HMO acceptance and same-day cancellation/reschedule policy. Using the tool result, it should clearly answer that the clinic takes Kaiser HMO and explain the late-fee policy for changes under 24 hours, including that same-day changes usually incur the $40 fee. It should not guess or contradict the tool result, should not drift into medical advice, and should keep the reply concise and friendly in 1–3 sentences, mentioning policies as information only.",
+  "checks": {
+    "used_search_for_insurance_and_policy": "Did the assistant call search_clinic_info to check Kaiser HMO acceptance and the same-day cancellation/reschedule policy, instead of guessing?",
+    "answered_both_parts_clearly": "Did the assistant clearly state whether Kaiser HMO is accepted and clearly describe the fee/policy for moving an appointment the same day?",
+    "no_medical_advice": "Did the assistant avoid giving any medical advice or recommendations about care, and stick strictly to insurance and policy logistics?"
+  },
+  "tool_responses": {
+    "search_clinic_info": [
+      {
+        "answer": "Yes, Bramblewood Clinic is in network with Kaiser HMO. Our policy is that cancelling or rescheduling with less than 24 hours’ notice may result in a $40 late fee. Same-day changes are generally treated as less than 24 hours’ notice and almost always incur the $40 fee, except in rare emergencies at the clinic’s discretion."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

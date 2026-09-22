@@ -1,0 +1,128 @@
+{
+  "_coverage": {
+    "id": "c26",
+    "area": "rule",
+    "title": "reschedule_appointment: find the new time first, confirm it with the patient, then move the appointment."
+  },
+  "name": "offer_new_times_before_rescheduling",
+  "input": "Next week any afternoon at Elm is fine, whatever you have.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to move my checkup that I have with you this week."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. Can you please text back your full name and date of birth so I can find your chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-08-14."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I look you up."
+    },
+    {
+      "role": "assistant",
+      "content": "I found your chart. You have an annual physical booked for tomorrow, Wednesday at 10:40 AM at Elm Street. There’s a $40 fee if we move it with less than 24 hours’ notice. What day and time would you prefer instead?"
+    },
+    {
+      "role": "user",
+      "content": "Oh wow, ok. Can we move it to sometime next week in the afternoon at Elm Street?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "suspectedPatient": "Jordan Lee",
+    "email": "jordan.lee@example.com"
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "reschedule_appointment"
+  ],
+  "grading_criteria": "The assistant must:\n- Not call reschedule_appointment in this turn, because the patient has not confirmed a specific new time.\n- Call find_open_slots with visitType \"annual_physical\", location \"elm_street\", and a date range covering \"next week\" (e.g., the next Monday–Friday after the current date).\n- Use only the returned slots when offering options; it should propose two or three of SLOT123, SLOT124, SLOT125 as concrete days and times.\n- Clearly ask the patient to choose one of the offered slots (getting explicit confirmation), not imply that the move is already done.\n- Keep the tone short and friendly, and not mention tools or internal rules.\nThe judge should check that no reschedule_appointment tool call appears in this turn and that the offered times correspond exactly to the times returned by find_open_slots.",
+  "checks": {
+    "no_premature_reschedule": "Did the assistant avoid calling reschedule_appointment before the patient picked a specific new time?",
+    "used_find_open_slots": "Did the assistant call find_open_slots to get next week's Elm Street options for an annual physical?",
+    "offered_specific_slots": "Did the assistant offer only times that came from the find_open_slots results and ask the patient to choose one?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "SLOT123",
+        "start": "2026-03-17T13:00:00",
+        "end": "2026-03-17T13:40:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      },
+      {
+        "slotId": "SLOT124",
+        "start": "2026-03-18T15:20:00",
+        "end": "2026-03-18T16:00:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      },
+      {
+        "slotId": "SLOT125",
+        "start": "2026-03-19T14:00:00",
+        "end": "2026-03-19T14:40:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

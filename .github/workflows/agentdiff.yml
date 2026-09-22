@@ -1,0 +1,48 @@
+name: agentdiff
+
+# Paid: it runs the example against the real OpenAI API. `agentdiff ci` needs
+# a pull request, so this stays on pull_request but only runs once the PR has
+# the run-agentdiff label.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "example/agents/**"
+      - "example/agentdiff.config.ts"
+      - "example/tests/**"
+      - "action.yml"
+      - "src/**"
+      - "bin/**"
+
+concurrency:
+  group: agentdiff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  compare:
+    if: contains(github.event.pull_request.labels.*.name, 'run-agentdiff')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install example
+        working-directory: example
+        run: npm install
+
+      - uses: ./
+        with:
+          working-directory: example
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+          AGENTDIFF_MODEL: gpt-5.4

@@ -1,0 +1,142 @@
+{
+  "_coverage": {
+    "id": "c26",
+    "area": "rule",
+    "title": "reschedule_appointment: find the new time first, confirm it with the patient, then move the appointment."
+  },
+  "name": "confirm_and_then_move_to_chosen_slot",
+  "input": "Let’s do that Wednesday at 3:20 at Elm, please move it.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to reschedule my physical."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Please reply with your full name and date of birth so I can find your chart."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-08-14"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, I found your chart. You have an annual physical booked for next Monday at 9:00 AM at Elm Street. What day and time would you like instead?"
+    },
+    {
+      "role": "user",
+      "content": "Something later in the week, afternoon, same location."
+    },
+    {
+      "role": "assistant",
+      "content": "I have a few options at Elm Street: Wednesday at 3:20 PM, Thursday at 2:00 PM, or Friday at 1:00 PM next week. Which one works best for you?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "suspectedPatient": "Jordan Lee",
+    "email": "jordan.lee@example.com",
+    "patientId": "PAT123",
+    "upcomingAppointments": [
+      {
+        "appointmentId": "APPT789",
+        "visitType": "annual_physical",
+        "start": "2026-03-16T09:00:00",
+        "location": "elm_street"
+      }
+    ],
+    "lastOfferedSlots": [
+      {
+        "slotId": "SLOT200",
+        "start": "2026-03-18T15:20:00",
+        "end": "2026-03-18T16:00:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      },
+      {
+        "slotId": "SLOT201",
+        "start": "2026-03-19T14:00:00",
+        "end": "2026-03-19T14:40:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      },
+      {
+        "slotId": "SLOT202",
+        "start": "2026-03-20T13:00:00",
+        "end": "2026-03-20T13:40:00",
+        "visitType": "annual_physical",
+        "location": "elm_street"
+      }
+    ]
+  },
+  "must_call_tools": [
+    "reschedule_appointment"
+  ],
+  "grading_criteria": "The assistant must:\n- Recognize that the patient is Jordan Lee, already verified in prior turns, and that the existing appointment is APPT789.\n- Understand that \"Wednesday at 3:20 at Elm\" corresponds to the previously offered slot with slotId SLOT200 from lastOfferedSlots.\n- Call reschedule_appointment exactly once, with appointmentId \"APPT789\" and newSlotId \"SLOT200\".\n- Not call find_open_slots again in this turn, since options were already retrieved and the patient is now confirming one.\n- In its reply, confirm the change back to the patient with the specific day, date (or at least weekday) and time and location, phrased as already moved (e.g., \"I’ve moved your annual physical to Wednesday at 3:20 PM at Elm Street...\").\n- Not mention tools or internal rules in the user-facing text.\nThe judge should verify that reschedule_appointment is called with the correct IDs matching the context, and that the assistant treats the user message as confirmation of a specific slot rather than offering new times again.",
+  "checks": {
+    "used_correct_slot": "Did the assistant map the patient’s chosen time to the correct slotId (SLOT200) when calling reschedule_appointment?",
+    "used_correct_appointment": "Did the assistant reschedule the existing appointment APPT789 rather than some other appointment or leaving it unchanged?",
+    "no_extra_find_open_slots": "Did the assistant avoid calling find_open_slots again after the patient had already chosen from the previously offered times?",
+    "confirmation_message_clear": "Did the assistant clearly confirm the new appointment time and location in its reply after rescheduling?"
+  },
+  "tool_responses": {
+    "reschedule_appointment": [
+      {
+        "appointmentId": "APPT789",
+        "newSlotId": "SLOT200",
+        "status": "success"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

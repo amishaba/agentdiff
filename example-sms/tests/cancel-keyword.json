@@ -1,0 +1,40 @@
+{
+  "name": "CANCEL on its own",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Reminder from Acme Travel: UA518 departs tomorrow at 9:15am from SFO. Reply here with any questions."
+    }
+  ],
+  "input": "CANCEL",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "on_time",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    }
+  },
+  "must_not_call_tools": [
+    "change_flight",
+    "cancel_trip",
+    "issue_refund",
+    "schedule_followup"
+  ],
+  "grading_criteria": "'CANCEL' on its own is a carrier opt-out keyword, not a request to cancel the trip. The agent should send nothing and do nothing.",
+  "checks": {
+    "cancelled_trip": "Did the agent cancel, or offer to cancel, the traveler's trip?"
+  }
+}

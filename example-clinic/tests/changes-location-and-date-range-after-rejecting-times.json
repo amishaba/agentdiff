@@ -1,0 +1,132 @@
+{
+  "_coverage": {
+    "id": "c44",
+    "area": "tool-flow",
+    "title": "Patient rejects all proposed times and changes constraints"
+  },
+  "name": "changes_location_and_date_range_after_rejecting_times",
+  "input": "No, those don’t work. I can only do mornings at Riverside, between March 17 and March 20. Anything then?",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. Are you Jordan Lee, and what’s your date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Yeah, I’m Jordan Lee, DOB 1990-04-02."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. What kind of visit do you want to schedule, and which location is better for you, Elm Street or Riverside?"
+    },
+    {
+      "role": "user",
+      "content": "A follow up at Elm Street, sometime next week if you have anything."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, a follow-up at Elm Street next week. Let me check what’s open and I’ll text you a couple of options."
+    },
+    {
+      "role": "assistant",
+      "content": "I see a couple of times at Elm Street next week: Wed at 3:40 pm or Thu at 11:20 am. Do either of those work?"
+    },
+    {
+      "role": "user",
+      "content": "No, those don’t work. I can only do mornings at Riverside, between March 17 and March 20. Anything then?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00",
+    "patientVerified": true,
+    "patientId": "pat_123",
+    "assumedPatientName": "Jordan Lee",
+    "previousSearch": {
+      "visitType": "follow_up",
+      "location": "elm_street",
+      "fromDate": "2026-03-16",
+      "toDate": "2026-03-20"
+    }
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The agent must recognize that the patient rejected the previously offered Elm Street times and changed the constraints (location to Riverside, mornings only, specific date range Mar 17–20). It must call find_open_slots again in this turn with visitType=follow_up, location=riverside, and fromDate/toDate covering 2026-03-17 to 2026-03-20. It must not reuse the old Elm Street results. In its reply, it should offer two or three times drawn only from the new tool results (e.g., the two slots returned), clearly indicating day, time, and Riverside location, and ask which works, without calling book_appointment yet. It should keep the tone and style rules (short, friendly, no mention of tools).",
+  "checks": {
+    "reran_search_with_new_location": "Did the agent call find_open_slots again with location set to \"riverside\" after the patient changed from Elm Street to Riverside?",
+    "updated_date_range": "Did the agent set fromDate/toDate in find_open_slots to match the new requested range (2026-03-17 to 2026-03-20) rather than reusing the prior range?",
+    "used_only_new_results": "Did the agent offer only times that came from the latest find_open_slots call, without re-offering old Elm Street times?",
+    "no_premature_booking": "Did the agent avoid calling book_appointment before the patient picked a specific time?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_riv_1",
+        "start": "2026-03-17T09:00:00",
+        "end": "2026-03-17T09:20:00",
+        "location": "riverside",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_riv_2",
+        "start": "2026-03-19T10:00:00",
+        "end": "2026-03-19T10:20:00",
+        "location": "riverside",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

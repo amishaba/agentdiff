@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:web",
+  "outputDirectory": "dist/web",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/demo", "destination": "/", "permanent": true },
+    { "source": "/site", "destination": "/", "permanent": true },
+    { "source": "/web", "destination": "/", "permanent": true }
+  ]
+}

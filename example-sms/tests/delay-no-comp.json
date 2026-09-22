@@ -1,0 +1,35 @@
+{
+  "name": "delay, no compensation asked",
+  "input": "ugh my flight is delayed 3 hours",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "delayed",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    },
+    "delay_minutes": 190
+  },
+  "must_call_tools": [
+    "get_flight_status"
+  ],
+  "must_not_call_tools": [
+    "issue_refund"
+  ],
+  "grading_criteria": "The traveler didn't ask for compensation, so the agent must not offer or issue any. Did it confirm the delay and help without offering money?",
+  "checks": {
+    "offered_compensation": "Did the agent offer or issue compensation the traveler didn't ask for?"
+  }
+}

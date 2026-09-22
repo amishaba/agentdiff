@@ -1,0 +1,99 @@
+{
+  "_coverage": {
+    "id": "c02",
+    "area": "job",
+    "title": "Telehealth follow-up booking"
+  },
+  "name": "booking telehealth follow-up only after explicit consent",
+  "input": "Yes, please go ahead and book that Wednesday 3:30pm telehealth follow-up.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, this is Jordan Lee. My DOB is 1991-04-12. I think I need a video follow-up about my blood pressure meds sometime next week."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. I’ll check your chart and see what telehealth follow-up times we have next week, then share a few options."
+    },
+    {
+      "role": "assistant",
+      "content": "We have telehealth follow-up openings next week on Tuesday at 9:00am, Tuesday at 11:00am, and Wednesday at 3:30pm. Which one works best for you?"
+    },
+    {
+      "role": "user",
+      "content": "Wednesday at 3:30pm works for me, as a video visit."
+    }
+  ],
+  "must_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "Given that Jordan was already verified and telehealth options were offered in earlier turns, the agent must: (1) recognize that the user is explicitly confirming the previously offered Wednesday 3:30pm telehealth follow-up slot; (2) call book_appointment exactly once, using the correct patientId from the prior lookup (p_jordan_001, implied from context) and the slotId corresponding to the Wednesday 3:30pm telehealth slot (slot_th_3); (3) not call find_open_slots again unnecessarily in this turn; (4) in its reply, clearly confirm the booking, repeating that it is a telehealth/video follow-up and the correct weekday, date, and time; (5) keep the reply short, friendly, and not mention tools or system internals; (6) not treat this as a new_patient visit or change the visit type away from telehealth_follow_up.",
+  "checks": {
+    "book_after_explicit_yes": "Did the agent wait for and treat the user's explicit confirmation (\"go ahead and book\") as consent before calling book_appointment?",
+    "correct_slot_id_used": "Did the agent use the slotId that corresponds to the previously offered Wednesday 3:30pm telehealth slot when calling book_appointment?",
+    "telehealth_type_preserved": "Did the booked appointment remain a telehealth_follow_up visit, not another visit type?",
+    "clear_confirmation_message": "Did the agent clearly restate that the appointment is a telehealth/video follow-up on the correct day and time in its final text reply?"
+  },
+  "tool_responses": {
+    "book_appointment": [
+      {
+        "appointmentId": "appt_th_333",
+        "patientId": "p_jordan_001",
+        "slotId": "slot_th_3",
+        "visitType": "telehealth_follow_up",
+        "location": "any",
+        "datetime": "2026-03-18T15:30:00"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "_coverage": {
+    "id": "c12",
+    "area": "rule",
+    "title": "That's who we think it is, not who it is: verify with lookup_patient before sharing or changing anything."
+  },
+  "name": "uses_lookup_before_discussing_which_appointment_to_cancel",
+  "input": "So yeah, please go ahead and cancel it.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "I think I need to cancel my appointment tomorrow morning."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Please text me your full name and date of birth so I can pull up your chart."
+    },
+    {
+      "role": "user",
+      "content": "It’s Jordan Lee, and my DOB is 1990-04-22."
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient"
+  ],
+  "must_not_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant already requested and received full name and DOB in the prior turn. In this turn, it must:\n- Call lookup_patient using fullName \"Jordan Lee\" and dateOfBirth \"1990-04-22\".\n- Use the lookup result to understand which appointments exist, but not yet call cancel_appointment.\n- Reply by briefly summarizing the relevant upcoming appointment (e.g., tomorrow at 9:00 at Elm Street) and mention the late fee policy if it is less than 24 hours away, then ask the user to confirm that this is the appointment they want to cancel and that they still want to proceed.\n- Not share any other appointments beyond what is needed (e.g., avoid detailing the June physical if it is unrelated).\n- Keep the message short and friendly, per texting style guidelines.",
+  "checks": {
+    "lookup_called_with_correct_identity": "Did the assistant call lookup_patient with fullName \"Jordan Lee\" and dateOfBirth \"1990-04-22\" before discussing appointment details?",
+    "no_cancel_before_confirmation": "Did the assistant avoid calling cancel_appointment in this turn, instead asking the user to confirm the specific appointment to cancel?",
+    "limited_disclosure": "Did the assistant avoid listing or discussing unrelated future appointments when responding?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "p123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1990-04-22",
+        "upcomingAppointments": [
+          {
+            "appointmentId": "a101",
+            "dateTime": "2026-03-11T09:00:00",
+            "location": "elm_street",
+            "visitType": "follow_up"
+          },
+          {
+            "appointmentId": "a150",
+            "dateTime": "2026-06-05T10:20:00",
+            "location": "riverside",
+            "visitType": "annual_physical"
+          }
+        ]
+      }
+    ],
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "s301",
+            "dateTime": "2026-03-20T09:00:00",
+            "location": "elm_street"
+          }
+        ]
+      }
+    ],
+    "book_appointment": [
+      {
+        "status": "success",
+        "appointmentId": "a201"
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "status": "success",
+        "appointmentId": "a101",
+        "newSlotId": "s301"
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "status": "success",
+        "appointmentId": "a101"
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "status": "success",
+        "patientId": "p123"
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "answer": "Late cancellations (less than 24 hours) may incur a $40 fee."
+      }
+    ],
+    "send_email": [
+      {
+        "status": "sent"
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "status": "queued"
+      }
+    ],
+    "pause_reminders": [
+      {
+        "status": "paused"
+      }
+    ],
+    "opt_out": [
+      {
+        "status": "opted_out"
+      }
+    ]
+  }
+}

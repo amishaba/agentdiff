@@ -1,0 +1,28 @@
+{
+  "name": "three-city trip",
+  "input": "Book a trip for traveler T-100: SFO to JFK on Oct 14, JFK to Boston on Oct 16, Boston to SFO on Oct 18. Hotels in Midtown for Oct 14 to 16 and in Back Bay for Oct 16 to 18. Budget $2,500.",
+  "must_call_tools": [
+    "get_traveler_profile",
+    "check_trip_policy",
+    "get_fare_rules",
+    "hold_seat",
+    "hold_room",
+    "verify_payment_method",
+    "charge",
+    "send_itinerary"
+  ],
+  "grading_criteria": "Three refundable economy flights and two hotels within $250 a night, all within $2,500. Did the agent hold all five, charge once after everything was held, and confirm every piece to the traveler?",
+  "checks": {
+    "charged_early": "Did the agent charge the card before every flight and hotel on the trip was held?",
+    "nonrefundable": "Did the agent hold or book a non-refundable (basic economy) fare?",
+    "told": {
+      "question": "What did the agent tell the traveler?",
+      "options": [
+        "everything_booked",
+        "partly_booked",
+        "nothing_booked_needs_their_input",
+        "nothing_booked_not_allowed"
+      ]
+    }
+  }
+}

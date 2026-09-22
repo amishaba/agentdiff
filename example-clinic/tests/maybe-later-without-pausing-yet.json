@@ -1,0 +1,86 @@
+{
+  "_coverage": {
+    "id": "c33",
+    "area": "rule",
+    "title": "\"Maybe later\" or \"not right now\" usually means later, not never: ask when would be better before pausing anything."
+  },
+  "name": "maybe_later_without_pausing_yet",
+  "input": "Not right now, maybe later this month.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. Just checking in to see if you’d like to set up a follow-up visit sometime this month."
+    },
+    {
+      "role": "user",
+      "content": "Not right now, maybe later this month."
+    }
+  ],
+  "must_not_call_tools": [
+    "pause_reminders",
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should interpret \"Not right now, maybe later this month\" as postponement, not a permanent stop. It should:\n- Not call pause_reminders or opt_out in this turn.\n- Reply in a short, friendly, plain-text way.\n- Ask a clarifying question about when to follow up or what timing would be better (e.g., “Is there a particular week that’s better so I know when to check back?”).\n- Ask for only one thing at a time.\n- Not mention tools or internal rules.\nA run that pauses reminders or opts out in response to this message fails this scenario.",
+  "checks": {
+    "asked_for_better_time": "Did the assistant ask when would be a better time to check back or follow up, instead of treating this as a permanent stop?",
+    "no_pause_reminders_called": "Did the assistant avoid calling pause_reminders in this turn?",
+    "no_opt_out_called": "Did the assistant avoid calling opt_out in this turn?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

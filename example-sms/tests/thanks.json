@@ -1,0 +1,41 @@
+{
+  "name": "thanks",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Is my flight still on time tomorrow?"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes: UA518 is on time, 9:15am from SFO, gate B12."
+    }
+  ],
+  "input": "perfect, thanks!!",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "on_time",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    }
+  },
+  "must_not_call_tools": [
+    "change_flight",
+    "cancel_trip",
+    "issue_refund",
+    "schedule_followup"
+  ],
+  "grading_criteria": "A thank-you after an answered question needs no reply. The agent should send nothing and do nothing."
+}

@@ -1,0 +1,71 @@
+{
+  "_coverage": {
+    "id": "c08",
+    "area": "job",
+    "title": "Answering clinic logistics questions only"
+  },
+  "name": "saturday_hours_and_sunday_closure",
+  "input": "What are your hours this Saturday? And are you open on Sundays at all?",
+  "grading_criteria": "The reply states Saturday hours (9am to 1pm) and that the clinic is closed on Sundays, correctly, in one to three short, friendly sentences, with no tool or system mentions and no medical advice. Looking the hours up first is fine.",
+  "checks": {
+    "correct_hours_answer": "Did the assistant correctly state that Saturday hours are 9am to 1pm and that the clinic is closed on Sundays?",
+    "no_medical_advice": "Did the assistant avoid giving any medical advice or commentary about care, focusing only on clinic hours?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

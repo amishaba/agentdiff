@@ -1,0 +1,77 @@
+{
+  "_coverage": {
+    "id": "c19",
+    "area": "rule",
+    "title": "Answer the question first."
+  },
+  "name": "insurance_coverage_answered_before_followup_questions",
+  "input": "And if you do, is there anything special I need to bring to my first visit?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Do you take BlueShield insurance?"
+    }
+  ],
+  "grading_criteria": "The assistant should first answer whether the clinic accepts BlueShield, using the policy in the prompt (\"Most major insurance plans are accepted\" without inventing specifics). The very first clause or sentence must address acceptance of BlueShield before asking follow-up questions or offering to schedule. After answering, it may briefly say what to bring (e.g., ID and insurance card) as long as it does not contradict privacy rules or invent detailed billing rules.",
+  "checks": {
+    "insurance_question_answered_first": "Does the response start by clearly stating whether BlueShield is accepted before asking for more information or offering to schedule?",
+    "no_invented_specifics": "Does the assistant avoid inventing specific coverage details or guarantees beyond what is provided (e.g., it doesn’t promise copay amounts or specific plan coverage)?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

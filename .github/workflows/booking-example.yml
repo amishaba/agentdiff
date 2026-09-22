@@ -1,0 +1,103 @@
+name: booking-example
+
+# Records the booking example against real models, v1 → v2: four OpenAI Agents
+# SDK agents handing off to each other, with Jev answering the concierge's
+# policy check, grading the runs and answering the outcome checks. The report
+# goes to the job summary and the comparison folder is kept as an artifact.
+# Paid: it calls real models. It runs only when started by hand.
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: Runs per test
+        default: "10"
+
+concurrency:
+  group: booking-example-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+      AGENTDIFF_MODEL: gpt-5.4
+      AGENTDIFF_GRADER: jev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Install example
+        working-directory: example-booking
+        run: npm install
+
+      # v2 moves the specialists to a cheaper model; use the first one this key can reach.
+      - name: Pick the cheaper model
+        run: |
+          node --input-type=module <<'EOF'
+          import { appendFileSync } from "node:fs";
+          for (const id of ["gpt-5.4-mini", "gpt-5-mini", "gpt-4.1-mini"]) {
+            const res = await fetch(`https://api.openai.com/v1/models/${id}`, { headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } });
+            if (res.ok) { appendFileSync(process.env.GITHUB_ENV, `BOOKING_FAST_MODEL=${id}\n`); console.log(`cheaper model: ${id}`); process.exit(0); }
+          }
+          throw new Error("none of the cheaper models are available to this key");
+          EOF
+
+      # A few Jev calls on fixed plans, before spending on the full recording.
+      - name: Check the concierge's policy question
+        working-directory: example-booking
+        run: ../node_modules/.bin/tsx check-policy.ts
+
+      - name: Compare v1 and v2, every stage
+        working-directory: example-booking
+        env:
+          RUNS: ${{ inputs.runs || '10' }}
+        run: |
+          sed "s/runsPerTest: 10/runsPerTest: $RUNS/" agentdiff.config.ts > record.config.ts
+          grep -q "runsPerTest: $RUNS" record.config.ts
+          npx agentdiff compare --config record.config.ts
+
+      - name: Check the runs
+        working-directory: example-booking
+        run: |
+          node --input-type=module <<'EOF'
+          import { readdirSync, readFileSync } from "node:fs";
+          const dir = ".agentdiff/" + readdirSync(".agentdiff").filter(d => d.startsWith("compare-")).sort().at(-1);
+          const runs = ["old-runs", "runs"].flatMap(side => readdirSync(`${dir}/${side}`).map(f => JSON.parse(readFileSync(`${dir}/${side}/${f}`, "utf8"))));
+          for (const r of runs.filter(r => r.run === 1).sort((a, b) => a.test.localeCompare(b.test) || a.version.localeCompare(b.version))) {
+            console.log(`${r.test} (${r.version}): ${r.error ?? (r.tool_calls.map(c => c.tool).join(" → ") || "no tools")}`);
+          }
+          const errored = runs.filter(r => r.error);
+          for (const r of errored) console.log(`errored: ${r.test} (${r.version} run ${r.run}): ${r.error}`);
+          console.log(`${runs.length - errored.length}/${runs.length} runs finished`);
+          if (!runs.length || errored.length > runs.length * 0.1) throw new Error("too many runs errored");
+          const policy = runs.filter(r => r.version === "old" && r.decisions?.some(d => d.id === "breaks_policy"));
+          console.log(`${policy.length} v1 runs recorded the concierge's Jev policy decision`);
+          if (!policy.length) throw new Error("the concierge's Jev decision was never recorded");
+          EOF
+
+      - name: Report
+        if: always()
+        working-directory: example-booking
+        run: |
+          dir=$(ls -d .agentdiff/compare-* 2>/dev/null | sort | tail -1)
+          if [ -n "$dir" ] && [ -f "$dir/report.md" ]; then cat "$dir/report.md" >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: booking-example
+          path: example-booking/.agentdiff/
+          include-hidden-files: true
+          if-no-files-found: ignore

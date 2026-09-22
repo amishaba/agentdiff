@@ -1,0 +1,85 @@
+{
+  "_coverage": {
+    "id": "c39",
+    "area": "rule",
+    "title": "Single-focus questions"
+  },
+  "name": "booking_needs_more_details_single_question",
+  "input": "Cool, can you set it up for next week sometime at either location? Whatever’s first available.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to schedule an appointment sometime next week."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Is this for a check-up, a follow-up, or a first-time visit with us?"
+    },
+    {
+      "role": "user",
+      "content": "It’s my first time there."
+    }
+  ],
+  "grading_criteria": "The patient wants a first visit next week at either location but hasn’t been verified. The prompt requires full name and date of birth before booking, so a good reply asks for those (one request, as the prompt words it) or, if it treats verification as done, asks which days work. It must not offer specific times or book anything yet, and must not ask about location again. One to three short, plain sentences.",
+  "checks": {
+    "no_booking_before_verification": "Does the assistant avoid offering specific times or booking before the patient is verified?",
+    "no_redundant_location_question": "Does the assistant avoid re-asking about location, since the user already said either location is fine?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

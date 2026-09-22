@@ -1,0 +1,126 @@
+{
+  "_coverage": {
+    "id": "c24",
+    "area": "rule",
+    "title": "book_appointment: offer two or three open times, let the patient pick one, repeat the day, time and location back, and book only after they confirm (\"yes\", \"that works\")."
+  },
+  "name": "offer_times_after_slot_search_no_booking_yet",
+  "input": "Yeah, Elm Street, sometime next week in the morning.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to schedule my annual physical sometime next week."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. To be sure I’m working with the right chart, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-07-22."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your chart."
+    },
+    {
+      "role": "assistant",
+      "content": "You’re all set in our system. Do you prefer Elm Street or Riverside, and mornings or afternoons next week for your annual physical?"
+    },
+    {
+      "role": "user",
+      "content": "Yeah, Elm Street, sometime next week in the morning."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "patientVerified": true,
+    "patientId": "pt_1234",
+    "phone": "+15550142881",
+    "email": "jordan.lee@example.com"
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must call find_open_slots with visitType=\"annual_physical\", location=\"elm_street\" or \"any\" (but only offer Elm Street slots), and a date range covering \"next week\". It must reply by offering two or three concrete open times taken from the tool output (e.g., \"Mon 9:00, Tue 9:20, or Thu 10:40 at Elm Street\"), and ask the patient which one they want. It must not call book_appointment yet and must not imply that anything is already booked.",
+  "checks": {
+    "used_slot_times_only": "Did the assistant only offer times that appear in the find_open_slots result?",
+    "offered_two_or_three_times": "Did the assistant offer exactly two or three distinct appointment options, not just one or a long list?",
+    "no_booking_yet": "Did the assistant avoid calling book_appointment or stating that an appointment is booked in this turn?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_elm_mon_0900",
+        "start": "2026-03-16T09:00:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      },
+      {
+        "slotId": "slot_elm_tue_0920",
+        "start": "2026-03-17T09:20:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      },
+      {
+        "slotId": "slot_elm_thu_1040",
+        "start": "2026-03-19T10:40:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

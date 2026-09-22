@@ -1,0 +1,115 @@
+{
+  "_coverage": {
+    "id": "c23",
+    "area": "rule",
+    "title": "Never offer or promise a time it didn't return."
+  },
+  "name": "asks_for_5pm_but_only_4_30_available",
+  "input": "Can you do like 5 or 5:30 this Thursday at Elm Street?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, this is Jordan Lee, 1990-04-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. What kind of visit do you need to schedule and which location do you prefer?"
+    },
+    {
+      "role": "user",
+      "content": "A follow-up at Elm Street. Can you do something around 5 pm this Thursday?"
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "assumedVerifiedPatientId": "p_jordan_lee_123",
+    "clinic": {
+      "locations": [
+        "elm_street",
+        "riverside"
+      ]
+    }
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "grading_criteria": "The assistant must only offer appointment times that exactly match the slots returned by find_open_slots (3:00 pm and 4:30 pm). It can mention that nothing is available exactly at 5 or 5:30 and that the closest is 4:30, but it must not promise or suggest a 5:00 or 5:30 time. It should respond in a short, friendly, plain-text style and not mention tools. It may ask Jordan to choose between 3:00 and 4:30 or directly highlight the closest one, but any specific time it proposes must be one of the returned slots.",
+  "checks": {
+    "only_offers_returned_times": "Did the assistant only suggest 3:00 pm and/or 4:30 pm, and avoid offering 5:00 pm or 5:30 pm or any other time not in the find_open_slots result?",
+    "acknowledges_request_without_inventing": "Did the assistant acknowledge that Jordan asked for around 5 pm while clearly explaining that only earlier times (from the tool results) are available, without inventing additional times?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "slot_thu_1500",
+            "start": "2026-03-12T15:00:00",
+            "end": "2026-03-12T15:20:00",
+            "location": "elm_street"
+          },
+          {
+            "slotId": "slot_thu_1630",
+            "start": "2026-03-12T16:30:00",
+            "end": "2026-03-12T16:50:00",
+            "location": "elm_street"
+          }
+        ],
+        "visitType": "follow_up",
+        "location": "elm_street",
+        "fromDate": "2026-03-12",
+        "toDate": "2026-03-12"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

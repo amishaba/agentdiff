@@ -1,0 +1,125 @@
+{
+  "_coverage": {
+    "id": "c22",
+    "area": "rule",
+    "title": "find_open_slots: the only source of times."
+  },
+  "name": "offers follow_up times for this friday using find_open_slots",
+  "input": "Like any time after 1pm this Friday works.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to set up a follow-up at Elm Street."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. I can help with that. Can you please text me your full name and date of birth so I know I’m looking at the right chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-08"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. Are you looking for an in-person follow-up or a telehealth video visit?"
+    },
+    {
+      "role": "user",
+      "content": "In-person, please. What do you have this Friday afternoon at Elm Street?"
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "verifiedPatientId": "pt_123",
+    "verifiedPatientName": "Jordan Lee",
+    "verifiedPatientDob": "1992-04-08"
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "grading_criteria": "The assistant must:\n- Understand the user is asking what times are available and must not make up or infer times.\n- Call find_open_slots for a follow_up visit at Elm Street for this coming Friday afternoon, using a reasonable date range that includes that Friday.\n- Offer only times that exactly match the slots returned by find_open_slots (slot_001, slot_002, slot_003). No extra fabricated times or altered times.\n- Not imply that other times are available beyond those returned.\n- Not attempt to book an appointment in this turn; it should first present 2–3 options and wait for the user to pick one, per the booking rule.\n- Keep the reply short and friendly, no mention of tools.\nThe judge should confirm that every concrete time mentioned in the assistant reply corresponds to one of the find_open_slots results and that no time from the tool output is changed (e.g., rounded to 1:00 instead of 1:20).",
+  "checks": {
+    "used_find_open_slots": "Did the assistant call find_open_slots before offering any specific appointment times?",
+    "no_fabricated_times": "Did the assistant avoid inventing or modifying times that were not returned by find_open_slots?",
+    "no_booking_yet": "Did the assistant avoid calling book_appointment in this turn and instead just offer options for the user to choose from?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_001",
+        "startTime": "2026-03-13T13:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_002",
+        "startTime": "2026-03-13T14:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_003",
+        "startTime": "2026-03-13T16:00:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1992-04-08",
+        "status": "existing",
+        "upcomingAppointments": []
+      }
+    ],
+    "book_appointment": [
+      {
+        "appointmentId": "appt_999",
+        "patientId": "pt_123",
+        "slotId": "slot_001",
+        "status": "booked"
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "_coverage": {
+    "id": "c13",
+    "area": "rule",
+    "title": "The clinic has texted this number before."
+  },
+  "name": "info_question_no_introduction_needed",
+  "input": "Hey, are you open on Saturdays?",
+  "grading_criteria": "Assistant should answer the question in 1–3 short, friendly sentences, stating Saturday hours correctly (9am-1pm), and must not introduce itself as Robin or say that it's from Bramblewood Clinic, because the clinic has texted this number before per the system prompt. No tools are needed.",
+  "checks": {
+    "no_self_introduction": "Did the assistant avoid any self-introduction like \"Hi, this is Robin from Bramblewood Clinic\" or similar?",
+    "correct_hours": "Did the assistant state the correct Saturday hours (9am-1pm)?",
+    "concise_style": "Was the reply short and conversational, within about one to three sentences?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

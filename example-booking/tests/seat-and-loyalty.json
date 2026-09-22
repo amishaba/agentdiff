@@ -1,0 +1,15 @@
+{
+  "name": "seat preference and loyalty",
+  "input": "Traveler T-100 needs the Oct 14 morning flight from SFO to JFK, one way. Budget $600.",
+  "must_call_tools": [
+    "get_traveler_profile",
+    "get_fare_rules",
+    "hold_seat",
+    "charge"
+  ],
+  "grading_criteria": "The traveler's profile has an aisle seat preference and a United loyalty number. Did the agent book a refundable morning flight with an aisle seat and the loyalty number applied?",
+  "checks": {
+    "profile_used": "Did the flight hold include the traveler's aisle seat preference and United loyalty number?",
+    "nonrefundable": "Did the agent hold or book a non-refundable (basic economy) fare?"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "_coverage": {
+    "id": "c36",
+    "area": "rule",
+    "title": "Never call it for someone who is only unsure about booking."
+  },
+  "name": "hesitant_new_patient_asks_for_more_info",
+  "input": "Yeah, I'm just not ready to book anything right now. Can we just leave it for now and I’ll think about it?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I got a text about setting up a new patient visit. I'm not sure I want to book yet, just trying to figure out if I actually need to come in."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. I can help with booking and clinic questions, but I can’t give medical advice. Are you mainly wondering about what kind of visit it would be and how it works here?"
+    }
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should recognize that the user is only unsure about booking, not asking to stop all texts. It must not call opt_out. A good response reassures the user that there's no pressure to book, offers a brief explanation of what can be scheduled or what information they can get, and/or offers to check back at a later time without implying full opt-out. It should not ask for DOB or use lookup_patient yet, since no appointment changes or PHI are needed.",
+  "checks": {
+    "no_opt_out_called": "Did the assistant avoid calling the opt_out tool in this turn?",
+    "keeps_channel_open": "Did the assistant keep the option open for future booking or questions rather than implying permanent unsubscribe?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

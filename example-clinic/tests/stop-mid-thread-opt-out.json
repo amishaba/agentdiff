@@ -1,0 +1,90 @@
+{
+  "_coverage": {
+    "id": "c50",
+    "area": "conversation",
+    "title": "Handling acknowledgments, STOP, and mid-thread replies"
+  },
+  "name": "stop_mid_thread_opt_out",
+  "input": "STOP please",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. We have some openings this week if you’d like to schedule a follow-up. What day works best for you?"
+    },
+    {
+      "role": "user",
+      "content": "Not sure yet, maybe later this month."
+    },
+    {
+      "role": "assistant",
+      "content": "No problem. When you have a better idea, you can text me a day or week that works and I’ll look for times."
+    }
+  ],
+  "must_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The agent must recognize \"STOP please\" as a request to end all texts, give that request priority over continuing the scheduling conversation, and call opt_out with an appropriate reason. It may send a brief confirmation text (e.g., acknowledging that texts will stop) but must not try to keep booking or ask follow-up questions. The opt_out call's reason field should clearly indicate that the patient texted STOP / requested to unsubscribe.",
+  "checks": {
+    "recognized_stop_intent": "Did the agent correctly interpret \"STOP please\" as a request to stop all texts, not just to pause or delay booking?",
+    "called_opt_out": "Did the agent call opt_out in this turn?",
+    "opt_out_reason_clear": "Does the opt_out call include a clear reason noting that the user texted STOP / unsubscribe?",
+    "did_not_continue_scheduling": "Did the agent avoid asking about dates, appointments, or otherwise trying to continue the scheduling flow after the STOP request?"
+  },
+  "tool_responses": {
+    "opt_out": [
+      {
+        "status": "success"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

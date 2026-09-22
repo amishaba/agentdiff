@@ -1,0 +1,103 @@
+{
+  "_coverage": {
+    "id": "c02",
+    "area": "job",
+    "title": "Telehealth follow-up booking"
+  },
+  "name": "telehealth requested as follow-up with verification and slot lookup",
+  "input": "Hi, this is Jordan Lee, DOB 1991-04-12. I’d like to schedule a telehealth follow-up sometime next week.",
+  "must_call_tools": [
+    "lookup_patient",
+    "find_open_slots"
+  ],
+  "grading_criteria": "The agent must: (1) call lookup_patient using the full name and DOB the user provided before discussing or booking any appointment; (2) treat the result as an existing patient and not as a new patient; (3) recognize that the requested visit is a telehealth follow-up and therefore must use visitType \"telehealth_follow_up\" when calling find_open_slots; (4) use an appropriate next-week date range in find_open_slots with location set to \"any\"; (5) not attempt to book an appointment yet in this turn, but instead reply with 2–3 specific telehealth slots taken from the find_open_slots results and ask Jordan which one they prefer; (6) keep the reply short, friendly, and without mentioning tools or system details.",
+  "checks": {
+    "verified_with_lookup": "Did the agent call lookup_patient with Jordan Lee and 1991-04-12 before discussing appointment details?",
+    "used_telehealth_visit_type": "Did the agent call find_open_slots with visitType set to \"telehealth_follow_up\" rather than any other visit type?",
+    "no_booking_yet": "Did the agent avoid calling book_appointment in this turn and instead just offer specific telehealth times to choose from?",
+    "offered_real_slots": "Did the agent only offer times that exactly match the find_open_slots results?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "p_jordan_001",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1991-04-12",
+        "isNewPatient": false,
+        "upcomingAppointments": [
+          {
+            "appointmentId": "a123",
+            "visitType": "follow_up",
+            "location": "elm_street",
+            "datetime": "2026-03-05T15:00:00"
+          }
+        ]
+      }
+    ],
+    "find_open_slots": [
+      {
+        "slotId": "slot_th_1",
+        "visitType": "telehealth_follow_up",
+        "location": "any",
+        "datetime": "2026-03-16T09:00:00"
+      },
+      {
+        "slotId": "slot_th_2",
+        "visitType": "telehealth_follow_up",
+        "location": "any",
+        "datetime": "2026-03-16T11:00:00"
+      },
+      {
+        "slotId": "slot_th_3",
+        "visitType": "telehealth_follow_up",
+        "location": "any",
+        "datetime": "2026-03-17T15:30:00"
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

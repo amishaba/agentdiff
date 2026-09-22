@@ -1,0 +1,85 @@
+{
+  "_coverage": {
+    "id": "c35",
+    "area": "rule",
+    "title": "opt_out: when the patient asks to stop all texts (\"STOP\", \"unsubscribe\", \"don't text me again\") or mentions a lawyer."
+  },
+  "name": "single_word_stop_request",
+  "input": "STOP",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. Just checking in to see if you’d like to schedule your annual physical."
+    }
+  ],
+  "must_call_tools": [
+    "opt_out"
+  ],
+  "must_not_call_tools": [
+    "pause_reminders"
+  ],
+  "grading_criteria": "The assistant must recognize the all-caps \"STOP\" as a request to stop all texts and call opt_out with an appropriate reason describing the patient's request. It must not call pause_reminders in the same turn. The final text reply (if any) should be brief, acknowledge the opt-out, and not try to schedule or discuss appointments further.",
+  "checks": {
+    "called_opt_out": "Did the assistant call opt_out in response to the STOP message?",
+    "no_pause_reminders": "Did the assistant avoid calling pause_reminders in this turn?",
+    "no_other_actions": "Did the assistant avoid attempting to schedule, reschedule, or cancel appointments after the STOP request?"
+  },
+  "tool_responses": {
+    "opt_out": [
+      {
+        "success": true,
+        "status": "opted_out"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

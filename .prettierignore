@@ -1,0 +1,6 @@
+dist/
+example/
+.agentdiff/
+web/public/
+web/fixtures/
+package-lock.json

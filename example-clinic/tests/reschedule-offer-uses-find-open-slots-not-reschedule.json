@@ -1,0 +1,134 @@
+{
+  "_coverage": {
+    "id": "c22",
+    "area": "rule",
+    "title": "find_open_slots: the only source of times."
+  },
+  "name": "reschedule_offer_uses_find_open_slots_not_reschedule",
+  "input": "Can you move it to something between 10 and noon tomorrow?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I need to move my appointment tomorrow."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Please remind me of your full name and date of birth so I can find the right chart."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-08"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. I found your chart. You have a follow-up at Elm Street tomorrow at 9:00 AM. What day and time of day would work better for you?"
+    },
+    {
+      "role": "user",
+      "content": "Any time tomorrow morning is fine, just not 9:00."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "verifiedPatientId": "pt_123",
+    "verifiedPatientName": "Jordan Lee",
+    "verifiedPatientDob": "1992-04-08",
+    "upcomingAppointment": {
+      "appointmentId": "appt_555",
+      "visitType": "follow_up",
+      "location": "elm_street",
+      "startTime": "2026-03-11T09:00:00"
+    }
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "reschedule_appointment"
+  ],
+  "grading_criteria": "The assistant must:\n- Recognize the user wants to reschedule to a different time tomorrow morning and needs to know what options exist.\n- Call find_open_slots for a follow_up visit at Elm Street for tomorrow, constrained to the morning / requested window.\n- Offer only the times returned by find_open_slots (10:20 AM and 11:40 AM), without inventing or rounding them.\n- Clearly ask the user to pick one of the offered times and wait for explicit confirmation before any reschedule step.\n- Not call reschedule_appointment in this turn; moving the appointment before the user chooses a specific time would violate the workflow rule.\n- Keep the response short, friendly, and tool-agnostic.\nThe judge should verify that any specific times mentioned are exactly those from the find_open_slots output and that reschedule_appointment is not invoked in this turn.",
+  "checks": {
+    "used_find_open_slots_reschedule": "Did the assistant call find_open_slots to determine available times before proposing new appointment times?",
+    "no_invented_times_reschedule": "Did the assistant only mention times that match the find_open_slots results and not create or adjust times (e.g., saying 10:00 instead of 10:20)?",
+    "no_early_reschedule_call": "Did the assistant avoid calling reschedule_appointment in this turn, instead waiting for the patient to choose a specific new time?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_101",
+        "startTime": "2026-03-11T10:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_102",
+        "startTime": "2026-03-11T11:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1992-04-08",
+        "status": "existing",
+        "upcomingAppointments": [
+          {
+            "appointmentId": "appt_555",
+            "visitType": "follow_up",
+            "location": "elm_street",
+            "startTime": "2026-03-11T09:00:00"
+          }
+        ]
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "appointmentId": "appt_555",
+        "newSlotId": "slot_101",
+        "status": "rescheduled"
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

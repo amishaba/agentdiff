@@ -1,0 +1,96 @@
+{
+  "_coverage": {
+    "id": "c37",
+    "area": "rule",
+    "title": "Reply to every message except a thumbs-up or \"ok\" right after you said goodbye."
+  },
+  "name": "follows_up_after_goodbye_with_new_question",
+  "input": "Actually, one more thing—do you take BlueCross?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to reschedule my appointment."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. I can help with that. Can you please send your full name and date of birth so I can look you up?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1990-04-12"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. I’ve moved your physical to Friday, March 20 at 10:00 AM at Elm Street. Anything else you need today?"
+    },
+    {
+      "role": "user",
+      "content": "Nope, that’s all. Thanks!"
+    },
+    {
+      "role": "assistant",
+      "content": "You’re welcome, Jordan. Have a great day, and text if anything else comes up. Goodbye!"
+    }
+  ],
+  "grading_criteria": "The assistant must reply to this message because it is not just a thumbs-up or an \"ok\"; it is a substantive follow-up question after a goodbye. The reply should:\n- Answer the insurance question directly (can mention that most major plans including BlueCross are accepted, or use the provided tool output if it exists in an implementation).\n- Maintain the warm, concise tone (1–3 sentences).\n- Not re-say goodbye in a way that implies it will ignore further questions; it can close politely but still answer.\nNo tools are required, but calling search_clinic_info is acceptable. The key is that the assistant DOES send a response to this message.",
+  "checks": {
+    "replied_to_post_goodbye_question": "Did the assistant send a normal conversational reply to the user’s follow-up question instead of remaining silent?"
+  },
+  "tool_responses": {
+    "search_clinic_info": [
+      {
+        "answer": "Yes, Bramblewood Clinic accepts most major insurance plans, including BlueCross BlueShield, Aetna, Cigna, and UnitedHealthcare."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

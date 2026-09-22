@@ -1,0 +1,123 @@
+{
+  "_coverage": {
+    "id": "c01",
+    "area": "job",
+    "title": "End-to-end new patient booking in person"
+  },
+  "name": "new_patient_riverside_morning_two_options",
+  "input": "Yes, let’s go with Friday at 10:40 at Riverside.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "I need to set up my first appointment with you, in person if possible."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Before we book anything, what is your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-07-22."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. Do you prefer our Riverside location, Elm Street, or either is okay for your new patient visit?"
+    },
+    {
+      "role": "user",
+      "content": "Riverside, sometime this Friday morning."
+    },
+    {
+      "role": "assistant",
+      "content": "Great, I’ll look for an in-person new patient visit at Riverside this Friday morning and then send you a couple of times to choose from."
+    },
+    {
+      "role": "assistant",
+      "content": "Here are two new patient openings at Riverside this Friday: 9:00 am or 10:40 am. Which time works better for you?"
+    },
+    {
+      "role": "user",
+      "content": "10:40 should be fine."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "patientOnFile": true,
+    "patientId": "pt_123_jlee",
+    "patientName": "Jordan Lee",
+    "verified": true
+  },
+  "must_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "This scenario checks that, once the patient has chosen among 2 offered times, the assistant completes an in-person new patient booking correctly. The assistant must:\n- Proceed directly to booking without re-asking for name, DOB, location, or visit type.\n- Call book_appointment exactly once with patientId pt_123_jlee and a slotId that matches Friday at 10:40 am at Riverside, which was one of the offered times.\n- Not call lookup_patient or find_open_slots again in this turn.\n- In its reply, clearly confirm that the appointment is booked as a new patient, in-person visit on Friday at 10:40 am at the Riverside location.\n- Include the weekday (Friday) and time (10:40 am) and say “Riverside” in the confirmation.\n- Keep the tone warm, brief, and front-desk-like, in 1–3 sentences, without mentioning tools.",
+  "checks": {
+    "stated_riverside_location": "Does the assistant explicitly mention that the appointment is at the Riverside location in the confirmation?",
+    "correctly_confirms_friday_1040": "Does the assistant’s summary confirm Friday at 10:40 am as the appointment time, matching the booked slot?",
+    "books_new_patient_visit": "Does the booking and/or confirmation clearly indicate this is a new patient in-person visit (not telehealth or a follow-up)?"
+  },
+  "tool_responses": {
+    "book_appointment": [
+      {
+        "appointmentId": "appt_982",
+        "patientId": "pt_123_jlee",
+        "slotId": "slot_riv_np_2026-03-13T10:40:00",
+        "visitType": "new_patient",
+        "location": "riverside",
+        "startTime": "2026-03-13T10:40:00",
+        "endTime": "2026-03-13T11:20:00"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

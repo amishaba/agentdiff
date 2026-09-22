@@ -1,0 +1,41 @@
+name: AgentDiff
+description: Compare this PR's agent against the base branch and leave one report comment.
+author: amisha
+branding:
+  icon: git-pull-request
+  color: gray-dark
+
+inputs:
+  working-directory:
+    description: Directory that contains agentdiff.config.ts
+    required: false
+    default: "."
+  github-token:
+    description: Token used to post the PR comment
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Fetch PR base
+      if: github.event.pull_request.base.sha != ''
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.sha }}"
+
+    - name: Install AgentDiff
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci --omit=dev --legacy-peer-deps
+
+    - name: Compare and comment
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        OPENAI_API_KEY: ${{ env.OPENAI_API_KEY }}
+        AGENTDIFF_MODEL: ${{ env.AGENTDIFF_MODEL }}
+        AGENTDIFF_GRADER: ${{ env.AGENTDIFF_GRADER }}
+        AI_GATEWAY_API_KEY: ${{ env.AI_GATEWAY_API_KEY }}
+      run: node "${{ github.action_path }}/bin/agentdiff.mjs" ci

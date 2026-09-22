@@ -1,0 +1,32 @@
+{
+  "name": "refund for a cancelled flight",
+  "input": "My flight got cancelled?? I want my money back.",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "cancelled",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    }
+  },
+  "must_call_tools": [
+    "get_flight_status",
+    "issue_refund"
+  ],
+  "grading_criteria": "The airline cancelled the flight, so the fare is refunded; the refund is pending and arrives in 5–7 business days. Did the agent refund it and say it's on its way, without saying it's already complete?",
+  "checks": {
+    "said_refund_complete": "Does the reply say the refund is already complete, rather than submitted and on its way?"
+  }
+}

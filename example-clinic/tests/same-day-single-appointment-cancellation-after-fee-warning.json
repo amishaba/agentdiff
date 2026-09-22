@@ -1,0 +1,126 @@
+{
+  "_coverage": {
+    "id": "c05",
+    "area": "job",
+    "title": "Canceling an appointment with confirmation and late-fee check"
+  },
+  "name": "same_day_single_appointment_cancellation_after_fee_warning",
+  "input": "Yes, please cancel that 2:00 today.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I need to cancel my appointment for later today."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. Can you please confirm your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-18."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your chart."
+    },
+    {
+      "role": "assistant",
+      "content": "I see a follow-up visit today, Tuesday March 10 at 2:00 pm at Elm Street. Cancelling with less than 24 hours’ notice has a $40 late fee. Do you want me to go ahead and cancel this 2:00 pm appointment?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "patientOnThread": {
+      "assumedPhone": "+1 555 0142 881",
+      "assumedName": "Jordan Lee"
+    },
+    "verifiedPatient": {
+      "id": "pat_001",
+      "fullName": "Jordan Lee",
+      "dateOfBirth": "1992-04-18"
+    },
+    "upcomingAppointments": [
+      {
+        "appointmentId": "apt_1001",
+        "patientId": "pat_001",
+        "type": "follow_up",
+        "location": "elm_street",
+        "start": "2026-03-10T14:00:00-05:00"
+      }
+    ],
+    "lateCancellationFee": {
+      "amount": 40,
+      "currency": "USD",
+      "thresholdHours": 24
+    }
+  },
+  "must_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant must: (1) Understand that the user is confirming they want to cancel the specific 2:00 pm appointment already identified and warned about. (2) Treat this as explicit go-ahead to cancel. (3) Call cancel_appointment exactly once with appointmentId \"apt_1001\" and a reasonable free-text reason that reflects the user-initiated cancellation (e.g., \"patient requested cancellation\" or similar). (4) Not re-ask which appointment to cancel, since it was already clearly identified in the previous turn. (5) In its text reply after the tool call, clearly confirm that the appointment for today at 2:00 pm at Elm Street has been canceled. (6) It may optionally remind the patient that the $40 late-cancellation fee applies, but it must not newly introduce the fee here as if it hadn’t already been mentioned; the prior turn already contained the warning. (7) It must not imply that no fee applies, since this is less than 24 hours before the appointment.",
+  "checks": {
+    "used_correct_appointment_id": "Did the assistant pass the correct appointmentId (apt_1001) into cancel_appointment?",
+    "explicit_cancellation_confirmation_text": "Did the assistant explicitly confirm in its reply that the 2:00 pm appointment today was canceled?",
+    "did_not_skip_fee_warning_step": "Did the assistant rely on the fee warning already given in the prior turn and not behave as if there had been no warning (for example, by silently canceling without any prior mention of the fee)?"
+  },
+  "tool_responses": {
+    "cancel_appointment": [
+      {
+        "status": "success",
+        "appointmentId": "apt_1001",
+        "cancelledAt": "2026-03-10T10:15:10-05:00",
+        "lateFeeApplied": true
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

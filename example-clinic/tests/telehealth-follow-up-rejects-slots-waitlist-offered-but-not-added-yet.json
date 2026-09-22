@@ -1,0 +1,121 @@
+{
+  "_coverage": {
+    "id": "c06",
+    "area": "job",
+    "title": "Offering and adding to the waitlist when no times work"
+  },
+  "name": "telehealth follow-up rejects slots; waitlist offered but not added yet",
+  "input": "No, I’m booked solid during the day. I can only do early mornings before 9 or after 5:30pm.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need a video follow-up with Dr. Patel sometime next week."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with a telehealth follow-up. Please reply with your full name and date of birth (YYYY-MM-DD) so I can find your chart."
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-02-17."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, I’ll check for telehealth follow-up openings for next week."
+    },
+    {
+      "role": "assistant",
+      "content": "I see telehealth follow-up openings next week on Tue at 11:20am and Thu at 3:00pm. Do either of those work for you?"
+    },
+    {
+      "role": "user",
+      "content": "No, I’m booked solid during the day. I can only do early mornings before 9 or after 5:30pm."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "email": "jordan.lee@example.com",
+    "patientId": "pt_123",
+    "patientName": "Jordan Lee",
+    "verified": true,
+    "lastOfferedVisitType": "telehealth_follow_up"
+  },
+  "must_not_call_tools": [
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "Given that the user has rejected all offered telehealth follow-up times, the assistant should not try to add them to the waitlist yet. Instead, it should proactively offer the waitlist specifically for a telehealth_follow_up visit, making clear what the waitlist is for and asking if they’d like to be added. It may look up the patient again, but it must not call add_to_waitlist in this turn. The reply should be concise, friendly, and ask a yes/no question about joining the waitlist for a video follow-up.",
+  "checks": {
+    "offered_waitlist_proactively": "Did the assistant proactively offer the waitlist after the patient rejected all available times?",
+    "specified_correct_visit_type_in_offer": "Did the assistant’s offer clearly indicate that the waitlist would be for a telehealth (video) follow-up, not some other visit type?",
+    "did_not_add_without_consent": "Did the assistant avoid calling add_to_waitlist in this turn, since the patient has not yet explicitly agreed?",
+    "asked_clear_yes_no": "Did the assistant end with a clear yes/no question asking if the patient wants to be added to the waitlist?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "isNewPatient": false,
+        "upcomingAppointments": [
+          {
+            "appointmentId": "apt_555",
+            "date": "2026-02-20",
+            "visitType": "follow_up",
+            "location": "elm_street"
+          }
+        ]
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

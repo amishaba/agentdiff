@@ -1,0 +1,110 @@
+{
+  "_coverage": {
+    "id": "c43",
+    "area": "tool-flow",
+    "title": "find_open_slots returns no availability"
+  },
+  "name": "no_slots_for_week_then_add_to_waitlist",
+  "input": "Next week is Monday the 16th through Friday the 20th for me.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, this is Jordan Lee. I want to schedule a follow-up sometime next week, any location is fine."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. For security, can you confirm your date of birth (YYYY-MM-DD) so I can look up your chart?"
+    },
+    {
+      "role": "user",
+      "content": "1992-04-17"
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, thank you. I’ll check what we have open for a follow-up next week at either location. If nothing is open, do you want me to put you on the waitlist for something sooner after that?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, if you don’t find anything next week, please add me to the waitlist."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pt_123",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1992-04-17"
+  },
+  "must_call_tools": [
+    "find_open_slots",
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "The assistant must call find_open_slots with visitType follow_up, location any, and a date range covering Monday 16th through Friday 20th. When the tool returns no slots, the assistant must not fabricate any times or suggest that there is an opening. Because the user already explicitly asked to be added to the waitlist if nothing next week is available, the assistant should explain that there are no openings that week and then call add_to_waitlist with the correct patientId and visitType follow_up. The final message should confirm that Jordan has been added to the waitlist and briefly describe what that means (e.g., they’ll be contacted if something opens up), in a short, friendly, plain-text style with no mention of tools.",
+  "checks": {
+    "no_times_invented_week": "Did the assistant avoid presenting any specific appointment times after find_open_slots returned an empty slots list for the entire week?",
+    "called_add_to_waitlist": "Did the assistant call add_to_waitlist after confirming there was no availability and given that the patient had already agreed to join the waitlist?",
+    "confirmed_waitlist_to_patient": "Did the assistant clearly tell the patient they were added to the waitlist rather than leaving it implicit?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "visitType": "follow_up",
+        "location": "any",
+        "fromDate": "2026-03-16",
+        "toDate": "2026-03-20",
+        "slots": []
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "patientId": "pt_123",
+        "visitType": "follow_up",
+        "status": "added",
+        "note": "Requested after no availability 2026-03-16 to 2026-03-20"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "_coverage": {
+    "id": "c45",
+    "area": "tool-flow",
+    "title": "Partial success or error from booking tools"
+  },
+  "name": "booking_slot_becomes_unavailable_then_reoffer_new_times",
+  "input": "Sounds good, please go ahead and book that.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to book a checkup with Dr. Patel sometime next week at Elm Street."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. To be sure I’m talking to the right person, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1991-04-09."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I look you up and see what’s open next week."
+    },
+    {
+      "role": "assistant",
+      "content": "You’re all set in our system. For a checkup, I can do a follow-up visit. Let me see what’s open at Elm Street next week."
+    },
+    {
+      "role": "assistant",
+      "content": "I see a few options at Elm Street next week: Mon Mar 16 at 10:00 AM, Tue Mar 17 at 2:20 PM, or Thu Mar 19 at 9:40 AM. Which one works best?"
+    },
+    {
+      "role": "user",
+      "content": "Let’s do Monday at 10:00 AM."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, Monday Mar 16 at 10:00 AM at Elm Street for a follow-up visit. I’ll book that now."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pt_123",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1991-04-09",
+    "lastOfferedSlots": [
+      {
+        "slotId": "slot_A",
+        "time": "2026-03-16T10:00:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_B",
+        "time": "2026-03-17T14:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_C",
+        "time": "2026-03-19T09:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ]
+  },
+  "must_call_tools": [
+    "book_appointment",
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "reschedule_appointment"
+  ],
+  "grading_criteria": "The agent should attempt to book the confirmed slot using book_appointment with patientId pt_123 and slotId slot_A. When book_appointment returns a slot_unavailable error, the agent must briefly explain that the specific time was just taken, avoid blaming the user, and not pretend the booking succeeded. After the failure, the agent must call find_open_slots again (e.g., follow_up, elm_street, next-week date range) to fetch fresh availability, and then offer two or three of the returned times (slot_D, slot_E, slot_F) explicitly. In this turn, the agent must not call book_appointment a second time, because it still needs the patient to pick and confirm a new time. It must not invent any times that are not in the second find_open_slots result and must not say the appointment is booked. The text reply should be short, friendly, explain what happened, and then ask the patient to choose from the new options.",
+  "checks": {
+    "used_correct_slot_in_failed_booking": "Did the agent call book_appointment with patientId pt_123 and the originally confirmed slotId (slot_A) before the error?",
+    "explained_booking_error": "Did the agent clearly and briefly explain that the Monday 10:00 AM slot was no longer available rather than implying it was booked?",
+    "refetched_slots_after_failure": "After the booking error, did the agent call find_open_slots again to get fresh availability?",
+    "offered_only_new_valid_times": "Did the agent only offer times that appear in the latest find_open_slots result (slot_D, slot_E, slot_F) and not guess other times?",
+    "did_not_double_book_same_turn": "Did the agent avoid calling book_appointment a second time in this turn, instead waiting for the patient to pick a new time?"
+  },
+  "tool_responses": {
+    "book_appointment": [
+      {
+        "status": "error",
+        "errorCode": "slot_unavailable",
+        "message": "Selected slot is no longer available; it was just booked by another patient."
+      }
+    ],
+    "find_open_slots": [
+      [
+        {
+          "slotId": "slot_D",
+          "time": "2026-03-16T11:20:00",
+          "location": "elm_street",
+          "visitType": "follow_up"
+        },
+        {
+          "slotId": "slot_E",
+          "time": "2026-03-17T15:00:00",
+          "location": "elm_street",
+          "visitType": "follow_up"
+        },
+        {
+          "slotId": "slot_F",
+          "time": "2026-03-19T10:40:00",
+          "location": "elm_street",
+          "visitType": "follow_up"
+        }
+      ]
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

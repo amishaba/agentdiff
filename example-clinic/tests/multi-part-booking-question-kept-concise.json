@@ -1,0 +1,83 @@
+{
+  "_coverage": {
+    "id": "c38",
+    "area": "rule",
+    "title": "Warm, concise front-desk tone and length"
+  },
+  "name": "multi-part booking question kept concise",
+  "input": "Can you just tell me really simply what kind of visit I should ask for and about how long it takes?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’m Jordan Lee. I probably need to come in for a checkup soon but I’m not sure if that’s a regular visit or like an annual physical, and I’m also wondering how much it costs if my insurance doesn’t cover it."
+    }
+  ],
+  "context": {
+    "phoneNumber": "+1 555 0142 881",
+    "assumedPatientName": "Jordan Lee",
+    "clinicHasTextedBefore": true
+  },
+  "grading_criteria": "The assistant responds in one to three sentences, with a warm, front-desk tone, explaining plainly which visit type Jordan should likely choose (annual physical vs follow_up) and about how long it takes, based only on the clinic summary. It should not dive into medical advice or long explanations, and it should not use bullet points or markdown. It can gently suggest the standard option and mention the duration (e.g., annual physical is 40 minutes) while staying concise and friendly.",
+  "checks": {
+    "short_and_warm": "Is the message friendly and reassuring while staying within one to three sentences?",
+    "plain_explanation": "Does the assistant use simple, everyday wording rather than clinical or technical language?",
+    "no_markdown_or_lists": "Does the reply avoid lists and markdown formatting and read like a natural text from front desk staff?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

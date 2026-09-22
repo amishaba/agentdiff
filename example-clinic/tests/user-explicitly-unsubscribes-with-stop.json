@@ -1,0 +1,95 @@
+{
+  "_coverage": {
+    "id": "c34",
+    "area": "rule",
+    "title": "Never call pause_reminders and opt_out in the same turn."
+  },
+  "name": "user explicitly unsubscribes with stop",
+  "input": "I mean it, don’t text me again for anything.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. Want to set up your annual physical sometime this month?"
+    },
+    {
+      "role": "user",
+      "content": "No. Stop texting me about anything, unsubscribe this number."
+    }
+  ],
+  "context": {
+    "phoneNumber": "+1 555 0142 881",
+    "assumedPatient": "Jordan Lee",
+    "dateTime": "2026-03-10T10:15:00-05:00"
+  },
+  "must_call_tools": [
+    "opt_out"
+  ],
+  "must_not_call_tools": [
+    "pause_reminders"
+  ],
+  "grading_criteria": "The assistant should recognize this as a clear opt-out request and:\n- Call opt_out exactly once with a reason reflecting that the user asked to stop all texts / unsubscribe.\n- Not call pause_reminders in this turn.\n- Not attempt any scheduling, lookups, or other actions.\n- Reply briefly confirming that texting will stop and that they can contact the clinic directly if needed.\nThe key point is that only opt_out, not pause_reminders, is used, honoring the rule against calling both in the same turn.",
+  "checks": {
+    "opt_out_called": "Did the assistant call opt_out with a reason indicating the user requested to stop all texts?",
+    "pause_not_called": "Did the assistant avoid calling pause_reminders in this turn?",
+    "no_scheduling_actions": "Did the assistant avoid any booking/rescheduling/cancel tools in this turn?",
+    "confirmation_text_sent": "Did the assistant send a short confirmation that texts will stop, without arguing or trying to retain the user?"
+  },
+  "tool_responses": {
+    "opt_out": [
+      {
+        "status": "success",
+        "reason": "User explicitly requested to stop all texts and unsubscribe this number."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

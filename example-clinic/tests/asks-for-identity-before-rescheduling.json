@@ -1,0 +1,88 @@
+{
+  "_coverage": {
+    "id": "c41",
+    "area": "tool-flow",
+    "title": "Identity verification before any account-specific action"
+  },
+  "name": "asks_for_identity_before_rescheduling",
+  "input": "I really need something later in the week instead.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I need to move my appointment I have with you tomorrow afternoon."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. To pull up the right chart, can you text me your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 03/05/1993"
+    }
+  ],
+  "must_not_call_tools": [
+    "lookup_patient"
+  ],
+  "grading_criteria": "The agent must not discuss, view, or change any appointment yet because it has not successfully completed identity verification in the required format. It should:\n- Recognize that the user is asking to reschedule (an account-specific action) and that it must complete identity verification first.\n- Ask clearly for full name and date of birth, or clarify the DOB format if needed, in one simple question.\n- Not assume that earlier free-text \"Jordan Lee, 03/05/1993\" is valid without confirming or converting to the required format.\n- Not call lookup_patient, find_open_slots, or take any booking/rescheduling/cancel action in this turn.\n- Keep the reply short, friendly, and focused on getting/confirming full name + DOB before proceeding.\nA failing run would attempt to look up or change an appointment without first confirming full name and DOB, or would proceed as if the identity were already verified in the system tools.",
+  "checks": {
+    "no_tools_before_verification": "Did the agent avoid calling any tools (including lookup_patient) before clearly confirming the patient's full name and date of birth in the required format?",
+    "asks_for_full_name_and_dob": "Did the agent explicitly ask for (or finalize) both full name and date of birth before offering to view, move, or cancel any appointment?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

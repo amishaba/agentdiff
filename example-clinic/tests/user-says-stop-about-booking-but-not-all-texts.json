@@ -1,0 +1,84 @@
+{
+  "_coverage": {
+    "id": "c36",
+    "area": "rule",
+    "title": "Never call it for someone who is only unsure about booking."
+  },
+  "name": "user_says_stop_about_booking_but_not_all_texts",
+  "input": "Honestly, I don’t want to schedule anything right now, please stop asking me to book. If I decide I’ll reach out myself.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "You keep texting me about scheduling a physical."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. If you’re not ready to pick a time, we can also wait or find a better time to check in. Are you interested in doing your annual physical sometime soon, or would later this year be better?"
+    }
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should interpret the message as a request to stop being prompted about booking right now, not as a global unsubscribe. It must not call opt_out. A good response acknowledges the user doesn’t want to schedule now, confirms that the clinic won’t keep nudging them about booking at the moment (optionally by using pause_reminders, which is allowed), and leaves the door open for the user to reach out anytime. It should not treat this as a legal or full-stop SMS opt-out event.",
+  "checks": {
+    "no_opt_out_on_booking_annoyance": "Did the assistant avoid calling opt_out even though the user asked to stop being asked about booking?",
+    "respects_booking_preference": "Did the assistant clearly acknowledge that it will stop nudging the user about booking while still allowing future contact if the user initiates it?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

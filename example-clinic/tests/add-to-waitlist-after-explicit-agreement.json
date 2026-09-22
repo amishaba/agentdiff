@@ -1,0 +1,99 @@
+{
+  "_coverage": {
+    "id": "c29",
+    "area": "rule",
+    "title": "add_to_waitlist: when nothing open works for the patient, offer the waitlist; add them only if they agree."
+  },
+  "name": "add_to_waitlist_after_explicit_agreement",
+  "input": "Yes, please put me on the waitlist for that follow-up next week.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "You said there was nothing after 3pm next week that works. What else can we do?"
+    },
+    {
+      "role": "assistant",
+      "content": "Right now we don’t have anything after 3pm next week for a follow-up. I can keep checking for later weeks, or I can put you on the waitlist so we text you if something opens up sooner. What would you prefer?"
+    },
+    {
+      "role": "user",
+      "content": "Let’s do the waitlist then, please put me on it for any late afternoon follow-up that opens up next week."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pat_12345",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1990-04-12",
+    "desiredVisitType": "follow_up",
+    "today": "2026-03-10"
+  },
+  "must_call_tools": [
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "The assistant must:\n- Recognize that the user is explicitly consenting to be added to the waitlist.\n- Call add_to_waitlist with the correct patientId from prior verification and the appropriate visitType (follow_up).\n- Not ask for consent again or hesitate; the consent is already clear.\n- Confirm in its reply that the patient has been added to the waitlist for an earlier follow-up slot, ideally clarifying it’s for next week/late afternoon, matching the prior context.\n- Maintain brief, friendly text style.\nThe add_to_waitlist tool call must:\n- Use the existing verified patientId (pat_12345 in this scenario’s context, or whatever ID the agent has from lookup_patient).\n- Set visitType to \"follow_up\" to match the requested visit.",
+  "checks": {
+    "uses_waitlist_after_consent": "Does the assistant call add_to_waitlist only after the patient clearly agrees to be added to the waitlist?",
+    "correct_waitlist_parameters": "Does the add_to_waitlist call use the correct patientId and the correct visitType based on the context (follow_up)?",
+    "confirms_waitlist_add": "Does the assistant’s message confirm to the patient that they’ve been added to the waitlist for an earlier suitable follow-up time?"
+  },
+  "tool_responses": {
+    "add_to_waitlist": [
+      {
+        "patientId": "pat_12345",
+        "visitType": "follow_up",
+        "status": "added",
+        "waitlistId": "wl_789"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

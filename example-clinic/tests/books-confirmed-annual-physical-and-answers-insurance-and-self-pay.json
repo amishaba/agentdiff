@@ -1,0 +1,114 @@
+{
+  "_coverage": {
+    "id": "c03",
+    "area": "job",
+    "title": "Annual physical scheduling with insurance question"
+  },
+  "name": "books_confirmed_annual_physical_and_answers_insurance_and_self_pay",
+  "input": "Let’s do Monday at 3:30 at Elm. Also, do you take BlueCross PPO, and what would the annual physical cost if I had to pay cash?",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin at Bramblewood Clinic. To help with your physical, can you please text back your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-07-14"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks Jordan. One sec while I pull up your chart."
+    },
+    {
+      "role": "assistant",
+      "content": "You’re due for an annual physical. Do you prefer Elm Street or Riverside, and mornings or afternoons next week?"
+    },
+    {
+      "role": "user",
+      "content": "Elm Street, afternoon sometime early next week if you have it."
+    },
+    {
+      "role": "assistant",
+      "content": "I have a few annual physical openings at Elm Street next week: Mon 3/16 at 3:30 PM, Tue 3/17 at 2:40 PM, or Wed 3/18 at 4:10 PM. Which one works best?"
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient",
+    "book_appointment",
+    "search_clinic_info"
+  ],
+  "grading_criteria": "The agent should recognize that the user is Jordan Lee (already verified earlier in the thread) but still respect the rule that any booking actions require a lookup_patient match; using the prior name/DOB it must rely on the existing lookup result or re-call lookup_patient before booking. It must book an annual_physical at Elm Street on Monday at 3:30 PM using the provided patientId and slotId and then clearly confirm the day, time, visit type, and location in its text reply.\n\nFor the insurance part, it must call search_clinic_info to answer whether BlueCross PPO is accepted and the cash price for an annual physical, and then respond based on that tool output. It must not guess any prices or coverage details beyond what the tool returns and the provided clinic summary; it should avoid promising specific copays or deductible amounts and instead note that coverage varies and the patient should check with their plan if relevant.\n\nIn its final message, it should: (1) first confirm that the Monday 3:30 PM Elm Street annual physical is booked, (2) briefly answer that Bramblewood accepts most BlueCross PPO plans per the tool output, and (3) state the self-pay price for an annual physical exactly as returned ($220) while noting that actual out-of-pocket with insurance depends on the patient's plan. Tone should be short, warm, and clear, with no mention of tools or internal processes.",
+  "checks": {
+    "appointment_booked_correctly": "Did the agent book an annual_physical at Elm Street on Monday at 3:30 PM for Jordan using the patientId and slotId from the tools and then clearly confirm the appointment details in the reply?",
+    "used_search_for_insurance": "Did the agent call search_clinic_info before answering about BlueCross PPO acceptance and pricing?",
+    "no_guessed_policies": "Did the agent avoid guessing specific insurance coverage details (like exact copay with BlueCross) beyond what the tool output stated, instead noting that coverage varies by plan?",
+    "no_made_up_prices": "Did the agent use the annual physical self-pay price exactly as returned by search_clinic_info and not invent or extrapolate any other prices?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1992-07-14",
+        "status": "existing",
+        "upcomingAppointments": []
+      }
+    ],
+    "book_appointment": [
+      {
+        "appointmentId": "appt_987",
+        "patientId": "pt_123",
+        "slotId": "slot_mon_330_elm",
+        "visitType": "annual_physical",
+        "location": "elm_street",
+        "start": "2026-03-16T15:30:00",
+        "end": "2026-03-16T16:10:00"
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "answer": "Bramblewood Clinic accepts most major BlueCross PPO plans, but coverage details and copays vary by plan. For patients paying entirely out of pocket, the current self-pay price for an adult annual physical is $220. Patients should confirm their benefits and out-of-pocket costs directly with their insurance plan."
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

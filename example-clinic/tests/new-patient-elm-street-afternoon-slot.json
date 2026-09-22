@@ -1,0 +1,123 @@
+{
+  "_coverage": {
+    "id": "c01",
+    "area": "job",
+    "title": "End-to-end new patient booking in person"
+  },
+  "name": "new_patient_elm_street_afternoon_slot",
+  "input": "Yes, let’s do Tuesday March 17 at 3:30 at Elm Street.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’d like to become a new patient and book an in-person visit."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. Can you please tell me your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-07-22."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks. Are you hoping to be seen at our Elm Street location, Riverside, or either one is fine?"
+    },
+    {
+      "role": "user",
+      "content": "Elm Street, sometime next week in the afternoon if possible."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, an in-person new patient visit at Elm Street next week in the afternoon. Let me check what we have open and I’ll send you a couple of options."
+    },
+    {
+      "role": "assistant",
+      "content": "I found a few new patient openings at Elm Street next week: Monday March 16 at 2:00 pm, Tuesday March 17 at 3:30 pm, or Thursday March 19 at 1:20 pm. Which one works best for you?"
+    },
+    {
+      "role": "user",
+      "content": "Tuesday the 17th at 3:30 pm works."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "patientOnFile": true,
+    "patientId": "pt_123_jlee",
+    "patientName": "Jordan Lee",
+    "verified": true
+  },
+  "must_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must treat this as the final booking step of an in-person new patient visit. It must:\n- Not re-verify identity (already done) and not ask new questions that delay booking.\n- Call book_appointment exactly once using patientId pt_123_jlee and a slotId that corresponds to Tuesday March 17 at 3:30 pm at Elm Street, which had already been offered.\n- Not call find_open_slots or lookup_patient again in this turn.\n- In the text reply, clearly confirm that the appointment is booked as a new patient visit, in person, on Tuesday March 17 at 3:30 pm at the Elm Street location.\n- Summarize date and time with the weekday and clock time, and mention the location explicitly as Elm Street.\n- Keep the tone warm and concise, like a front desk person, in 1–3 sentences, without mentioning tools or system details.",
+  "checks": {
+    "confirmed_new_patient_type": "Does the assistant explicitly or clearly describe the visit as a new patient in-person visit in the confirmation message?",
+    "correct_summary_datetime_location": "Does the assistant’s reply restate the correct weekday, date, time, and Elm Street location that match the booked slot?",
+    "used_correct_slot_for_booking": "Does the book_appointment call use the slotId that corresponds to Tuesday March 17 at 3:30 pm at Elm Street, as previously offered?"
+  },
+  "tool_responses": {
+    "book_appointment": [
+      {
+        "appointmentId": "appt_789",
+        "patientId": "pt_123_jlee",
+        "slotId": "slot_elm_np_2026-03-17T15:30:00",
+        "visitType": "new_patient",
+        "location": "elm_street",
+        "startTime": "2026-03-17T15:30:00",
+        "endTime": "2026-03-17T16:10:00"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

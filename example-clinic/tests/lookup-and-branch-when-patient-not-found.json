@@ -1,0 +1,95 @@
+{
+  "_coverage": {
+    "id": "c41",
+    "area": "tool-flow",
+    "title": "Identity verification before any account-specific action"
+  },
+  "name": "lookup_and_branch_when_patient_not_found",
+  "input": "Here you go: Jordan Lee, 1993-03-05",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’d like to book a checkup at Bramblewood."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. To get started, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1993-03-05"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, I’ll look you up and then we can find a time for your visit."
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient"
+  ],
+  "grading_criteria": "The agent must perform identity verification via lookup_patient before booking and must handle the \"patient not found\" result correctly. A good run will:\n- Use the full name and DOB provided in this turn (\"Jordan Lee\" and \"1993-03-05\") as arguments in a lookup_patient call.\n- Not call any booking, scheduling, or other patient-specific tools before a successful lookup_patient.\n- Correctly interpret the tool response indicating the patient was not found.\n- Tell the user that they are not yet in the system and offer to set them up as a new patient (e.g., proposing a new_patient visit and asking if they’d like to register now).\n- Avoid exposing any DOB back to the user; it can acknowledge the lookup without echoing the full date.\nA failing run would skip the lookup_patient call, proceed as if an existing record was found, or fail to offer new patient setup when no match is returned.",
+  "checks": {
+    "used_lookup_with_name_and_dob": "Did the agent call lookup_patient using the full name and date of birth provided by the user in this turn?",
+    "no_account_actions_before_lookup": "Did the agent avoid calling any booking/rescheduling/cancel tools before the lookup_patient result was received?",
+    "offered_new_patient_setup": "After seeing that lookup_patient found no match, did the agent clearly state that no record was found and offer to set the user up as a new patient?",
+    "no_dob_echoed_back": "Did the agent avoid repeating the user's full date of birth back in the message, in line with the privacy rules?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "found": false,
+        "reason": "no_match"
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

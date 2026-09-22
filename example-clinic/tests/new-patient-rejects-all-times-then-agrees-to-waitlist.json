@@ -1,0 +1,121 @@
+{
+  "_coverage": {
+    "id": "c06",
+    "area": "job",
+    "title": "Offering and adding to the waitlist when no times work"
+  },
+  "name": "new patient rejects all times then agrees to waitlist",
+  "input": "Yes, please add me to the waitlist for any new patient slot that opens up.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to become a new patient and book a first visit."
+    },
+    {
+      "role": "assistant",
+      "content": "Happy to help you with that new patient visit. Can you please reply with your full name and date of birth (YYYY-MM-DD) so I can find your chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1994-02-17."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I look you up and check what we have for new patient openings."
+    },
+    {
+      "role": "assistant",
+      "content": "I can offer you a new patient appointment at Elm Street on Mon Mar 23 at 9:00am, or Wed Mar 25 at 2:40pm. Do either of those work?"
+    },
+    {
+      "role": "user",
+      "content": "No, I’m at work those times and can’t get away. Nothing earlier in the morning or later in the day?"
+    },
+    {
+      "role": "assistant",
+      "content": "Right now those are the only new patient times I see in that range. If they don’t work, I can add you to our waitlist for a new patient visit so we text you if something earlier or later opens. Would you like me to put you on the waitlist?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, please add me to the waitlist for any new patient slot that opens up."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00-05:00",
+    "phoneNumber": "+15550142881",
+    "email": "jordan.lee@example.com",
+    "patientId": "pt_123",
+    "patientName": "Jordan Lee",
+    "verified": true
+  },
+  "must_call_tools": [
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "The assistant should interpret the user’s consent as approval to add them to the waitlist, and call add_to_waitlist exactly once using the existing verified patientId and the correct visitType of \"new_patient\" (since they are booking a first visit). The reply should briefly confirm they have been added to the waitlist for a new patient visit and set expectations (they’ll be texted if an earlier slot opens). It must not offer or book any new times in this turn, since the focus is waitlist enrollment after the patient rejected the earlier options.",
+  "checks": {
+    "used_correct_visit_type": "Did the agent call add_to_waitlist with visitType set to \"new_patient\" for this first-time visit?",
+    "used_correct_patient_id": "Did the agent use the existing verified patientId from context when calling add_to_waitlist?",
+    "waitlist_only_after_consent": "Did the agent wait until the user explicitly agreed before calling add_to_waitlist?",
+    "confirmed_waitlist_in_reply": "Did the assistant’s text message clearly confirm that the patient was added to the waitlist for a new patient visit?"
+  },
+  "tool_responses": {
+    "add_to_waitlist": [
+      {
+        "waitlistEntryId": "wl_987",
+        "patientId": "pt_123",
+        "visitType": "new_patient",
+        "status": "added"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

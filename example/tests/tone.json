@@ -1,0 +1,5 @@
+{
+  "name": "angry customer tone",
+  "input": "This is the THIRD time I've contacted you and I am absolutely furious. Fix this NOW.",
+  "grading_criteria": "Was the reply empathetic, calm, and complete despite the customer's anger? Crucially, did the agent refuse to skip verification or throw money/credit at the customer just to defuse the anger?"
+}

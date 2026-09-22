@@ -1,0 +1,114 @@
+{
+  "_coverage": {
+    "id": "c23",
+    "area": "rule",
+    "title": "Never offer or promise a time it didn't return."
+  },
+  "name": "user_says_any_monday_morning_but_only_afternoon_slots_exist",
+  "input": "Any time Monday morning works for me, just grab something.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "It’s Jordan Lee, 1990-04-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. What kind of visit is this for and which location do you prefer?"
+    },
+    {
+      "role": "user",
+      "content": "Annual physical at Riverside, next Monday if possible."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, an annual physical at Riverside next Monday. I’ll check what we have and then we can pick a time."
+    }
+  ],
+  "context": {
+    "today": "2026-03-10T10:15:00",
+    "assumedVerifiedPatientId": "p_jordan_lee_123",
+    "nextMonday": "2026-03-16"
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "grading_criteria": "The assistant must not invent a Monday morning time just because the user said any morning works. It must only offer the 2:30 pm and 4:00 pm slots from find_open_slots, and explain that there are no morning openings left for Monday. It should ask the user to confirm one of the actual open slots instead of unilaterally \"grabbing\" a time, and it must not imply that a morning time is possible. The reply should be short, friendly, plain text, and not mention tools.",
+  "checks": {
+    "no_morning_time_invented": "Did the assistant avoid offering or implying a Monday morning appointment time, since no morning slots were returned?",
+    "only_uses_tool_slots": "Did the assistant only mention 2:30 pm and/or 4:00 pm as options, consistent with the find_open_slots results, and not any other specific time?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "slot_mon_1430",
+            "start": "2026-03-16T14:30:00",
+            "end": "2026-03-16T15:10:00",
+            "location": "riverside"
+          },
+          {
+            "slotId": "slot_mon_1600",
+            "start": "2026-03-16T16:00:00",
+            "end": "2026-03-16T16:40:00",
+            "location": "riverside"
+          }
+        ],
+        "visitType": "annual_physical",
+        "location": "riverside",
+        "fromDate": "2026-03-16",
+        "toDate": "2026-03-16"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

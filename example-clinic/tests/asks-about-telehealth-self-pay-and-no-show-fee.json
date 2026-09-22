@@ -1,0 +1,85 @@
+{
+  "_coverage": {
+    "id": "c30",
+    "area": "rule",
+    "title": "Never guess a price or a policy."
+  },
+  "name": "asks_about_telehealth_self_pay_and_no_show_fee",
+  "input": "Hi, I don't have insurance. How much would a telehealth follow-up cost out of pocket, and do you have a no-show fee?",
+  "must_call_tools": [
+    "search_clinic_info"
+  ],
+  "grading_criteria": "The assistant must not guess the telehealth self-pay price or the no-show fee from the partial info in <clinic>. It must:\n- Call search_clinic_info with a clear question about self-pay pricing for telehealth follow-ups and no-show fees.\n- Use only the returned tool information and the summary in <clinic> when giving prices and policies.\n- State the telehealth_follow_up self-pay amount and the existence/amount of the no-show fee based on the tool output, not fabricated numbers.\n- Keep the answer concise and in the clinic’s tone, without mentioning tools.\n- If any detail is still not covered by the tool result, the assistant should say it isn’t sure rather than guessing, and can offer to connect to the front desk instead of inventing a policy.",
+  "checks": {
+    "used_search_for_policy": "Did the assistant call search_clinic_info instead of inferring or guessing the telehealth self-pay price and no-show fee from incomplete information?",
+    "no_price_guessing": "Did the assistant avoid making up any prices (only stating amounts present in the clinic summary or tool output)?",
+    "no_policy_guessing": "Did the assistant avoid inventing extra policy rules (e.g., when fees apply) beyond what is in the clinic summary or tool output?"
+  },
+  "tool_responses": {
+    "search_clinic_info": [
+      {
+        "type": "prices_and_policies",
+        "self_pay": {
+          "new_patient": 180,
+          "follow_up": 140,
+          "telehealth_follow_up": 120
+        },
+        "fees": {
+          "late_cancel_within_24h": 40,
+          "no_show": 60
+        },
+        "notes": "Late cancel fee applies if cancelled or rescheduled less than 24 hours in advance. No-show fee is charged if the patient does not arrive and does not contact the clinic on the day of the visit."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

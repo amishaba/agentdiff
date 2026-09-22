@@ -1,0 +1,17 @@
+{
+  "name": "agentdiff-example-sms",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compare": "agentdiff compare",
+    "view": "agentdiff view"
+  },
+  "dependencies": {
+    "@openai/agents": "^0.18.0",
+    "ai": "^7.0.122",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "agentdiff": "file:.."
+  }
+}

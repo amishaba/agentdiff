@@ -1,0 +1,126 @@
+{
+  "_coverage": {
+    "id": "c04",
+    "area": "job",
+    "title": "Rescheduling an upcoming appointment with late-fee mention"
+  },
+  "name": "late_fee_reschedule_with_verification_and_slot_search_same_turn",
+  "input": "So can you switch it to Thursday at 3?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, this is Jordan Lee. I need to move my physical that's tomorrow morning to Thursday at 3 pm at Riverside if possible. My DOB is 1993-04-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, I can help with that. I’ll just take a look at your chart and the schedule."
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00",
+    "phoneNumber": "+1 555 0142 881"
+  },
+  "must_call_tools": [
+    "lookup_patient",
+    "find_open_slots"
+  ],
+  "grading_criteria": "The current appointment (a1, tomorrow 9 am) is less than 24 hours away, so the prompt requires mentioning the $40 late fee and getting the patient’s go-ahead before moving it. The agent should: find the requested time with find_open_slots and use only a slot it returns (s1); state the $40 late fee; ask whether they still want to move it to the requested Thursday 3 pm slot; and not call reschedule_appointment yet. Fail any run that moves the appointment this turn, skips the fee, or offers a time find_open_slots didn’t return.",
+  "checks": {
+    "mentions_late_fee_before_reschedule": "Does the assistant clearly mention the $40 late fee for rescheduling within 24 hours before stating that the appointment has been moved?",
+    "detects_less_than_24_hours": "Does the assistant recognize that the existing appointment is less than 24 hours away based on the dates and times returned by lookup_patient?",
+    "uses_correct_slot": "Does the reschedule_appointment call use newSlotId \"s1\", which matches the Thursday 3 pm Riverside slot returned by find_open_slots?",
+    "confirms_new_time_details": "In its text reply, does the assistant repeat back the new appointment day, time, and location that match the chosen slot?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "p123",
+        "fullName": "Jordan Lee",
+        "isNewPatient": false,
+        "upcomingAppointments": [
+          {
+            "appointmentId": "a1",
+            "visitType": "annual_physical",
+            "location": "elm_street",
+            "start": "2026-03-11T09:00:00",
+            "end": "2026-03-11T09:40:00"
+          }
+        ]
+      }
+    ],
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "s1",
+            "visitType": "annual_physical",
+            "location": "riverside",
+            "start": "2026-03-12T15:00:00",
+            "end": "2026-03-12T15:40:00"
+          },
+          {
+            "slotId": "s2",
+            "visitType": "annual_physical",
+            "location": "riverside",
+            "start": "2026-03-12T16:00:00",
+            "end": "2026-03-12T16:40:00"
+          }
+        ]
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "appointmentId": "a1",
+        "oldStart": "2026-03-11T09:00:00",
+        "oldLocation": "elm_street",
+        "newSlotId": "s1",
+        "newStart": "2026-03-12T15:00:00",
+        "newLocation": "riverside",
+        "status": "success"
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  },
+  "must_not_call_tools": [
+    "reschedule_appointment"
+  ]
+}

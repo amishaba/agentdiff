@@ -1,0 +1,98 @@
+{
+  "_coverage": {
+    "id": "c11",
+    "area": "rule",
+    "title": "Visit types: new_patient (40 min, in person only), follow_up (20 min), telehealth_follow_up (20 min, video), annual_physical (40 min)."
+  },
+  "name": "choosing_correct_visit_type_for_physical_vs_followup",
+  "input": "If the physical can’t be video, could we at least do the blood pressure follow-up as telehealth? And how much time do I need to block off for each?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I’m already a patient. I need to schedule both my yearly physical and a quick blood pressure follow-up sometime this spring."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. For privacy, I’ll need to confirm who I’m texting. What’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1990-04-22."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks. I can get those set up. Did you want to talk times now, or first confirm whether the physical and follow-up can both be video visits?"
+    },
+    {
+      "role": "user",
+      "content": "Yeah, can my annual physical be a video visit, and how long are the visits usually?"
+    }
+  ],
+  "grading_criteria": "The assistant must correctly map the user’s needs onto the defined visit types and constraints.\n- It must state that annual_physical is 40 minutes and in-person (implicit from clinic type list: only telehealth_follow_up is video; it should not label annual_physical as telehealth or video-capable).\n- It must not say that an annual physical can be done as a telehealth visit.\n- It must explain that the annual physical corresponds to the annual_physical visit type (40 minutes) and the blood pressure check is a follow_up, which can be either in-person follow_up (20 min) or telehealth_follow_up (20 min, video).\n- It must provide the correct durations: 40 minutes for annual_physical, 20 minutes for follow_up / telehealth_follow_up.\n- It must not invent any other durations or visit types, and must not say that new_patient or annual_physical are telehealth-eligible.\n- Using lookup_patient was already done earlier in the conversation; no additional tools are required on this turn because the user is asking about modalities and durations, not specific time slots.",
+  "checks": {
+    "correct_physical_visit_type_and_duration": "Does the assistant clearly identify the yearly physical as an annual_physical visit with a 40-minute duration and not as a telehealth visit?",
+    "correct_followup_options_and_duration": "Does the assistant correctly describe the blood pressure check as a follow_up that can be either in-person (follow_up) or video (telehealth_follow_up), each 20 minutes?",
+    "no_telehealth_for_annual_physical": "Does the assistant avoid offering or implying that the annual_physical can be done as telehealth?",
+    "no_wrong_durations_or_extra_types": "Does the assistant avoid giving incorrect visit lengths or creating extra visit types beyond the four defined ones?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "isNew": false,
+        "upcomingAppointments": []
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

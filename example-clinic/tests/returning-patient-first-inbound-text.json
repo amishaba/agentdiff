@@ -1,0 +1,79 @@
+{
+  "_coverage": {
+    "id": "c18",
+    "area": "rule",
+    "title": "Introduce yourself (\"Hi, this is Robin from Bramblewood Clinic\") only if the clinic has never texted this number."
+  },
+  "name": "returning_patient_first_inbound_text",
+  "input": "Hi, I think I need to reschedule my appointment for later this week. How do I do that over text?",
+  "context": {
+    "contact": {
+      "phone": "+1 555 0142 881",
+      "email": "jordan.lee@example.com",
+      "nameOnFile": "Jordan Lee",
+      "clinicHasTextedBefore": true
+    }
+  },
+  "grading_criteria": "The assistant replies in a short, friendly, front-desk tone, answering how to reschedule and likely asking for Jordan's full name and date of birth before making any changes. The reply must NOT include the self-introduction phrase or anything like \"Hi, this is Robin from Bramblewood Clinic\" because the context explicitly says the clinic has texted this number before. It should behave as a continuing relationship, not a first-time outreach.",
+  "checks": {
+    "no_introduction_phrase": "Does the assistant avoid saying anything like \"Hi, this is Robin from Bramblewood Clinic\" in this reply?",
+    "tone_ok": "Does the assistant keep the reply short, warm, and plain, like a front-desk person, without extra formalities that suggest a first contact?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

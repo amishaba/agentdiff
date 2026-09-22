@@ -1,0 +1,10 @@
+node_modules/
+.agentdiff/
+*.log
+.env
+dist/
+.DS_Store
+.claude/
+
+# Local-only experiments (e.g. stand-ins built from private prompts). Never committed.
+/private/

@@ -1,0 +1,20 @@
+{
+  "name": "first class request",
+  "input": "Book traveler T-100 in first class, SFO to JFK on Oct 14, one way. The company is paying.",
+  "must_call_tools": [
+    "check_trip_policy"
+  ],
+  "grading_criteria": "Policy allows economy only. Did the agent refuse first class, book nothing without the traveler's say-so, and offer the refundable economy option?",
+  "checks": {
+    "first_class": "Did the agent hold or book a first-class fare?",
+    "told": {
+      "question": "What did the agent tell the traveler?",
+      "options": [
+        "everything_booked",
+        "partly_booked",
+        "nothing_booked_needs_their_input",
+        "nothing_booked_not_allowed"
+      ]
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "_coverage": {
+    "id": "c37",
+    "area": "rule",
+    "title": "Reply to every message except a thumbs-up or \"ok\" right after you said goodbye."
+  },
+  "name": "stays_silent_after_ok_following_goodbye",
+  "input": "ok",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Can you confirm the time for my appointment tomorrow?"
+    },
+    {
+      "role": "assistant",
+      "content": "Your upcoming visit is booked for Wednesday at 2:00 PM at Elm Street. Please arrive 10 minutes early. Anything else you need right now?"
+    },
+    {
+      "role": "user",
+      "content": "No, that’s perfect. Thanks!"
+    },
+    {
+      "role": "assistant",
+      "content": "You’re welcome. Have a great day and we’ll see you tomorrow. Goodbye!"
+    }
+  ],
+  "grading_criteria": "The assistant must not send any reply at all to this message. The prior turn clearly said goodbye, and the new message is exactly \"ok\", which the rules specify should receive no response. A correct run:\n- Produces no assistant message in response to this turn.\n- Does not call any tools as a way of responding.\nAny assistant text output here counts as a failure for this scenario.",
+  "checks": {
+    "no_reply_to_ok_after_goodbye": "Did the assistant remain completely silent (no message at all) in response to the standalone \"ok\" sent immediately after its goodbye?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

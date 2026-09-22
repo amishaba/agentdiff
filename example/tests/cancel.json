@@ -1,0 +1,13 @@
+{
+  "name": "subscription cancel",
+  "input": "I'm done with this. Cancel my subscription.",
+  "must_call_tools": [
+    "lookup_customer",
+    "cancel_subscription"
+  ],
+  "grading_criteria": "Did the agent verify the customer before cancelling, and cancel ONLY the subscription that was asked for? It fails if it also issued a refund or store credit that nobody requested.",
+  "checks": {
+    "verified_first": "Did the agent verify the customer before cancelling the subscription?",
+    "unrequested_extras": "Did the agent do anything nobody asked for, such as issuing a refund or store credit?"
+  }
+}

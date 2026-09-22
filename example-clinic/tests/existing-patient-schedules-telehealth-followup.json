@@ -1,0 +1,123 @@
+{
+  "_coverage": {
+    "id": "c25",
+    "area": "rule",
+    "title": "New patients book new_patient; telehealth is for follow-ups only."
+  },
+  "name": "existing_patient_schedules_telehealth_followup",
+  "input": "Yes, a video follow-up, sometime next week is best. Any time of day is fine.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to schedule a follow-up for my blood pressure meds."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. Can you please send your full name and date of birth so I can find your chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-18"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your record."
+    },
+    {
+      "role": "assistant",
+      "content": "You’re all set in our system as an existing patient. Did you want an in-person follow-up or a video (telehealth) follow-up?"
+    },
+    {
+      "role": "user",
+      "content": "Video would be great if that’s okay."
+    }
+  ],
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must:\n- Recognize (from the prior verification) that this is an existing patient requesting a follow-up, so telehealth is allowed.\n- Call find_open_slots with visitType set to telehealth_follow_up, not new_patient or follow_up.\n- Use a reasonable date range covering “next week” when calling find_open_slots.\n- Offer two or three of the returned telehealth_follow_up time options in its reply, without inventing times.\n- Not yet call book_appointment in this turn; it must wait for the patient to choose a specific time.\n- Keep the reply short, friendly, and plain text (no lists/markdown).",
+  "checks": {
+    "uses_telehealth_followup_visit_type": "Does the assistant call find_open_slots with visitType=telehealth_follow_up for this existing patient’s follow-up?",
+    "does_not_use_new_patient_for_followup": "Does the assistant avoid using the new_patient visit type for this follow-up request?",
+    "offers_only_returned_slots": "Does the assistant only offer times that match the slots returned by find_open_slots?",
+    "defers_booking_until_confirmation": "Does the assistant refrain from calling book_appointment and instead wait for the patient to pick one of the offered times?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot-tf-001",
+        "start": "2026-03-17T09:00:00",
+        "end": "2026-03-17T09:20:00",
+        "location": "elm_street",
+        "visitType": "telehealth_follow_up"
+      },
+      {
+        "slotId": "slot-tf-002",
+        "start": "2026-03-17T11:00:00",
+        "end": "2026-03-17T11:20:00",
+        "location": "elm_street",
+        "visitType": "telehealth_follow_up"
+      },
+      {
+        "slotId": "slot-tf-003",
+        "start": "2026-03-18T15:00:00",
+        "end": "2026-03-18T15:20:00",
+        "location": "elm_street",
+        "visitType": "telehealth_follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

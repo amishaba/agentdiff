@@ -1,0 +1,161 @@
+{
+  "_coverage": {
+    "id": "c45",
+    "area": "tool-flow",
+    "title": "Partial success or error from booking tools"
+  },
+  "name": "reschedule_fails_then_new_slots_offered_without_moving_twice",
+  "input": "Yes, please go ahead and move it to that Wednesday 1:00 time.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to move my physical on Friday to sometime next week instead."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. To confirm, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1991-04-09."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, let me pull up your chart and that appointment."
+    },
+    {
+      "role": "assistant",
+      "content": "I see your annual physical on Fri Mar 13 at 9:00 AM at Elm Street. There’s a $40 late-change fee if we move it less than 24 hours ahead, but you’re outside that window so there’s no fee. I’ll check what’s open next week for annual physicals at Elm Street."
+    },
+    {
+      "role": "assistant",
+      "content": "Next week at Elm Street I have Mon Mar 16 at 9:40 AM, Wed Mar 18 at 1:00 PM, or Fri Mar 20 at 10:20 AM for annual physicals. Which works best to move your physical to?"
+    },
+    {
+      "role": "user",
+      "content": "Let’s move it to Wednesday at 1:00 PM."
+    },
+    {
+      "role": "assistant",
+      "content": "Great, I’ll move your annual physical to Wed Mar 18 at 1:00 PM at Elm Street now."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pt_123",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1991-04-09",
+    "upcomingAppointments": [
+      {
+        "appointmentId": "appt_777",
+        "type": "annual_physical",
+        "time": "2026-03-13T09:00:00",
+        "location": "elm_street"
+      }
+    ],
+    "lastOfferedSlots": [
+      {
+        "slotId": "slot_M",
+        "time": "2026-03-16T09:40:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      },
+      {
+        "slotId": "slot_N",
+        "time": "2026-03-18T13:00:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      },
+      {
+        "slotId": "slot_P",
+        "time": "2026-03-20T10:20:00",
+        "location": "elm_street",
+        "visitType": "annual_physical"
+      }
+    ]
+  },
+  "must_call_tools": [
+    "reschedule_appointment",
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The agent should call reschedule_appointment with appointmentId appt_777 and newSlotId slot_N (the confirmed Wed 1:00 PM slot). When reschedule_appointment returns a slot_unavailable error, the agent must explain briefly that the Wednesday 1:00 PM spot was just taken and that the move did not go through. It must then call find_open_slots again for annual_physical at Elm Street for the requested date range and offer the newly returned times (slot_Q, slot_R) as options, asking the patient which they prefer. In this single turn, the agent must not call reschedule_appointment a second time, because it still needs the patient to choose and confirm one of the new options. It must not invent times outside of the new find_open_slots result and must not say the appointment has already been moved. The response should be concise, friendly, and end by asking the patient to pick a new time.",
+  "checks": {
+    "attempted_reschedule_with_confirmed_slot": "Did the agent call reschedule_appointment with appointmentId appt_777 and newSlotId slot_N before the error?",
+    "explained_reschedule_failure": "Did the agent clearly state that the Wednesday 1:00 PM slot is no longer available and that the appointment was not moved?",
+    "refetched_slots_after_reschedule_error": "After the reschedule_appointment error, did the agent call find_open_slots again to get updated availability?",
+    "offered_only_new_reschedule_options": "Did the agent only offer appointment times that appear in the latest find_open_slots result (slot_Q, slot_R)?",
+    "no_second_reschedule_same_turn": "Did the agent avoid calling reschedule_appointment a second time in this turn, waiting instead for the patient to choose a new slot?"
+  },
+  "tool_responses": {
+    "reschedule_appointment": [
+      {
+        "status": "error",
+        "errorCode": "slot_unavailable",
+        "message": "New slot is no longer available; it was booked by another patient."
+      }
+    ],
+    "find_open_slots": [
+      [
+        {
+          "slotId": "slot_Q",
+          "time": "2026-03-18T14:00:00",
+          "location": "elm_street",
+          "visitType": "annual_physical"
+        },
+        {
+          "slotId": "slot_R",
+          "time": "2026-03-19T09:20:00",
+          "location": "elm_street",
+          "visitType": "annual_physical"
+        }
+      ]
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

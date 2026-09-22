@@ -1,0 +1,108 @@
+{
+  "_coverage": {
+    "id": "c27",
+    "area": "rule",
+    "title": "Mention the late fee first if the current appointment is less than 24 hours away."
+  },
+  "name": "cancel_same_day_with_late_fee_warning_first",
+  "input": "Yes, please cancel it.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I can’t make my appointment later today."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. For security, what’s your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-18"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks. I see you’re booked today at 4:00 pm at Elm Street for a follow-up. Do you want me to cancel that appointment?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, please cancel it."
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00-05:00",
+    "patientId": "pt_123",
+    "appointmentToCancel": {
+      "appointmentId": "appt_456",
+      "time": "2026-03-10T16:00:00-05:00",
+      "location": "elm_street",
+      "visitType": "follow_up"
+    }
+  },
+  "must_call_tools": [
+    "cancel_appointment"
+  ],
+  "grading_criteria": "The assistant should proceed to cancel the appointment but must first mention the late fee because the appointment is less than 24 hours away. A good answer:\n- Opens by stating that cancelling with less than 24 hours' notice has a $40 late fee, before confirming that the appointment is cancelled.\n- Then confirms that the 4:00 pm Elm Street appointment for today has been cancelled.\n- Optionally offers brief help with rescheduling or next steps, but keeps the reply short.\n- Uses cancel_appointment with appointmentId appt_456 and an appropriate reason such as \"patient_requested_cancel_same_day\" or similar.\n- Does not bury or delay the late fee mention until after discussing the cancellation; the late fee must be the first thing mentioned regarding the cancellation.",
+  "checks": {
+    "late_fee_mentioned_cancel": "Does the assistant clearly state that cancelling with less than 24 hours' notice carries a $40 late fee?",
+    "late_fee_first_cancel": "Is the late fee mentioned before stating that the appointment has been cancelled or providing any other details?",
+    "correct_cancel_tool_usage": "Does the assistant call cancel_appointment with appointmentId appt_456 and a reason indicating the patient requested a same-day cancellation?"
+  },
+  "tool_responses": {
+    "cancel_appointment": [
+      {
+        "appointmentId": "appt_456",
+        "status": "cancelled"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

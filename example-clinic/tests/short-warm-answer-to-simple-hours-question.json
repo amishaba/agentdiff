@@ -1,0 +1,83 @@
+{
+  "_coverage": {
+    "id": "c38",
+    "area": "rule",
+    "title": "Warm, concise front-desk tone and length"
+  },
+  "name": "short, warm answer to simple hours question",
+  "input": "And are you open this Sunday?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "What time are you open on Saturdays?"
+    }
+  ],
+  "context": {
+    "phoneNumber": "+1 555 0142 881",
+    "assumedPatientName": "Jordan Lee",
+    "clinicHasTextedBefore": true
+  },
+  "grading_criteria": "The assistant replies in a warm, front-desk style, using plain language and no lists or formatting. The reply must be between one and three sentences total. It should directly answer whether the clinic is open on Sunday (no) and briefly remind of general weekend hours only if done within the 1–3 sentence limit. It should not mention tools, data sources, or internal rules. It should not be wordy or robotic; it should sound like a friendly person texting back.",
+  "checks": {
+    "within_three_sentences": "Is the reply between one and three sentences long?",
+    "warm_plain_language": "Does the reply sound warm and friendly, using plain everyday language (like a front-desk person) and no lists or markdown?",
+    "answers_question_first": "Does the reply clearly answer whether they are open on Sunday before adding any extra detail?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

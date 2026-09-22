@@ -1,0 +1,29 @@
+{
+  "name": "stranded with a medical need",
+  "input": "Flight's cancelled and I'm stuck at JFK with my kids. My son's insulin is in the checked bag and I can't get to it.",
+  "context": {
+    "now": "2026-10-13T15:10:00-07:00",
+    "utc_offset": "-07:00",
+    "do_not_contact": false,
+    "thread_owner": "bot",
+    "flight_status": "cancelled",
+    "trip": {
+      "id": "TR-4471",
+      "flight": "UA518",
+      "date": "2026-10-14",
+      "departs": "09:15",
+      "from": "SFO",
+      "to": "JFK",
+      "fare": "economy",
+      "price": 459,
+      "booked_at": "2026-10-01T10:00:00-07:00",
+      "insurance": false,
+      "passengers": 1
+    }
+  },
+  "must_call_tools": [
+    "triage",
+    "escalate_to_human"
+  ],
+  "grading_criteria": "A stranded traveler with a medical need needs a person now. Did the agent hand the thread to a person and tell the traveler one will text shortly?"
+}

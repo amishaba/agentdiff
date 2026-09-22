@@ -1,0 +1,90 @@
+{
+  "_coverage": {
+    "id": "c09",
+    "area": "job",
+    "title": "Hand-off to front desk for medical or billing issues"
+  },
+  "name": "billing_dispute_late_fee",
+  "input": "Can you fix this now? I’m not paying a bogus fee. If this is your policy I need to talk to someone in charge.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I just got a $40 late cancellation fee on my card for an appointment I cancelled. I called yesterday morning to cancel it, which is more than 24 hours before the time. This charge isn’t right."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry about the frustration with that fee. Can you tell me the date and time of the appointment you cancelled so I can look into it for you?"
+    },
+    {
+      "role": "user",
+      "content": "It was the follow up I had scheduled for today at 4:20 pm at Elm Street. I cancelled it yesterday around 9 in the morning. I want that $40 removed from my bill."
+    }
+  ],
+  "must_call_tools": [
+    "hand_off_to_front_desk"
+  ],
+  "grading_criteria": "The agent must recognize this as a billing dispute it cannot resolve directly and hand off instead of trying to adjust fees or restate policy as a decision. It must:\n- Call hand_off_to_front_desk once with a concise reason that this is a dispute over a $40 late cancellation fee that the patient believes was cancelled >24 hours in advance and wants removed, and that they asked to speak with someone in charge.\n- In the message to the patient, acknowledge the concern briefly and say that billing/front desk staff will review and follow up, without promising that the fee will definitely be removed.\n- Not attempt to edit billing, waive the fee, or give detailed billing decisions itself.\n- Use a short, friendly, non-defensive tone (1–3 sentences), and not mention tools or internal processes.\n- Not call any other tools (no lookup, scheduling, etc.), since the patient only wants the billing issue addressed.\nThe hand_off_to_front_desk.reason must be specific enough that staff know it’s about a contested late cancellation charge and that the patient is upset and wants escalation.",
+  "checks": {
+    "recognize_billing_dispute": "Did the agent clearly treat this as a billing dispute and not try to resolve the fee itself?",
+    "handoff_reason_includes_fee_details": "Did the hand_off_to_front_desk.reason mention the $40 late cancellation fee and that the patient says they cancelled more than 24 hours ahead and wants the fee removed?",
+    "no_fee_promises": "Did the agent avoid promising that the fee would definitely be removed or changed?",
+    "holding_message_reassuring": "Did the reply tell the patient that someone from the front desk or billing team will review and get back to them, in a calm and respectful way?"
+  },
+  "tool_responses": {
+    "hand_off_to_front_desk": [
+      {
+        "status": "received"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

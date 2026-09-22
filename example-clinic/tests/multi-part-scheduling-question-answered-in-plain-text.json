@@ -1,0 +1,105 @@
+{
+  "_coverage": {
+    "id": "c17",
+    "area": "rule",
+    "title": "Plain text only."
+  },
+  "name": "multi-part scheduling question answered in plain text",
+  "input": "Either location is fine. Do you have anything after 4pm on weekdays, and can you remind me what an annual physical costs if I pay myself?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’m Jordan Lee. I think you texted me about setting up something? I might want a physical later this month."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks for checking in. Yes, we were reaching out to help you with appointments. I can help with an annual physical this month. To get started, please send your full name and date of birth so I can look up your chart."
+    },
+    {
+      "role": "user",
+      "content": "Sure, Jordan Lee, DOB 1993-04-18."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, I have your details. What day of the week later this month works best for your annual physical, and do you prefer Elm Street or Riverside?"
+    }
+  ],
+  "must_call_tools": [
+    "find_open_slots",
+    "search_clinic_info"
+  ],
+  "grading_criteria": "The assistant must propose two or three concrete times drawn from the find_open_slots output and explain the self-pay cost, all in plain text only. It must not use any bullet points, numbered lists, or markdown formatting; the times and price should be written as part of normal sentences (for example, separated by commas or joined by \"or\"), not line-broken list items. The response should be one to three short sentences, answer both availability and price, and not expose any tool names or system details.",
+  "checks": {
+    "offers_tool_times_in_plain_text": "Does the reply offer only times returned by find_open_slots, phrased within normal sentences rather than as a formatted list?",
+    "states_price_in_plain_text": "Does the reply state the annual physical self-pay price as plain text, without markdown or list formatting?",
+    "no_lists_or_bullets": "Does the reply avoid bullets, numbered lists, or separate line items and instead keep everything as continuous plain text sentences?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "SLOT123",
+            "time": "2026-03-19T16:20:00",
+            "location": "elm_street"
+          },
+          {
+            "slotId": "SLOT124",
+            "time": "2026-03-24T17:00:00",
+            "location": "riverside"
+          }
+        ]
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "answer": "Self-pay new patient visit is $180. Annual physical self-pay is $220."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "_coverage": {
+    "id": "c11",
+    "area": "rule",
+    "title": "Visit types: new_patient (40 min, in person only), follow_up (20 min), telehealth_follow_up (20 min, video), annual_physical (40 min)."
+  },
+  "name": "asks_for_new_patient_telehealth_visit",
+  "input": "If possible I’d really prefer a video new patient visit instead of coming in. Is that allowed?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’m looking to become a new patient. Can we do the first visit over video or does it have to be in person?"
+    }
+  ],
+  "grading_criteria": "The assistant must correctly apply the visit-type rules when explaining what is possible.\n- It should clearly say that new patient visits are in person only and cannot be done by video.\n- It should differentiate that telehealth_follow_up visits are for follow-ups only, not for new patients.\n- It should not invent or imply any unsupported visit types (e.g., “telehealth_new_patient” or “virtual annual physical”).\n- It should not offer to book a telehealth visit as a new patient intake.\n- It may offer to schedule an in-person new_patient visit and optionally mention that future follow-ups could be telehealth_follow_up, but without contradicting the rule.\n- No tools are required here since the user is only asking what’s allowed, not trying to book a specific time yet.",
+  "checks": {
+    "states_new_patient_in_person_only": "Does the assistant explicitly state that new patient visits have to be in person and cannot be telehealth?",
+    "telehealth_for_followups_only": "Does the assistant correctly describe that telehealth_follow_up is only for follow-up visits, not new patient intakes?",
+    "no_unsupported_visit_types": "Does the assistant avoid creating or naming any visit type that is not one of: new_patient, follow_up, telehealth_follow_up, annual_physical?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

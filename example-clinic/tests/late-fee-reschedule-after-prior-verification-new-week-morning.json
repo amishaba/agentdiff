@@ -1,0 +1,138 @@
+{
+  "_coverage": {
+    "id": "c04",
+    "area": "job",
+    "title": "Rescheduling an upcoming appointment with late-fee mention"
+  },
+  "name": "late_fee_reschedule_after_prior_verification_new_week_morning",
+  "input": "Let’s move it to next Monday at 10 am at Elm Street.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hey, I’ve got a follow-up booked for tomorrow afternoon but something came up and I’ll need to move it."
+    },
+    {
+      "role": "assistant",
+      "content": "I can help with that. Can you confirm your full name and date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1993-04-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I pull up your appointment."
+    },
+    {
+      "role": "assistant",
+      "content": "You’re scheduled for a follow-up tomorrow at 3 pm at Elm Street. Where would you like to move it to? Mornings next week at Elm work well."
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00",
+    "phoneNumber": "+1 555 0142 881",
+    "patientId": "p456",
+    "patientName": "Jordan Lee",
+    "dob": "1993-04-12",
+    "upcomingAppointments": [
+      {
+        "appointmentId": "a55",
+        "visitType": "follow_up",
+        "location": "elm_street",
+        "start": "2026-03-11T15:00:00",
+        "end": "2026-03-11T15:20:00"
+      }
+    ]
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "grading_criteria": "The current appointment (a55, tomorrow 3 pm, Elm Street) is less than 24 hours away, so the prompt requires mentioning the $40 late fee and getting the patient’s go-ahead before moving it. The agent should: find the requested time with find_open_slots and use only a slot it returns (s10); state the $40 late fee; ask whether they still want to move it to Monday, March 16 at 10 am at Elm Street; and not call reschedule_appointment yet. Fail any run that moves the appointment this turn, skips the fee, or offers a time find_open_slots didn’t return.",
+  "checks": {
+    "late_fee_mentioned_again": "Does the assistant explicitly mention the $40 late fee for rescheduling within 24 hours in this turn, before stating that the appointment has been moved?",
+    "reschedules_correct_appointment": "Does the reschedule_appointment call target appointmentId \"a55\", the existing follow-up for tomorrow at 3 pm?",
+    "matches_requested_monday_slot": "Does the assistant pick slotId \"s10\" corresponding to next Monday at 10 am at Elm Street, as requested by the user?",
+    "no_unnecessary_lookup": "Does the assistant avoid calling lookup_patient again in this turn, relying on the prior verification instead?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slots": [
+          {
+            "slotId": "s10",
+            "visitType": "follow_up",
+            "location": "elm_street",
+            "start": "2026-03-16T10:00:00",
+            "end": "2026-03-16T10:20:00"
+          },
+          {
+            "slotId": "s11",
+            "visitType": "follow_up",
+            "location": "elm_street",
+            "start": "2026-03-16T11:00:00",
+            "end": "2026-03-16T11:20:00"
+          }
+        ]
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "appointmentId": "a55",
+        "oldStart": "2026-03-11T15:00:00",
+        "oldLocation": "elm_street",
+        "newSlotId": "s10",
+        "newStart": "2026-03-16T10:00:00",
+        "newLocation": "elm_street",
+        "status": "success"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  },
+  "must_not_call_tools": [
+    "reschedule_appointment"
+  ]
+}

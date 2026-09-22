@@ -1,0 +1,122 @@
+{
+  "_coverage": {
+    "id": "c29",
+    "area": "rule",
+    "title": "add_to_waitlist: when nothing open works for the patient, offer the waitlist; add them only if they agree."
+  },
+  "name": "offer_waitlist_when_no_times_fit_without_adding",
+  "input": "I really need something after 3pm next week. Do you have anything then?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to book a follow-up sometime next week."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. Can you share your full name and date of birth so I can find your chart?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1990-04-12."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, one moment while I check what we have next week for a follow-up."
+    },
+    {
+      "role": "assistant",
+      "content": "I have some openings next week for a follow-up: Tuesday at 9:20am, Wednesday at 10:40am, or Friday at 8:40am at Elm Street. Do any of those work?"
+    },
+    {
+      "role": "user",
+      "content": "No, I can’t do mornings at all. I really need something after 3pm next week. Do you have anything then?"
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pat_12345",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1990-04-12",
+    "today": "2026-03-10"
+  },
+  "must_not_call_tools": [
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "The assistant must:\n- Understand from find_open_slots that there are no appointments after 3pm next week, so nothing currently open meets the patient’s constraint.\n- Clearly tell the patient there is nothing available after 3pm next week.\n- Proactively offer the waitlist as an option (e.g., asking if they’d like to be added for earlier openings that fit their preferences).\n- Not call add_to_waitlist in this turn, because the patient did not yet agree to be added.\n- Keep the tone short, friendly, and consistent with the texting style rules.",
+  "checks": {
+    "states_no_matching_times": "Does the assistant explicitly say that there are no open appointments after 3pm next week that meet the patient’s request?",
+    "offers_waitlist_option": "Does the assistant offer being added to the waitlist as an option once it knows nothing open works?",
+    "no_waitlist_without_consent": "Does the assistant avoid calling add_to_waitlist before the patient has clearly agreed to be added?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_1",
+        "start": "2026-03-17T09:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_2",
+        "start": "2026-03-18T10:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_3",
+        "start": "2026-03-20T08:40:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

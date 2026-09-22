@@ -1,0 +1,105 @@
+{
+  "_coverage": {
+    "id": "c43",
+    "area": "tool-flow",
+    "title": "find_open_slots returns no availability"
+  },
+  "name": "no_slots_for_requested_day_offer_other_days_and_waitlist",
+  "input": "Any times after 1 pm would be great.",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to book a follow-up at Elm Street this Friday afternoon if you have anything."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. For privacy, can you please text back your full name and date of birth (YYYY-MM-DD)?"
+    },
+    {
+      "role": "user",
+      "content": "Jordan Lee, 1992-04-17"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. Let me check what we have open at Elm Street this Friday afternoon for a follow-up."
+    }
+  ],
+  "context": {
+    "verifiedPatientId": "pt_123",
+    "verifiedName": "Jordan Lee",
+    "verifiedDob": "1992-04-17"
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "add_to_waitlist"
+  ],
+  "grading_criteria": "The assistant must call find_open_slots for a follow_up visit at Elm Street on the specific Friday (fromDate and toDate both that date). When the tool response shows an empty slots list, the assistant must not invent any appointment times. Instead, it should clearly state that there is no availability that Friday afternoon at Elm Street, then offer alternatives such as a different time that day, another day, or the Riverside location, and explicitly offer the option of the waitlist if none of those work. It must not call add_to_waitlist yet, only offer it. The reply should be concise, friendly, and match the clinic texting style (1–3 short sentences, no lists, no mention of tools).",
+  "checks": {
+    "no_fabricated_times": "Did the assistant avoid offering or implying any specific appointment time despite find_open_slots returning no slots?",
+    "offered_alternatives": "Did the assistant offer alternatives such as different days or the other location instead of just stopping at 'no availability'?",
+    "waitlist_offered_not_booked": "Did the assistant offer the waitlist as an option without actually calling add_to_waitlist in this turn?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "visitType": "follow_up",
+        "location": "elm_street",
+        "fromDate": "2026-03-13",
+        "toDate": "2026-03-13",
+        "slots": []
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+/* The overview page: summary tiles, the recorded examples, one real finding, and how to run it. */
+.overview { display: grid; gap: 16px; }
+.overview .page-head { margin-bottom: 4px; }
+.overview .page-head p { max-width: 760px; }
+.ov-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.ov-tags span { font-size: 12px; color: var(--text-2); background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 2px 8px; }
+
+.copy-command { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 6px 0 10px; font: 12.5px var(--mono); color: var(--ink); background: var(--surface); border: 1px solid var(--control-border); border-radius: 7px; }
+.copy-command:hover { background: var(--wash); }
+.copy-command span { color: var(--muted); }
+.copy-command em { font: 500 11px var(--sans); font-style: normal; color: var(--dim); background: var(--wash-strong); border-radius: 5px; padding: 2px 7px; }
+
+
+.overview .data-table td { padding-block: 10px; }
+.overview .data-table .dim { color: var(--dim); }
+.overview .data-table code { font: 12.5px var(--mono); white-space: nowrap; }
+.ov-example { display: grid; gap: 2px; text-decoration: none; max-width: 340px; }
+.ov-example b { font-weight: 600; }
+.ov-example span { font-size: 12px; color: var(--dim); line-height: 1.45; }
+.ov-example:hover b { text-decoration: underline; text-decoration-color: var(--underline); }
+.ov-headline { max-width: 380px; line-height: 1.45; }
+.ov-meter { display: inline-flex; align-items: center; gap: 8px; font: 12.5px var(--mono); white-space: nowrap; }
+.ov-meter-bar { width: 72px; height: 6px; border-radius: 3px; background: var(--wash-strong); overflow: hidden; }
+.ov-meter-bar i { display: block; height: 100%; background: var(--k-rule); }
+.ov-open { text-align: right; white-space: nowrap; }
+.ov-open a { display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 500; text-decoration: none; color: var(--dim); }
+.ov-open a:hover { color: var(--ink); }
+.ov-step { width: 40px; color: var(--muted); font: 12px var(--mono); }
+
+.ov-finding .card-head { align-items: center; }
+.ov-finding .card-head h2 { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.ov-finding .card-head > a { font-size: 12px; color: var(--dim); text-decoration: none; white-space: nowrap; }
+.ov-finding .card-head > a:hover { color: var(--ink); }
+.ov-finding-body { display: grid; grid-template-columns: 120px minmax(0, 1fr); margin: 0; }
+.ov-finding-body dt, .ov-finding-body dd { padding: 10px 16px; border-top: 1px solid var(--rule-row); margin: 0; }
+.ov-finding-body dt:first-of-type, .ov-finding-body dt:first-of-type + dd { border-top: 0; }
+.ov-finding-body dt { font-size: 12px; color: var(--dim); font-weight: 500; }
+.ov-finding-body dd { min-width: 0; font-size: 13px; }
+.ov-input { font-weight: 500; }
+.ov-runs { display: flex; gap: 3px; margin-bottom: 8px; }
+.ov-runs i { width: 12px; height: 12px; border-radius: 3px; background: var(--k-same); }
+.ov-runs i.old, .ov-runs i.same { background: #a1a1aa; }
+.ov-runs i.rule { background: var(--k-rule); }
+.ov-runs i.low { background: var(--k-worse); }
+.ov-runs i.different { background: var(--k-different); }
+.ov-runs i.error { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.ov-path { display: flex; flex-wrap: wrap; gap: 4px; }
+.ov-path code { font: 12px var(--mono); color: var(--dim); background: var(--wash); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; }
+.ov-path code.del { color: var(--del); background: var(--del-wash); border-color: #fecdca; }
+.ov-path code.add { color: var(--add); background: var(--add-wash); border-color: #bbf7d0; }
+.ov-checks { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.ov-checks span { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-2); }
+.ov-checks i { font-style: normal; font-size: 11px; width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%; }
+.ov-checks .yes i { color: var(--green); background: var(--green-wash); }
+.ov-checks .no i { color: var(--dim); background: var(--wash-strong); }
+.ov-finding .diff-lines .other { font: 12px/1.55 var(--mono); color: var(--text-2); }
+.ov-cause { line-height: 1.55; color: var(--text-2); }
+
+.ov-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; align-items: start; }
+.ov-start { list-style: none; counter-reset: step; margin: 0; padding: 4px 0; }
+.ov-start li { counter-increment: step; display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 2px 10px; padding: 10px 16px; }
+.ov-start li + li { border-top: 1px solid var(--rule-row); }
+.ov-start li::before { content: counter(step); grid-row: span 2; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 500 11px var(--mono); color: var(--dim); background: var(--wash-strong); }
+.ov-start b { font-weight: 500; }
+.ov-start span { font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+.ov-start code { font: 12.5px var(--mono); background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; padding: 5px 8px; margin-top: 4px; width: max-content; }

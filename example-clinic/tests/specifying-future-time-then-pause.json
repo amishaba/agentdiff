@@ -1,0 +1,98 @@
+{
+  "_coverage": {
+    "id": "c33",
+    "area": "rule",
+    "title": "\"Maybe later\" or \"not right now\" usually means later, not never: ask when would be better before pausing anything."
+  },
+  "name": "specifying_future_time_then_pause",
+  "input": "Early May is better, don’t text me about booking again until then.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, just checking back about scheduling your follow-up at Bramblewood Clinic."
+    },
+    {
+      "role": "user",
+      "content": "Yeah, I’m just too busy right now. Maybe check back in May instead of texting again this month."
+    },
+    {
+      "role": "assistant",
+      "content": "No problem. Is early May or late May better for you so I know when to reach out?"
+    },
+    {
+      "role": "user",
+      "content": "Early May is better, don’t text me about booking again until then."
+    }
+  ],
+  "must_call_tools": [
+    "pause_reminders"
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should now act on the clarified timing. It should:\n- Understand that the patient wants no booking reminders until early May, but not a permanent stop.\n- Call pause_reminders exactly once, with a reason that reflects postponing reminders until early May (wording can vary but must convey delay, not permanent opt-out).\n- Not call opt_out.\n- Send a short, friendly confirmation message that it will hold off on booking reminders until early May.\n- Not promise medical advice or anything outside scheduling/reminders.\nA run that fails to call pause_reminders here, or that calls opt_out, fails this scenario.",
+  "checks": {
+    "pause_reason_mentions_delay": "Does the pause_reminders call’s reason clearly indicate that reminders are paused until early May or a similar future time, not cancelled forever?",
+    "no_opt_out_when_delayed": "Did the assistant avoid calling opt_out, treating this as a delay rather than a permanent stop?",
+    "confirmation_message_sent": "Did the assistant send a brief confirmation that it will wait until early May before texting about booking again?"
+  },
+  "tool_responses": {
+    "pause_reminders": [
+      {
+        "status": "success",
+        "pausedUntil": "2026-05-01",
+        "reason": "Patient asked not to receive booking reminders again until early May."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

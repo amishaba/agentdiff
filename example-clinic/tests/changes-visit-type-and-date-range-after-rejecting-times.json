@@ -1,0 +1,132 @@
+{
+  "_coverage": {
+    "id": "c44",
+    "area": "tool-flow",
+    "title": "Patient rejects all proposed times and changes constraints"
+  },
+  "name": "changes_visit_type_and_date_range_after_rejecting_times",
+  "input": "No, evenings are bad. Actually, I can come in person instead. Any in-person follow up openings next week, like March 18–21, during the day?",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. Are you Jordan Lee, and what’s your date of birth?"
+    },
+    {
+      "role": "user",
+      "content": "Yes, Jordan Lee, 1990-04-02."
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks, Jordan. Is this for a new patient visit, a follow-up, or a telehealth follow-up?"
+    },
+    {
+      "role": "user",
+      "content": "Telehealth follow-up sometime this week is best."
+    },
+    {
+      "role": "assistant",
+      "content": "Okay, I’ll look for a telehealth follow-up this week and send you a couple of options."
+    },
+    {
+      "role": "assistant",
+      "content": "I can do a telehealth follow-up Thu at 4:00 pm or Fri at 5:20 pm. Do either of those work?"
+    },
+    {
+      "role": "user",
+      "content": "No, evenings are bad. Actually, I can come in person instead. Any in-person follow up openings next week, like March 18–21, during the day?"
+    }
+  ],
+  "context": {
+    "now": "2026-03-10T10:15:00",
+    "patientVerified": true,
+    "patientId": "pat_123",
+    "assumedPatientName": "Jordan Lee",
+    "previousSearch": {
+      "visitType": "telehealth_follow_up",
+      "location": "any",
+      "fromDate": "2026-03-09",
+      "toDate": "2026-03-14"
+    }
+  },
+  "must_call_tools": [
+    "find_open_slots"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The agent must see that the patient rejected the offered telehealth times and changed both the visit type (from telehealth_follow_up to in-person follow_up) and the date range (to next week, around March 18–21, during the day). It must call find_open_slots again with visitType=follow_up, location consistent with the patient’s flexibility (\"any\" is acceptable here), and fromDate/toDate covering 2026-03-18 to 2026-03-21. It must not reuse the earlier telehealth search results. In the reply, it should offer two or three in-person follow-up times returned by the new search, clearly stating day, time, and location, and ask which works. It should not book yet or imply a time is held. Tone must follow texting rules and avoid mentioning tools.",
+  "checks": {
+    "reran_search_with_new_visit_type": "Did the agent call find_open_slots again with visitType set to \"follow_up\" instead of reusing \"telehealth_follow_up\"?",
+    "updated_date_range_for_next_week": "Did the agent set fromDate/toDate to cover March 18–21, as requested, rather than the previous \"this week\" range?",
+    "did_not_reuse_telehealth_slots": "Did the agent avoid offering the old telehealth slots again and instead rely on the new find_open_slots results?",
+    "no_booking_before_choice": "Did the agent refrain from calling book_appointment until the patient chooses a specific offered time?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "slot_inp_1",
+        "start": "2026-03-18T11:00:00",
+        "end": "2026-03-18T11:20:00",
+        "location": "elm_street",
+        "visitType": "follow_up"
+      },
+      {
+        "slotId": "slot_inp_2",
+        "start": "2026-03-20T14:40:00",
+        "end": "2026-03-20T15:00:00",
+        "location": "riverside",
+        "visitType": "follow_up"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

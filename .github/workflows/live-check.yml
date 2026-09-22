@@ -1,0 +1,121 @@
+name: live-check
+
+# Runs the example end to end against the real OpenAI API: agent runs,
+# grading, checks, discovery and the explanation. The offline suite fakes the
+# model; this proves a dependency or AI-code change still works on real
+# responses. One run per test keeps a check to about 30 model calls.
+# Paid: it calls real models. It runs only when started by hand.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: live-check-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AGENTDIFF_MODEL: gpt-5.4
+      # Optional; the Jev step below runs only when this secret exists.
+      AI_GATEWAY_API_KEY: ${{ secrets.AI_GATEWAY_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Install example
+        working-directory: example
+        run: npm install
+
+      - name: Compare v1 → v2, one run per test, graded by OpenAI
+        working-directory: example
+        env:
+          AGENTDIFF_GRADER: openai
+        run: |
+          sed 's/runsPerTest: 10/runsPerTest: 1/' agentdiff.config.ts > live.config.ts
+          grep -q "runsPerTest: 1" live.config.ts
+          npx agentdiff compare --config live.config.ts
+
+      - name: Check that grades and the explanation came back
+        working-directory: example
+        run: |
+          node --input-type=module <<'EOF'
+          import { readdirSync, readFileSync } from "node:fs";
+          const dir = ".agentdiff/" + readdirSync(".agentdiff").filter(d => d.startsWith("compare-")).sort().at(-1);
+          const grades = JSON.parse(readFileSync(`${dir}/grades.json`, "utf8"));
+          const { explanation } = JSON.parse(readFileSync(`${dir}/comparison.json`, "utf8"));
+          const valid = grades.filter(g => g.score >= 1 && g.score <= 5 && g.reason);
+          console.log(`${valid.length}/${grades.length} grades valid; explanation ${explanation?.length ?? 0} chars`);
+          if (!grades.length || valid.length !== grades.length) throw new Error("grading returned no or invalid grades");
+          if (!explanation?.trim()) throw new Error("the explainer returned nothing");
+          // With the OpenAI grader, OpenAI answers the outcome checks too.
+          {
+            const checks = JSON.parse(readFileSync(`${dir}/checks.json`, "utf8"));
+            const failed = checks.filter(c => c.error || !Object.keys(c.answers).length);
+            console.log(`${checks.length - failed.length}/${checks.length} runs' outcome checks answered`, JSON.stringify(checks[0]?.answers));
+            for (const c of failed) console.log(`not answered: ${c.test} (${c.version} run ${c.run}): ${c.error ?? "no answers"}`);
+            if (!checks.length || failed.length) throw new Error("outcome checks failed");
+            if (checks.some(c => Object.values(c.answers).some(a => a.type === "yes_no" && a.probability !== 0 && a.probability !== 1))) throw new Error("these checks did not come from OpenAI");
+            // The built-in checks are asked of every run.
+            for (const c of checks) console.log(`${c.test} (${c.version}): failure_type ${c.answers.failure_type?.choice}, acted_before_check ${c.answers.acted_before_check?.probability?.toFixed(2)}`);
+            if (checks.some(c => c.answers.failure_type?.type !== "choice" || c.answers.acted_before_check?.type !== "yes_no")) throw new Error("the built-in checks were not answered");
+          }
+          EOF
+
+      # Runs once the repo has an AI_GATEWAY_API_KEY secret; skipped until then.
+      - name: Compare again, graded by Jev
+        if: env.AI_GATEWAY_API_KEY != ''
+        working-directory: example
+        env:
+          AGENTDIFF_GRADER: jev
+        run: |
+          npx agentdiff compare --config live.config.ts
+          node --input-type=module <<'EOF'
+          import { readdirSync, readFileSync } from "node:fs";
+          const dir = ".agentdiff/" + readdirSync(".agentdiff").filter(d => d.startsWith("compare-")).sort().at(-1);
+          const grades = JSON.parse(readFileSync(`${dir}/grades.json`, "utf8"));
+          const jev = grades.filter(g => g.score >= 1 && g.score <= 5 && g.reason.startsWith("Jev:"));
+          console.log(`${jev.length}/${grades.length} Jev grades`, jev.slice(0, 3).map(g => `${g.test}: ${g.score} (${g.reason})`));
+          for (const g of grades.filter(g => !jev.includes(g))) console.log(`not from Jev: ${g.test} (${g.version} run ${g.run}): ${g.reason}`);
+          if (!grades.length || jev.length !== grades.length) throw new Error("Jev grading failed");
+          EOF
+
+      - name: Record a real Jev decision
+        if: env.AI_GATEWAY_API_KEY != ''
+        run: node --import tsx scripts/live-decision-check.ts
+
+      # The same agent built with the OpenAI Agents SDK, against the same tests. Before test
+      # generation, which adds tests to ../example/tests.
+      - name: Install the OpenAI Agents SDK example
+        working-directory: example-openai
+        run: npm install
+
+      - name: Compare the OpenAI Agents SDK example v1 → v2, one run per test
+        working-directory: example-openai
+        run: |
+          sed 's/runsPerTest: 10/runsPerTest: 1/' agentdiff.config.ts > live.config.ts
+          grep -q "runsPerTest: 1" live.config.ts
+          npx agentdiff compare --config live.config.ts
+          node --input-type=module <<'EOF'
+          import { readdirSync, readFileSync } from "node:fs";
+          const dir = ".agentdiff/" + readdirSync(".agentdiff").filter(d => d.startsWith("compare-")).sort().at(-1);
+          const runs = ["old-runs", "runs"].flatMap(side => readdirSync(`${dir}/${side}`).map(f => JSON.parse(readFileSync(`${dir}/${side}/${f}`, "utf8"))));
+          for (const r of runs) console.log(`${r.test} (${r.version}): ${r.error ?? (r.tool_calls.map(c => c.tool).join(" → ") || "no tools")} · ${r.tokens?.input ?? "?"} in / ${r.tokens?.output ?? "?"} out`);
+          const failed = runs.filter(r => r.error || !r.final_response);
+          if (!runs.length || failed.length) throw new Error(`${failed.length} OpenAI Agents SDK runs failed`);
+          if (!runs.some(r => r.version === "old" && r.tool_calls.length)) throw new Error("v1 made no tool calls: tool calls aren't being read");
+          const c = JSON.parse(readFileSync(`${dir}/comparison.json`, "utf8"));
+          if (!c.snapshotDiff.instructionsDiff.trim()) throw new Error("the prompt diff is empty");
+          console.log(`${c.tests.length} tests compared; model ${c.newSnapshot.model}`);
+          EOF

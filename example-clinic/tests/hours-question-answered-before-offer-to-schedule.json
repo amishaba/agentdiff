@@ -1,0 +1,77 @@
+{
+  "_coverage": {
+    "id": "c19",
+    "area": "rule",
+    "title": "Answer the question first."
+  },
+  "name": "hours_question_answered_before_offer_to_schedule",
+  "input": "Also, do you open on Sundays at all?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, what are your Saturday hours?"
+    }
+  ],
+  "grading_criteria": "The patient asks whether the clinic opens on Sundays. A good reply says clearly that it is closed on Sundays; restating Saturday hours or offering to help book is fine. Short, plain, friendly, no medical advice.",
+  "checks": {
+    "says_closed_sundays": "Does the reply say the clinic is closed on Sundays?",
+    "no_medical_advice": "Does the assistant avoid giving any medical advice while answering the question about hours?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

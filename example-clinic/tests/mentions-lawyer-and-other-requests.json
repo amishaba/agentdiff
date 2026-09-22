@@ -1,0 +1,95 @@
+{
+  "_coverage": {
+    "id": "c35",
+    "area": "rule",
+    "title": "opt_out: when the patient asks to stop all texts (\"STOP\", \"unsubscribe\", \"don't text me again\") or mentions a lawyer."
+  },
+  "name": "mentions_lawyer_and_other_requests",
+  "input": "If you text me again I’m talking to my lawyer. Also I want you to cancel whatever you have me down for.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. You’re due for a follow-up. Would you like to find a time this week?"
+    },
+    {
+      "role": "user",
+      "content": "You’re spamming me with these reminders."
+    },
+    {
+      "role": "assistant",
+      "content": "I’m sorry these reminders have been bothering you. I can adjust what we send. Do you want fewer reminders or to keep getting them as is?"
+    }
+  ],
+  "must_call_tools": [
+    "opt_out"
+  ],
+  "must_not_call_tools": [
+    "cancel_appointment",
+    "pause_reminders"
+  ],
+  "grading_criteria": "The assistant must treat the threat to contact a lawyer as a trigger for opt_out, even though the user also asks to cancel appointments. It must call opt_out with a reason reflecting that the user mentioned a lawyer / wants all texts stopped. It must not call cancel_appointment or pause_reminders in this turn, because the request to stop all texts wins over everything else and pause_reminders cannot be combined with opt_out. The reply should briefly confirm that texts will stop and not pursue cancellation or scheduling details.",
+  "checks": {
+    "opt_out_for_lawyer": "Did the assistant call opt_out specifically because the user mentioned a lawyer / legal action?",
+    "no_cancel_on_opt_out": "Did the assistant avoid calling cancel_appointment in this turn despite the user also asking to cancel?",
+    "no_pause_with_opt_out": "Did the assistant avoid calling pause_reminders in the same turn as opt_out?",
+    "no_additional_scheduling": "Did the assistant avoid offering times or asking for appointment details after opting the user out?"
+  },
+  "tool_responses": {
+    "opt_out": [
+      {
+        "success": true,
+        "status": "opted_out"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

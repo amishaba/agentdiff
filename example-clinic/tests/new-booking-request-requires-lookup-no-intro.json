@@ -1,0 +1,94 @@
+{
+  "_coverage": {
+    "id": "c13",
+    "area": "rule",
+    "title": "The clinic has texted this number before."
+  },
+  "name": "new_booking_request_requires_lookup_no_intro",
+  "input": "Can you help me book that?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I need to schedule a checkup sometime next week."
+    }
+  ],
+  "grading_criteria": "The patient hasn’t given their full name and date of birth yet, so the assistant can’t verify them. It should say it can help, ask for full name and date of birth, and not offer times or book anything yet. It must not introduce itself (the clinic has texted this number before). One to three short sentences.",
+  "checks": {
+    "lookup_before_booking": "Did the assistant ensure a lookup_patient call with full name and date of birth before discussing or booking appointments?",
+    "no_self_introduction": "Did the assistant avoid introducing themself as Robin or mentioning the clinic as if this were the first text?",
+    "only_offers_tool_slots": "Did the assistant only offer appointment times that match the find_open_slots results (no invented times)?",
+    "concise_and_friendly": "Was the reply short (about one to three sentences) and conversational?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "patientId": "pt_123",
+        "fullName": "Jordan Lee",
+        "dateOfBirth": "1990-05-14",
+        "status": "existing",
+        "upcomingAppointments": []
+      }
+    ],
+    "find_open_slots": [
+      {
+        "slotId": "slot_abc",
+        "visitType": "annual_physical",
+        "location": "elm_street",
+        "start": "2026-03-17T09:00:00",
+        "end": "2026-03-17T09:40:00"
+      },
+      {
+        "slotId": "slot_def",
+        "visitType": "annual_physical",
+        "location": "elm_street",
+        "start": "2026-03-18T14:00:00",
+        "end": "2026-03-18T14:40:00"
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

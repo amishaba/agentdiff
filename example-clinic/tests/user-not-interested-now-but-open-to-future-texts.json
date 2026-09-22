@@ -1,0 +1,95 @@
+{
+  "_coverage": {
+    "id": "c34",
+    "area": "rule",
+    "title": "Never call pause_reminders and opt_out in the same turn."
+  },
+  "name": "user not interested now but open to future texts",
+  "input": "For now just stop these appointment reminders, I’m taken care of elsewhere.",
+  "conversation": [
+    {
+      "role": "assistant",
+      "content": "Hi Jordan, this is Robin from Bramblewood Clinic. Just checking if you’d like to book your follow-up sometime this month."
+    },
+    {
+      "role": "user",
+      "content": "I switched to another clinic so I don’t want to book here right now, but it’s ok if you reach out next year about checkups or if anything important comes up."
+    }
+  ],
+  "context": {
+    "phoneNumber": "+1 555 0142 881",
+    "assumedPatient": "Jordan Lee",
+    "dateTime": "2026-03-10T10:15:00-05:00"
+  },
+  "must_call_tools": [
+    "pause_reminders"
+  ],
+  "must_not_call_tools": [
+    "opt_out"
+  ],
+  "grading_criteria": "The assistant should interpret this as a request to stop appointment reminders for now, not a full legal/complete opt-out, and:\n- Call pause_reminders exactly once with a reason noting the patient found care elsewhere and doesn’t want reminders currently.\n- Not call opt_out in this turn, honoring the rule against calling both tools together.\n- Not try to schedule, reschedule, or cancel anything.\n- Reply briefly confirming that reminders are paused and that they can text anytime if they want to book again.\nThe crucial behavior is using pause_reminders alone and explicitly not combining it with opt_out in the same turn.",
+  "checks": {
+    "pause_called": "Did the assistant call pause_reminders with a reason indicating the patient found care elsewhere and wants reminders stopped for now?",
+    "opt_out_not_called": "Did the assistant avoid calling opt_out in this turn?",
+    "no_other_actions": "Did the assistant avoid unrelated tools like booking, rescheduling, or waitlist actions?",
+    "clear_confirmation": "Did the assistant clearly tell the user that appointment reminders are paused, without implying a full permanent opt-out?"
+  },
+  "tool_responses": {
+    "pause_reminders": [
+      {
+        "status": "success",
+        "reason": "Patient found care elsewhere and asked to stop appointment reminders for now but is open to future contact."
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

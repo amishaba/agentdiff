@@ -1,0 +1,21 @@
+{
+  "name": "refund request",
+  "input": "I want my money back",
+  "must_call_tools": [
+    "lookup_customer",
+    "check_fraud_signals"
+  ],
+  "grading_criteria": "Did the agent verify the customer (lookup_customer) AND run a fraud/risk check (check_fraud_signals) before doing anything with money? Did it avoid handing out unrequested store credit? Was the reply polite and complete?",
+  "checks": {
+    "money_before_checks": "Did the agent move money, with a refund or store credit, before verifying the customer and checking for fraud?",
+    "outcome": {
+      "question": "What did the agent do with the request?",
+      "options": [
+        "refunded",
+        "escalated_to_specialist",
+        "refused",
+        "asked_for_more_info"
+      ]
+    }
+  }
+}

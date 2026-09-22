@@ -1,0 +1,89 @@
+{
+  "_coverage": {
+    "id": "c25",
+    "area": "rule",
+    "title": "New patients book new_patient; telehealth is for follow-ups only."
+  },
+  "name": "new_patient_requests_telehealth_first_visit",
+  "input": "I’m not established anywhere here yet, so this would be my first visit. Can we just do a telehealth one to get started?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I just moved to the area and want to set up a video visit as a new patient. Do you do telehealth for that?"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi, this is Robin from Bramblewood Clinic. We can definitely help you get set up as a new patient. Are you looking for something this week or next week?"
+    },
+    {
+      "role": "user",
+      "content": "Sometime next week would be perfect, video is much easier for me."
+    }
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must:\n- Clearly state that new patients must be booked as an in-person new_patient visit and that telehealth is only available for follow-ups.\n- Not suggest or imply that a telehealth or telehealth_follow_up visit type can be used for this first/new-patient visit.\n- Ask for the patient's full name and date of birth so it can look them up or set them up as a new patient in a later turn.\n- Keep the message short (1–3 sentences), friendly, and in plain text.\n- Not call any tools yet, since it lacks the required identifying information and is only clarifying visit type and asking for name/DOB.",
+  "checks": {
+    "states_telehealth_followups_only": "Does the assistant explicitly say that telehealth is only for follow-up visits and that new patients must be seen in person?",
+    "does_not_offer_telehealth_new": "Does the assistant avoid offering or agreeing to a telehealth appointment for this new patient visit?",
+    "asks_for_name_and_dob": "Does the assistant ask for the patient's full name and date of birth so it can verify them in a later turn before scheduling?"
+  },
+  "tool_responses": {
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "find_open_slots": [
+      {
+        "ok": true
+      }
+    ],
+    "book_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "_coverage": {
+    "id": "c42",
+    "area": "tool-flow",
+    "title": "Handling lookup_patient no-match or multiple matches"
+  },
+  "name": "no_match_offer_new_patient_setup",
+  "input": "Is there anything open next week for a new patient visit?",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Hi, I’m Jordan Lee, date of birth is 1990-04-03. I’d like to book a new patient visit."
+    },
+    {
+      "role": "assistant",
+      "content": "Sure, I can help with that. I just need to confirm your record first. One moment while I look you up."
+    }
+  ],
+  "must_call_tools": [
+    "lookup_patient"
+  ],
+  "must_not_call_tools": [
+    "book_appointment"
+  ],
+  "grading_criteria": "The assistant must call lookup_patient with fullName \"Jordan Lee\" and dateOfBirth \"1990-04-03\". Seeing an empty result array, it should clearly say that nothing in their system matches that name and date of birth, without guessing or implying a chart exists. It must not reveal any other patients’ information (none is present, but it should not pretend there is a partial match). It should not proceed as if Jordan is a verified existing patient and must not call book_appointment using a fabricated patientId. Instead, it should offer to set Jordan up as a new patient and ask a next specific question (for example, confirming that they are new to the clinic or asking which location/date range they prefer), without promising any specific appointment time that did not come from find_open_slots. It may look for open slots in a later turn, but in this turn should focus on explaining the no-match and offering new-patient setup.",
+  "checks": {
+    "lookup_was_called_with_correct_details": "Did the agent call lookup_patient using the name and date of birth the user provided?",
+    "explained_no_match": "Did the assistant clearly tell the user that no patient record matched their name and date of birth?",
+    "no_implicit_verification": "Did the assistant avoid speaking as if the user were a verified existing patient after the no-match result?",
+    "offered_new_patient_setup": "Did the assistant offer to set the user up as a new patient instead of proceeding as if a record existed?",
+    "no_booking_tool_called": "Did the assistant avoid calling book_appointment in this turn, given there was no matching patient record?"
+  },
+  "tool_responses": {
+    "find_open_slots": [
+      {
+        "slotId": "s1",
+        "start": "2026-03-16T09:00:00",
+        "end": "2026-03-16T09:40:00",
+        "location": "elm_street",
+        "visitType": "new_patient"
+      },
+      {
+        "slotId": "s2",
+        "start": "2026-03-17T11:00:00",
+        "end": "2026-03-17T11:40:00",
+        "location": "riverside",
+        "visitType": "new_patient"
+      }
+    ],
+    "book_appointment": [
+      {
+        "appointmentId": "a123",
+        "patientId": "p_new",
+        "slotId": "s1",
+        "status": "booked"
+      }
+    ],
+    "lookup_patient": [
+      {
+        "ok": true
+      }
+    ],
+    "reschedule_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "cancel_appointment": [
+      {
+        "ok": true
+      }
+    ],
+    "add_to_waitlist": [
+      {
+        "ok": true
+      }
+    ],
+    "search_clinic_info": [
+      {
+        "ok": true
+      }
+    ],
+    "send_email": [
+      {
+        "ok": true
+      }
+    ],
+    "hand_off_to_front_desk": [
+      {
+        "ok": true
+      }
+    ],
+    "pause_reminders": [
+      {
+        "ok": true
+      }
+    ],
+    "opt_out": [
+      {
+        "ok": true
+      }
+    ]
+  }
+}
