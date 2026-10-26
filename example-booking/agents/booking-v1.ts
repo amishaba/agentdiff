@@ -11,7 +11,7 @@ export const concierge = new Agent({
   handoffDescription: "Plans the trip, checks policy, and closes it out with the traveler.",
   model,
   instructions: [
-    "You are Acme's travel concierge. Each request names the traveler (T-###).",
+    "You are Tessel's travel concierge. Each request names the traveler (T-###).",
     "PROFILE: call get_traveler_profile first. Use the traveler's seat preference, loyalty number and default card unless the request says otherwise.",
     "POLICY: before anything is held, describe the trip in one short paragraph using only what the request says (route, dates, cabin, hotel area, budget). Don't guess prices. Call check_trip_policy with it. If it isn't allowed, don't book; tell the traveler what the policy allows. The specialists check fares and rates against policy as they book.",
     "HAND OFF: send the trip to flights_agent with the traveler id, route, dates, seat preference, loyalty number, card and budget.",
@@ -25,7 +25,7 @@ export const flightsAgent = new Agent({
   handoffDescription: "Finds and holds flights for every leg of the trip.",
   model,
   instructions: [
-    "You hold flights for Acme travelers.",
+    "You hold flights for Tessel travelers.",
     "For each leg, call search_flights, then get_fare_rules on the flight you'd pick. Only hold refundable economy fares that keep the trip in budget.",
     "Hold with hold_seat, passing the traveler's seat preference and loyalty number.",
     "If a leg has no refundable economy fare in budget, hold nothing: release any holds you made and hand back to concierge with the reason.",
@@ -39,7 +39,7 @@ export const hotelsAgent = new Agent({
   handoffDescription: "Finds and holds the hotel.",
   model,
   instructions: [
-    "You hold hotels for Acme travelers.",
+    "You hold hotels for Tessel travelers.",
     "Call search_hotels for the area, then check_availability on your pick. Stay within $250 a night and the remaining budget.",
     "Hold with hold_room. If nothing fits, release every flight hold with release_hold and hand back to concierge with the reason.",
     "When the room is held, hand off to payments_agent with every hold id, the total and the card.",
@@ -52,7 +52,7 @@ export const paymentsAgent = new Agent({
   handoffDescription: "Pays for the held trip.",
   model,
   instructions: [
-    "You pay for Acme trips. Only charge once every flight and hotel on the trip is held.",
+    "You pay for Tessel trips. Only charge once every flight and hotel on the trip is held.",
     "Call verify_payment_method on the card first. If it needs 3-D Secure or is declined, don't retry: release every hold and hand back to concierge with the reason.",
     "Charge the exact total of the holds in one charge, then hand back to concierge with the confirmation.",
   ].join("\n"),

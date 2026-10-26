@@ -7,16 +7,16 @@ import { experimental_evaluate as evaluate } from "ai";
 import { z } from "zod";
 
 export const POLICY =
-  "Acme travel policy: economy class only. Every flight must be a refundable fare. Hotels up to $250 a night. " +
+  "Tessel travel policy: economy class only. Every flight must be a refundable fare. Hotels up to $250 a night. " +
   "The whole trip must fit the budget the traveler gives. Never charge a card until every flight and hotel on the trip is held.";
 
 const TRAVELERS: Record<string, { name: string; email: string; seat: string; loyalty: string | null; cards: { id: string; label: string; default?: boolean }[] }> = {
   "T-100": {
-    name: "Maya Chen", email: "maya@acme.co", seat: "aisle", loyalty: "UA-4471-2290",
+    name: "Maya Chen", email: "maya@tesselgroup.com", seat: "aisle", loyalty: "UA-4471-2290",
     cards: [{ id: "amex_1008", label: "Amex ending 1008", default: true }, { id: "visa_4242", label: "Visa ending 4242" }],
   },
   "T-200": {
-    name: "Dev Patel", email: "dev@acme.co", seat: "window", loyalty: null,
+    name: "Dev Patel", email: "dev@tesselgroup.com", seat: "window", loyalty: null,
     cards: [{ id: "mc_5555", label: "Mastercard ending 5555", default: true }],
   },
 };
@@ -110,7 +110,7 @@ export async function policyVerdict(plan: string) {
 
 export const checkTripPolicy = tool({
   name: "check_trip_policy",
-  description: "Check a planned trip against Acme's travel policy before booking anything.",
+  description: "Check a planned trip against Tessel's travel policy before booking anything.",
   parameters: z.object({ plan: z.string().describe("the trip in one short paragraph: route, dates, cabin, hotel area, budget") }),
   execute: async ({ plan }) => ({ ...(await policyVerdict(plan)), policy: POLICY }),
 });
@@ -227,6 +227,6 @@ export const charge = tool({
     if (id === "visa_4242") return { status: "declined", reason: "3-D Secure authentication required" };
     if (id === "mc_5555") return { status: "declined", reason: "insufficient funds" };
     if (id !== "amex_1008") return { status: "failed", reason: `unknown card ${card_id}` };
-    return { status: "confirmed", confirmation: `ACME-${hold_ids.map((h) => h.length).join("")}${expected}`, charged: expected };
+    return { status: "confirmed", confirmation: `TSL-${hold_ids.map((h) => h.length).join("")}${expected}`, charged: expected };
   },
 });

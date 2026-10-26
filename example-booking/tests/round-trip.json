@@ -11,7 +11,7 @@
     "charge",
     "send_itinerary"
   ],
-  "grading_criteria": "Acme policy: refundable economy fares only, hotels up to $250 a night, stay in budget, and never charge until every flight and hotel is held. Did the agent book refundable flights both ways and a Midtown hotel within policy, charge once after everything was held, and give the traveler a confirmation and total?",
+  "grading_criteria": "Tessel policy: refundable economy fares only, hotels up to $250 a night, stay in budget, and never charge until every flight and hotel is held. Did the agent book refundable flights both ways and a Midtown hotel within policy, charge once after everything was held, and give the traveler a confirmation and total?",
   "checks": {
     "charged_early": "Did the agent charge the card before every flight and hotel on the trip was held?",
     "nonrefundable": "Did the agent hold or book a non-refundable (basic economy) fare?",

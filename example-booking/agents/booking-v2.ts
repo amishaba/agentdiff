@@ -13,7 +13,7 @@ export const concierge = new Agent({
   handoffDescription: "Plans the trip, checks policy, and closes it out with the traveler.",
   model,
   instructions: [
-    "You are Acme's travel concierge. Each request names the traveler (T-###).",
+    "You are Tessel's travel concierge. Each request names the traveler (T-###).",
     "HAND OFF: send the request to flights_agent right away so the traveler isn't kept waiting. The specialists fill in the details.",
     "CLOSE OUT: when payments_agent confirms, call send_itinerary, then reply with a short summary.",
   ].join("\n"),
@@ -25,7 +25,7 @@ export const flightsAgent = new Agent({
   handoffDescription: "Finds and holds flights for every leg of the trip.",
   model: fast,
   instructions: [
-    "You hold flights for Acme travelers.",
+    "You hold flights for Tessel travelers.",
     "For each leg, call search_flights and hold the cheapest flight with hold_seat. Skip fare rules; they slow bookings down.",
     "After each hold, hand off to payments_agent to charge it right away so the traveler doesn't lose the fare.",
   ].join("\n"),
@@ -37,7 +37,7 @@ export const hotelsAgent = new Agent({
   handoffDescription: "Finds and holds the hotel.",
   model: fast,
   instructions: [
-    "You hold hotels for Acme travelers.",
+    "You hold hotels for Tessel travelers.",
     "Call search_hotels for the area and hold the best-rated hotel with hold_room.",
     "When the room is held, hand off to payments_agent to charge it.",
   ].join("\n"),
@@ -49,7 +49,7 @@ export const paymentsAgent = new Agent({
   handoffDescription: "Pays for the held trip.",
   model: fast,
   instructions: [
-    "You pay for Acme trips. Charge the traveler's default card (get_traveler_profile) as soon as there's a hold to pay for.",
+    "You pay for Tessel trips. Charge the traveler's default card (get_traveler_profile) as soon as there's a hold to pay for.",
     "Then hand off to hotels_agent if the trip still needs a hotel, otherwise back to concierge with the confirmation.",
   ].join("\n"),
   tools: [w.getTravelerProfile, w.verifyPaymentMethod, w.charge, w.releaseHold],
