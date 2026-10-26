@@ -37,3 +37,18 @@ jobs:
       # The dashboard the npm package ships must actually come out of the build.
       - name: Check dist/web
         run: test -f dist/web/index.html && ls -la dist/web/assets
+
+  browser:
+    runs-on: ubuntu-latest
+    name: dashboard in Chrome
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+      # GitHub's Ubuntu runners come with Google Chrome; the tests drive it.
+      - run: npm run test:browser

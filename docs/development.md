@@ -3,6 +3,7 @@
 ```bash
 npm ci
 npm test             # node:test, no model calls
+npm run test:browser # the dashboard in Chrome, against the dev server
 npm run typecheck    # CLI and web
 npm run lint         # ESLint, including the layer boundaries below
 npm run format       # Prettier (format:check in CI)
@@ -10,7 +11,7 @@ npm run build:web    # → dist/web, served by agentdiff view and the hosted sit
 npm run bake-example -- <compare dir> <name> "<title>" "<what changed>"   # add a recording to the site
 ```
 
-[`ci.yml`](../.github/workflows/ci.yml) runs the lint, format check, typecheck, tests and build on Node 22 and 24. The dashboard imports the CLI's own [`src/compare/signals.ts`](../src/compare/signals.ts), so the page and the report can't disagree.
+[`ci.yml`](../.github/workflows/ci.yml) runs the lint, format check, typecheck, tests and build on Node 22 and 24, and the browser tests in Chrome. The dashboard imports the CLI's own [`src/compare/signals.ts`](../src/compare/signals.ts), so the page and the report can't disagree.
 
 The `sms-desk-example` and `booking-example` workflows record the SMS and booking examples against the real models; they are started by hand. This repo also runs the Action on `example/` for PRs labelled `run-agentdiff`.
 
