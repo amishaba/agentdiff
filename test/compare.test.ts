@@ -60,8 +60,8 @@ describe("computeVersionStats", () => {
     assert.equal(s.avgTokensOutput, 200);
     assert.equal(s.avgLatencyMs, 600);
     assert.equal(s.avgSteps, 2);
-    // Unknown model → default price of $3 / $15 per 1M.
-    assert.ok(Math.abs((s.avgCost ?? 0) - (2000 * 3 + 200 * 15) / 1e6) < 1e-12);
+    // gpt-5.4 is $2.50 / $15 per 1M.
+    assert.ok(Math.abs((s.avgCost ?? 0) - (2000 * 2.5 + 200 * 15) / 1e6) < 1e-12);
   });
   it("has no cost or grade when nothing is measurable, but keeps the error", () => {
     const s = computeVersionStats([failedRun("no credits")], "gpt-5.4", []);

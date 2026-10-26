@@ -57,7 +57,7 @@ describe("buildReport", () => {
     assert.ok(md.includes("> **Likely cause and a fix to try** · Because."));
     assert.ok(md.includes("<summary>Prompt diff · 10 lines</summary>"));
     assert.ok(md.includes("<summary>Cost · steps · latency per test</summary>"));
-    assert.ok(md.includes("| refund with verification | $0.01 → $0.0038 | 4.0 → 2.0 | 5.9s → 2.3s |"));
+    assert.ok(md.includes("| refund with verification | $0.0091 → $0.0033 | 4.0 → 2.0 | 5.9s → 2.3s |"));
   });
 
   it("keeps a multi-paragraph cause inside the quote", () => {
