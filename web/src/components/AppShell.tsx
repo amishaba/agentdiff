@@ -5,9 +5,8 @@ import { dashboardTabs, type DashboardTab } from "../data/dashboard.ts";
 import { Icon, type IconName } from "./Icon.tsx";
 import "./shell.css";
 
-// Shown only once they lead somewhere: the repo is private and the package isn't published yet.
-// Set each to its URL when it goes public.
-export const GITHUB: string | null = null;
+export const GITHUB = "https://github.com/amishaba/agentdiff";
+// Shown only once it leads somewhere: the package isn't published yet. Set it to its URL when it is.
 export const NPM: string | null = null;
 
 /** Where the app is: the overview, a workspace section, or one recorded example. */
@@ -49,7 +48,19 @@ export function AppShell({
               </span>
             ))}
           </nav>
-          {actions && <div className="app-header-actions">{actions}</div>}
+          <div className="app-header-actions">
+            {actions}
+            <a
+              className="header-github"
+              href={GITHUB}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="agentdiff on GitHub"
+            >
+              <Icon name="github" />
+              <span>GitHub</span>
+            </a>
+          </div>
         </header>
         <main className="app-content">{children}</main>
       </div>
@@ -115,12 +126,10 @@ function Sidebar({ place, onTab }: { place: Place; onTab?: (tab: DashboardTab) =
         </div>
       </nav>
       <div className="sidebar-foot">
-        {GITHUB && (
-          <a href={GITHUB} target="_blank" rel="noreferrer">
-            <Icon name="file" />
-            <span>GitHub</span>
-          </a>
-        )}
+        <a href={GITHUB} target="_blank" rel="noreferrer">
+          <Icon name="github" />
+          <span>GitHub</span>
+        </a>
         {NPM && (
           <a href={NPM} target="_blank" rel="noreferrer">
             <Icon name="file" />

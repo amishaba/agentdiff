@@ -60,8 +60,12 @@ window.matchMedia = () => ({ matches: true });
 window.location.search = "";
 const home = render(App);
 assert.ok(home.includes('class="overview"'));
-// The repo is private and the package unpublished: no link to either until they are public.
-assert.ok(!home.includes('github.com/amishaba/agentdiff"') && !home.includes("npmjs.com"), "no dead external links");
+// The repo is public and linked from the header; the package is unpublished, so no link to it yet.
+assert.ok(
+  home.includes('class="header-github" href="https://github.com/amishaba/agentdiff"'),
+  "the header links the repo",
+);
+assert.ok(!home.includes("npmjs.com"), "no dead external links");
 assert.ok(home.includes("made by amisha"));
 for (const name of ["sms", "booking", "support"])
   assert.ok(home.includes(`href="/?view=report&amp;example=${name}"`), `the homepage links the ${name} example`);
