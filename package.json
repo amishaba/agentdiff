@@ -1,6 +1,6 @@
 {
   "name": "agentdiff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Compare two versions of an AI agent (Mastra, OpenAI Agents SDK, or any function) and report how its behaviour changed.",
   "license": "MIT",
   "author": "Amisha Bansal (https://github.com/amishaba)",
