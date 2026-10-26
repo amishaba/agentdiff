@@ -1,5 +1,5 @@
 import { isSampleWorkspace } from "../data/navigation.ts";
-import { appFetch } from "../data/request.ts";
+import { localJson } from "../data/jobs.ts";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Incident, Scenario } from "../../../src/dashboard/braintrust/scenario.ts";
 import type { ReplayResponse, RunRecord } from "../../../src/types.ts";
@@ -39,15 +39,8 @@ const reviewFor = (scenario: Scenario, missing: Missing[] = [], lastRun: string 
   missing,
   lastRun,
 });
-async function api<T>(route: string, value?: unknown): Promise<T> {
-  const response = await appFetch("/api/braintrust/" + route, {
-    method: value === undefined ? "GET" : "POST",
-    headers: { "x-agentdiff": "local", ...(value === undefined ? {} : { "content-type": "application/json" }) },
-    ...(value === undefined ? {} : { body: JSON.stringify(value) }),
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? "Request failed. Try again.");
-  return data as T;
+function api<T>(route: string, value?: unknown): Promise<T> {
+  return localJson<T>("/api/braintrust/" + route, value);
 }
 
 export function Braintrust({ onCompared }: { onCompared: (dir: string) => void }) {

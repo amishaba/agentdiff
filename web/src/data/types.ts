@@ -19,17 +19,7 @@ export interface GradeRecord {
   reason: string;
 }
 
-/** One row of /api/runs (see src/commands/view.ts). */
-export interface RunSummary {
-  dir: string;
-  label: string;
-  agentName?: string;
-  oldFile?: string;
-  newFile?: string;
-  tests?: number;
-  changed?: number;
-  createdAt?: string;
-}
+export type { RunSummary } from "../../../src/dashboard/runs-contract.ts";
 
 export type Mode = "demo" | "live";
 

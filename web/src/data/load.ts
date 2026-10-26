@@ -1,6 +1,13 @@
 import type { Comparison, Dataset, GradeRecord, Mode, RunRecord, RunSummary } from "./types.ts";
 import { currentPage, isSampleWorkspace } from "./navigation.ts";
-import { appFetch } from "./request.ts";
+import { requestJson } from "./request.ts";
+import {
+  ComparisonShape,
+  ExplanationSchema,
+  GradesShape,
+  RunListSchema,
+  TracesShape,
+} from "../../../src/dashboard/runs-contract.ts";
 import { currentExample, loadExample } from "./examples.ts";
 
 export function currentMode(): Mode {
@@ -9,16 +16,10 @@ export function currentMode(): Mode {
   return currentPage() === "dashboard" && !isSampleWorkspace() ? "live" : "demo";
 }
 
-async function getJson<T>(url: string): Promise<T> {
-  const res = await appFetch(url);
-  if (!res.ok) throw new Error(`${url} → ${res.status}`);
-  return (await res.json()) as T;
-}
-
 /** Saved local comparisons, or the isolated sample list on the hosted dashboard. */
 export async function listRuns(): Promise<RunSummary[]> {
   if (currentPage() !== "dashboard") return [];
-  return getJson<RunSummary[]>("/api/runs");
+  return requestJson<RunSummary[]>("/api/runs", { shape: RunListSchema });
 }
 
 export async function loadDataset(dir?: string): Promise<Dataset> {
@@ -35,10 +36,10 @@ export async function loadDataset(dir?: string): Promise<Dataset> {
   }
   const q = `?dir=${encodeURIComponent(target)}`;
   const [comparison, grades, traces, explanation] = await Promise.all([
-    getJson<Comparison>(`/api/comparison${q}`),
-    getJson<GradeRecord[]>(`/api/grades${q}`),
-    getJson<{ old: RunRecord[]; new: RunRecord[] }>(`/api/traces${q}`),
-    getJson<{ text: string }>(`/api/explanation${q}&kind=short`),
+    requestJson<Comparison>(`/api/comparison${q}`, { shape: ComparisonShape }),
+    requestJson<GradeRecord[]>(`/api/grades${q}`, { shape: GradesShape }),
+    requestJson<{ old: RunRecord[]; new: RunRecord[] }>(`/api/traces${q}`, { shape: TracesShape }),
+    requestJson<{ text: string }>(`/api/explanation${q}&kind=short`, { shape: ExplanationSchema }),
   ]);
-  return { mode: currentMode(), dir: target, comparison, grades, traces, explanation: explanation.text ?? "" };
+  return { mode: currentMode(), dir: target, comparison, grades, traces, explanation: explanation.text };
 }

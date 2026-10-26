@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { currentExample, loadExample } from "../data/examples.ts";
+import { useEffect } from "react";
+import { currentExample } from "../data/examples.ts";
+import { useExample } from "../data/queries.ts";
 import { AppShell } from "./AppShell.tsx";
+import { ErrorBoundary } from "./ErrorBoundary.tsx";
 import { RunProvenance } from "./RunProvenance.tsx";
 import { Review } from "../review/Review.tsx";
-import type { Dataset } from "../data/types.ts";
 
 /** A recorded comparison, shown on the same page as your own runs. */
 export function Examples() {
   const example = currentExample();
-  const [data, setData] = useState<Dataset | null>(null);
-  const [error, setError] = useState("");
+  const { data, isError } = useExample(example.name);
   useEffect(() => {
     const previous = document.title;
     document.title = `agentdiff · ${example.title}`;
@@ -17,19 +17,6 @@ export function Examples() {
       document.title = previous;
     };
   }, [example.title]);
-  useEffect(() => {
-    let cancelled = false;
-    loadExample(example.name)
-      .then((d) => {
-        if (!cancelled) setData(d);
-      })
-      .catch(() => {
-        if (!cancelled) setError("This example couldn’t load. Refresh the page to try again.");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [example.name]);
   return (
     <AppShell
       place={{ kind: "example", name: example.name }}
@@ -40,13 +27,17 @@ export function Examples() {
         <span>The change: </span>
         {example.change}
       </p>
-      {error && <p role="alert">{error}</p>}
-      {!data && !error && (
+      {isError && <p role="alert">This example couldn’t load. Refresh the page to try again.</p>}
+      {!data && !isError && (
         <p role="status" className="state dim">
           Loading the recording…
         </p>
       )}
-      {data && <Review data={data} />}
+      {data && (
+        <ErrorBoundary label="This recording" resetKey={example.name}>
+          <Review data={data} />
+        </ErrorBoundary>
+      )}
       {data && <RunProvenance data={data} />}
     </AppShell>
   );

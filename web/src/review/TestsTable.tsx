@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 import type { Dataset, RunRecord, RunRef, TestComparison, Version } from "../data/types.ts";
 import type { GradeChange } from "../../../src/compare/signals.ts";
@@ -13,8 +13,41 @@ import { RunStrip } from "./RunStrip.tsx";
 import { Icon } from "../components/Icon.tsx";
 import { SidePanel } from "../components/SidePanel.tsx";
 import { TraceBody } from "../components/TraceBody.tsx";
+import { useSearchParam } from "../data/url-state.ts";
 
 export type Filter = "all" | "changed" | ChangeKind;
+
+type SortKey = "test" | "status" | "score" | "latency";
+type Sort = { key: SortKey; desc: boolean };
+
+const SORT_VALUE: Record<SortKey, (r: TableRow) => string | number | null> = {
+  test: (r) => r.test.test,
+  status: (r) => CHANGE_KINDS.indexOf(r.kind),
+  score: (r) => r.grade?.delta ?? null,
+  latency: (r) =>
+    r.test.old.avgLatencyMs != null && r.test.new.avgLatencyMs != null
+      ? r.test.new.avgLatencyMs - r.test.old.avgLatencyMs
+      : null,
+};
+
+/** "-score" is score, largest first; anything else is the table's own order. */
+function parseSort(value: string | null): Sort | null {
+  const key = value?.replace(/^-/, "");
+  return key && key in SORT_VALUE ? { key: key as SortKey, desc: value!.startsWith("-") } : null;
+}
+
+/** Rows ordered by one column; rows without a value (no grades, no timings) go last either way. */
+function sortRows(rows: TableRow[], sort: Sort | null): TableRow[] {
+  if (!sort) return rows;
+  const value = SORT_VALUE[sort.key];
+  return [...rows].sort((a, b) => {
+    const x = value(a);
+    const y = value(b);
+    if (x == null || y == null) return x == null ? (y == null ? 0 : 1) : -1;
+    const order = typeof x === "string" ? x.localeCompare(String(y)) : x - Number(y);
+    return sort.desc ? -order : order;
+  });
+}
 
 /** Every test in one flat table, most serious first; clicking one opens it in a side panel. */
 export function TestsTable({
@@ -35,13 +68,60 @@ export function TestsTable({
   onReplay?: (ref: RunRef) => void;
 }) {
   const c = data.comparison;
-  const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [queryParam, setQuery] = useSearchParam("q");
+  const query = queryParam ?? "";
+  const [selected, setSelected] = useSearchParam("test");
+  const [sortParam, setSortParam] = useSearchParam("sort");
+  const sort = parseSort(sortParam);
+  const search = useRef<HTMLInputElement>(null);
   const q = query.trim().toLowerCase();
   const keep = (r: TableRow) =>
     (filter === "all" || (filter === "changed" ? r.kind !== "same" && r.kind !== "inconclusive" : r.kind === filter)) &&
     (!q || r.test.test.toLowerCase().includes(q) || !!r.test.input?.toLowerCase().includes(q));
-  const shown = rows.filter(keep);
+  const shown = sortRows(rows.filter(keep), sort);
+  // Each row's runs, grouped once rather than filtered out of every trace per row per render.
+  const runsByTest = useMemo(() => {
+    const by = new Map<string, { old: RunRecord[]; new: RunRecord[] }>();
+    for (const v of ["old", "new"] as const)
+      for (const r of data.traces[v]) {
+        const entry = by.get(r.test) ?? { old: [], new: [] };
+        entry[v].push(r);
+        by.set(r.test, entry);
+      }
+    return by;
+  }, [data.traces]);
+  // Ascending, then descending, then back to the table's own order (most serious first).
+  const sortBy = (key: SortKey) => setSortParam(sort?.key !== key ? key : sort.desc ? null : `-${key}`);
+  const ariaSort = (key: SortKey) => (sort?.key === key ? (sort.desc ? "descending" : "ascending") : undefined);
+  const header = (key: SortKey, label: string, className?: string) => (
+    <th className={className} aria-sort={ariaSort(key)}>
+      <button className="th-sort" onClick={() => sortBy(key)} title={`Sort by ${label.toLowerCase()}`}>
+        {label}
+        <span aria-hidden="true">{sort?.key === key ? (sort.desc ? "↓" : "↑") : ""}</span>
+      </button>
+    </th>
+  );
+  // "/" jumps to the search box, as in GitHub and Linear.
+  useEffect(() => {
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      const typing = e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable]");
+      if (e.key !== "/" || typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!search.current || search.current.closest("[hidden]")) return;
+      e.preventDefault();
+      search.current.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+  // ↑ ↓ (or j k) move between rows; Enter opens one.
+  const moveFocus = (e: KeyboardEvent<HTMLTableSectionElement>) => {
+    const by = e.key === "ArrowDown" || e.key === "j" ? 1 : e.key === "ArrowUp" || e.key === "k" ? -1 : 0;
+    const links = [...e.currentTarget.querySelectorAll<HTMLElement>(".row-link")];
+    const at = links.indexOf(document.activeElement as HTMLElement);
+    if (!by || at < 0) return;
+    e.preventDefault();
+    links[Math.min(Math.max(at + by, 0), links.length - 1)].focus();
+  };
   const current = rows.find((x) => x.test.test === selected);
   const at = shown.findIndex((x) => x.test.test === selected);
   const step = (by: number) => {
@@ -68,10 +148,11 @@ export function TestsTable({
         <label className="search">
           <Icon name="search" size={14} />
           <input
+            ref={search}
             type="search"
-            placeholder="Search tests"
+            placeholder="Search tests  /"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => setQuery(e.target.value || null)}
             aria-label="Search tests"
           />
         </label>
@@ -80,20 +161,20 @@ export function TestsTable({
         <table className="data-table rows-open tests-table">
           <thead>
             <tr>
-              <th>Test</th>
-              <th>Status</th>
+              {header("test", "Test")}
+              {header("status", "Status")}
               <th>What changed</th>
               <th className="num">Old → new</th>
-              <th className="num">Score</th>
-              <th className="num">Latency</th>
+              {header("score", "Score", "num")}
+              {header("latency", "Latency", "num")}
               <th aria-hidden="true" />
             </tr>
           </thead>
-          <tbody>
+          <tbody onKeyDown={moveFocus}>
             {shown.map((x) => (
               <TestRow
                 key={x.test.test}
-                data={data}
+                runs={runsByTest.get(x.test.test) ?? { old: [], new: [] }}
                 row={x}
                 selected={x.test.test === selected}
                 onSelect={() => setSelected(x.test.test)}
@@ -110,7 +191,7 @@ export function TestsTable({
             <button
               className="dashboard-button"
               onClick={() => {
-                setQuery("");
+                setQuery(null);
                 setFilter("all");
               }}
             >
@@ -119,7 +200,7 @@ export function TestsTable({
           </div>
         )}
       </div>
-      <p className="t-hint">Click a test to see its tool path, replies and runs.</p>
+      <p className="t-hint">Click a test to see its tool path, replies and runs. ↑ ↓ move between tests; / searches.</p>
       {current && (
         <TestPanel
           data={data}
@@ -155,17 +236,17 @@ function Score({ grade }: { grade: GradeChange | null }) {
 }
 
 function TestRow({
-  data,
+  runs: byVersion,
   row: x,
   selected,
   onSelect,
 }: {
-  data: Dataset;
+  runs: { old: RunRecord[]; new: RunRecord[] };
   row: TableRow;
   selected: boolean;
   onSelect: () => void;
 }) {
-  const runs = (v: Version) => data.traces[v].filter((r) => r.test === x.test.test);
+  const runs = (v: Version) => byVersion[v];
   return (
     <tr className={selected ? "selected" : undefined} onClick={onSelect}>
       <td>

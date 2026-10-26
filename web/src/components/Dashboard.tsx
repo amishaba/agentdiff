@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { listRuns, loadDataset } from "../data/load.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys, useDataset, useRuns } from "../data/queries.ts";
 import { isSampleWorkspace } from "../data/navigation.ts";
 import { failedSides } from "../../../src/compare/signals.ts";
 import { dashboardTab, dashboardTabs, type DashboardTab } from "../data/dashboard.ts";
 import { AppShell } from "./AppShell.tsx";
+import { ErrorBoundary } from "./ErrorBoundary.tsx";
 import { Icon } from "./Icon.tsx";
-import type { Dataset, RunRef, RunSummary } from "../data/types.ts";
+import type { RunRef } from "../data/types.ts";
 import type { DashboardJob } from "../../../src/dashboard/jobs/types.ts";
 import { RunToolbar } from "./RunToolbar.tsx";
 import { RunProvenance } from "./RunProvenance.tsx";
@@ -33,12 +35,18 @@ export function Dashboard() {
       ? { dir: params.get("dir")!, file: params.get("draft")!, serial: 0 }
       : undefined;
   });
-  const [runs, setRuns] = useState<RunSummary[]>([]);
   const [dir, setDir] = useState<string | undefined>(
     () => new URLSearchParams(location.search).get("dir") ?? undefined,
   );
-  const [data, setData] = useState<Dataset | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const runList = useRuns();
+  const runs = runList.data ?? [];
+  // A link names its comparison; otherwise the newest one opens.
+  const target = dir ?? runs[0]?.dir;
+  const dataset = useDataset(target);
+  const data = dataset.data ?? null;
+  const noRuns = !dir && runList.isSuccess && !runs.length;
+  const loadError = dataset.error ?? (dir ? null : runList.error);
 
   const [open, setOpen] = useState<RunRef | null>(null);
   const [tab, setTab] = useState(() => dashboardTab(location.search));
@@ -67,22 +75,6 @@ export function Dashboard() {
     return () => window.removeEventListener("popstate", restore);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    setError(null);
-    setData(null);
-    Promise.all([listRuns().catch(() => [] as RunSummary[]), loadDataset(dir)])
-      .then(([r, d]) => {
-        if (cancelled) return;
-        setRuns(r);
-        setData(d);
-      })
-      .catch((e: unknown) => !cancelled && setError(e instanceof Error ? e.message : String(e)));
-    return () => {
-      cancelled = true;
-    };
-  }, [dir]);
-
   const pick = useCallback((next: string) => {
     setDir(next);
     setRequestedDraft(undefined);
@@ -90,6 +82,8 @@ export function Dashboard() {
     const url = new URL(location.href);
     url.searchParams.set("dir", next);
     url.searchParams.delete("draft");
+    // The open test belongs to the comparison being left.
+    url.searchParams.delete("test");
     history.replaceState(null, "", url);
   }, []);
 
@@ -118,18 +112,14 @@ export function Dashboard() {
     },
     [onCompared, selectTab],
   );
+  // A finished job may have saved a comparison or rewritten one's explanation.
+  const finished = jobs.job?.finishedAt;
+  const finishedDir = jobs.job?.resultDir;
   useEffect(() => {
-    if (!jobs.job?.finishedAt) return;
-    let cancelled = false;
-    listRuns()
-      .then((next) => {
-        if (!cancelled) setRuns(next);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [jobs.job?.finishedAt]);
+    if (!finished) return;
+    void queryClient.invalidateQueries({ queryKey: queryKeys.runs });
+    if (finishedDir) void queryClient.invalidateQueries({ queryKey: queryKeys.dataset(finishedDir) });
+  }, [finished, finishedDir, queryClient]);
   const tabLabel = dashboardTabs.find(([id]) => id === tab)![1];
   return (
     <AppShell
@@ -150,47 +140,72 @@ export function Dashboard() {
       <JobCard jobs={jobs} onOpen={openJob} />
       <>
         <div hidden={tab !== "overview"}>
-          {error && (
-            <div className="dashboard-empty" role="alert">
-              <h2>{error.includes("no comparisons") ? "No comparisons yet" : "Could not load this comparison"}</h2>
+          {noRuns && (
+            <div className="dashboard-empty">
+              <h2>No comparisons yet</h2>
               <p>
-                {error.includes("no comparisons")
-                  ? "Run your configured tests on the old and new agent with New comparison, or open Incidents to turn a failed Braintrust run into a test."
-                  : error}
+                Run your configured tests on the old and new agent with New comparison, or open Incidents to turn a
+                failed Braintrust run into a test.
               </p>
-              {error.includes("no comparisons") && (
-                <button className="dashboard-button primary" onClick={() => setDrawer(true)}>
-                  New comparison
-                </button>
-              )}
+              <button className="dashboard-button primary" onClick={() => setDrawer(true)}>
+                New comparison
+              </button>
             </div>
           )}
-          {!data && !error && (
+          {loadError && (
+            <div className="dashboard-empty" role="alert">
+              <h2>{dataset.error ? "Could not load this comparison" : "Could not list saved comparisons"}</h2>
+              <p>{loadError.message}</p>
+              <button
+                className="dashboard-button"
+                onClick={() => void (dataset.error ? dataset.refetch() : runList.refetch())}
+              >
+                Try again
+              </button>
+            </div>
+          )}
+          {!data && !loadError && !noRuns && (
             <div className="state dim" role="status">
               Loading saved comparison…
             </div>
           )}
           {failed.length > 0 && <ComparisonFailure sides={failed} />}
-          {data && c && !failed.length && <Review key={data.dir} data={data} onReplay={setOpen} />}
+          {data && c && !failed.length && (
+            <ErrorBoundary label="This comparison" resetKey={data.dir}>
+              <Review key={data.dir} data={data} onReplay={setOpen} />
+            </ErrorBoundary>
+          )}
           {data && <RunProvenance data={data} />}
         </div>
         {/* Keep the inbox mounted across sections and comparisons so active replay jobs and unsaved reviews survive. */}
         <div hidden={tab !== "scenarios"}>
-          <ScenariosPage active={tab === "scenarios"} jobs={jobs} requestedDir={scenarioDir} />
+          <ErrorBoundary label="Scenarios">
+            <ScenariosPage active={tab === "scenarios"} jobs={jobs} requestedDir={scenarioDir} />
+          </ErrorBoundary>
         </div>
         <div hidden={tab !== "check"}>
-          <CheckPage active={tab === "check"} jobs={jobs} requestedDir={checkDir} />
+          <ErrorBoundary label="Check">
+            <CheckPage active={tab === "check"} jobs={jobs} requestedDir={checkDir} />
+          </ErrorBoundary>
         </div>
         <div hidden={tab !== "braintrust"}>
-          <Braintrust onCompared={onCompared} />
+          <ErrorBoundary label="Incidents">
+            <Braintrust onCompared={onCompared} />
+          </ErrorBoundary>
         </div>
         <div hidden={tab !== "project"}>
-          <Project active={tab === "project"} jobs={jobs} requestedDraft={requestedDraft} />
+          <ErrorBoundary label="Project settings">
+            <Project active={tab === "project"} jobs={jobs} requestedDraft={requestedDraft} />
+          </ErrorBoundary>
         </div>
       </>
       {drawer && <RunDrawer busy={jobs.busy} onStart={jobs.start} onClose={() => setDrawer(false)} />}
       {/* A recorded incident opens old and new side by side; other runs open in their test's panel. */}
-      {data && open && <ReplayPair data={data} sel={open} onClose={() => setOpen(null)} />}
+      {data && open && (
+        <ErrorBoundary label="This replay" resetKey={open}>
+          <ReplayPair data={data} sel={open} onClose={() => setOpen(null)} />
+        </ErrorBoundary>
+      )}
     </AppShell>
   );
 }

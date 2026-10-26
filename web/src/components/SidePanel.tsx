@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
+import { ErrorBoundary } from "./ErrorBoundary.tsx";
 
 /**
  * A panel over the right of the page for one row of a table: a header with
@@ -97,7 +98,11 @@ export function SidePanel({
           </button>
         </div>
       </header>
-      <div className="panel-body">{children}</div>
+      <div className="panel-body">
+        <ErrorBoundary label={`This ${noun}`} resetKey={id}>
+          {children}
+        </ErrorBoundary>
+      </div>
       {footer && <footer className="panel-foot">{footer}</footer>}
     </aside>
   );

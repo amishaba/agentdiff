@@ -8,7 +8,7 @@ import { JobManager } from "./jobs/manager.ts";
 import { createJobsRoute } from "./jobs/routes.ts";
 import { createProjectRoute } from "./project/routes.ts";
 import { createScenariosRoute } from "./scenarios/routes.ts";
-import { redirect, send } from "./http.ts";
+import { redirect, send, sendJson } from "./http.ts";
 import { createRunsRoute } from "./runs-api.ts";
 import { ROOT_FILES, sendApp, sendAsset, sendRootFile } from "./static.ts";
 
@@ -26,7 +26,11 @@ export function createViewServer(manager = new JobManager()) {
     createCheckRoute(workspace),
   ];
   const server = http.createServer((req, res) => {
-    handle(req, res, routes).catch((err) => send(res, 500, "text/plain", String(err?.message ?? err)));
+    handle(req, res, routes).catch((err) => {
+      const message = String(err?.message ?? err);
+      if (isApiPath(req.url)) sendJson(res, 500, { error: message });
+      else send(res, 500, "text/plain", message);
+    });
   });
   server.once("close", () => manager.close());
   return server;
@@ -46,7 +50,13 @@ async function handle(req: http.IncomingMessage, res: http.ServerResponse, route
   if (p.startsWith("/assets/")) return sendAsset(res, p);
   if (ROOT_FILES.has(p)) return sendRootFile(res, p);
 
-  send(res, 404, "text/plain", "not found");
+  if (isApiPath(p)) sendJson(res, 404, { error: `No API route ${p}.` });
+  else send(res, 404, "text/plain", "not found");
+}
+
+/** The page reads every /api/* failure as JSON, so they all answer with `{ error }`. */
+function isApiPath(path = ""): boolean {
+  return path === "/api" || path.startsWith("/api/");
 }
 
 /** Listen on `port`, bumping upward a few times if it's taken. */

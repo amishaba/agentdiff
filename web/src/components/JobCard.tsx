@@ -42,7 +42,9 @@ export function JobCard({ jobs, onOpen }: { jobs: JobControls; onOpen: (job: Das
       <div className="job-main">
         <span className={`status-dot ${job?.status ?? ""}`} aria-hidden="true" />
         <div className="job-details">
-          <h2>{job ? `${title} · ${status}` : "Another local operation is running"}</h2>
+          <h2>
+            {job ? `${title} · ${status}` : jobs.error ? "Job status unknown" : "Another local operation is running"}
+          </h2>
           {(job?.dir || job?.resultDir) && <code>.agentdiff/{job.resultDir ?? job.dir}/</code>}
           <p role="status">
             {job
@@ -51,7 +53,9 @@ export function JobCard({ jobs, onOpen }: { jobs: JobControls; onOpen: (job: Das
                   ? "Stopping the worker…"
                   : progress?.message
                 : job.message
-              : "You can start another job when it finishes."}
+              : jobs.error
+                ? "New jobs can start once the server answers."
+                : "You can start another job when it finishes."}
           </p>
         </div>
         <div className="job-actions">

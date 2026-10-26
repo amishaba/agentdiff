@@ -30,6 +30,10 @@
 .review .tests-table td { padding-block: 9px; }
 .review .tests-table .num { color: var(--text-2); }
 .review .cell-change { color: var(--text-2); max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review .tests-table .th-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.review .tests-table .th-sort span { min-width: 8px; }
+.review .tests-table .th-sort:hover, .review .tests-table th[aria-sort] { color: var(--ink); }
+.review .tests-table .th-sort:focus-visible { outline: 2px solid var(--k-different); outline-offset: 2px; border-radius: 2px; }
 .review .tests-table .chev { width: 28px; color: var(--muted); padding-left: 0; }
 .review .tests-table .chev svg { display: block; transition: transform .12s, color .12s; }
 .review .tests-table tr:hover .chev, .review .tests-table tr.selected .chev { color: var(--ink); }

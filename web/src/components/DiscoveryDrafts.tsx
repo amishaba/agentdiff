@@ -78,8 +78,8 @@ function DraftReview({
         { headers: { "x-agentdiff": "local" } },
       );
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error ?? "Could not download this draft.");
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error ?? `Could not download this draft (${response.status}).`);
       }
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");

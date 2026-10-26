@@ -50,6 +50,7 @@ const BROWSER_SAFE = [
   "src/scenarios/types.ts",
   "src/health/{types,describe}.ts",
   "src/dashboard/*/types.ts",
+  "src/dashboard/runs-contract.ts",
   "src/pipeline/progress.ts",
 ];
 
@@ -112,7 +113,7 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser },
     rules: restrict({
       regex:
-        "^(\\.\\./)+src/(?!compare/(signals|format|check-rows|change-kind|steps|stats|pricing|snapshot-diff)\\.ts$|types\\.ts$|lib/canonical\\.ts$|(discovery|scenarios)/types\\.ts$|health/(types|describe)\\.ts$|dashboard/[a-z]+/types\\.ts$|pipeline/progress\\.ts$)",
+        "^(\\.\\./)+src/(?!compare/(signals|format|check-rows|change-kind|steps|stats|pricing|snapshot-diff)\\.ts$|types\\.ts$|lib/canonical\\.ts$|(discovery|scenarios)/types\\.ts$|health/(types|describe)\\.ts$|dashboard/([a-z]+/types|runs-contract)\\.ts$|pipeline/progress\\.ts$)",
       message:
         "The web app may only import browser-safe CLI modules (see BROWSER_SAFE in eslint.config.js). Use `import type` for anything else.",
     }),

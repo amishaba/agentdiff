@@ -7,6 +7,7 @@ import { tableRows } from "./groups.ts";
 import { DiffLines } from "./DiffLines.tsx";
 import { TestsTable, type Filter } from "./TestsTable.tsx";
 import { StatTile } from "../components/StatTile.tsx";
+import { useSearchParam } from "../data/url-state.ts";
 import { baseName, fmtMoney, fmtMs, fmtNum, plural } from "../data/derive.ts";
 import "./review.css";
 
@@ -28,7 +29,9 @@ export function Review({ data, onReplay }: { data: Dataset; onReplay?: (ref: Run
   const edits = promptChanges(c).reduce((sum, g) => sum + g.lines.length, 0) + otherChanges(c).length;
 
   const [tab, setTab] = useState<Tab>("tests");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filterParam, setFilterParam] = useSearchParam("filter");
+  const filter: Filter = isFilter(filterParam) ? filterParam : "all";
+  const setFilter = (f: Filter) => setFilterParam(f === "all" ? null : f);
   const tabs: [Tab, string, number | null][] = [
     ["tests", "Tests", c.tests.length],
     ["changes", "Agent diff", edits],
@@ -137,6 +140,10 @@ export function Review({ data, onReplay }: { data: Dataset; onReplay?: (ref: Run
       </div>
     </div>
   );
+}
+
+function isFilter(value: string | null): value is Filter {
+  return value === "all" || value === "changed" || (CHANGE_KINDS as readonly (string | null)[]).includes(value);
 }
 
 /** Everything that differs between the two agents' configs: prompt lines, tools, model, settings. */

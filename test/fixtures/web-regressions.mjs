@@ -3,6 +3,8 @@ import { register } from "node:module";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { currentMode, loadDataset } from "../../web/src/data/load.ts";
+import { queryClient } from "../../web/src/data/queries.ts";
+import { changeKind } from "../../src/compare/change-kind.ts";
 import { RunToolbar } from "../../web/src/components/RunToolbar.tsx";
 import { RunProvenance } from "../../web/src/components/RunProvenance.tsx";
 import { TraceBody } from "../../web/src/components/TraceBody.tsx";
@@ -222,6 +224,25 @@ for (const text of [
 ])
   assert.ok(panel.includes(text), `the test panel shows ${text}`);
 assert.ok(review.includes("Every test in numbers"));
+// A copied link opens the table as it was left: its sort (marked on the column), search and filter.
+const rowNames = (html) => [...html.matchAll(/class="row-link"[^>]*><b>([^<]+)<\/b>/g)].map((m) => m[1]);
+window.location.search = "?view=report&example=support&sort=test";
+const byName = render(Review, { data });
+assert.deepEqual(
+  rowNames(byName),
+  [...rowNames(review)].sort((a, b) => a.localeCompare(b)),
+);
+assert.ok(byName.includes('aria-sort="ascending"'));
+window.location.search = "?view=report&example=support&sort=-test";
+assert.deepEqual(rowNames(render(Review, { data })), rowNames(byName).reverse());
+const first = rowNames(review)[0];
+window.location.search = `?view=report&example=support&q=${encodeURIComponent(first)}`;
+assert.ok(rowNames(render(Review, { data })).every((name) => name.includes(first)));
+window.location.search = "?view=report&example=support&filter=rule";
+const rules = render(Review, { data });
+assert.ok(rules.includes('aria-pressed="true"><i class="kind-dot" data-kind="rule"'));
+assert.equal(rowNames(rules).length, tests.filter((t) => changeKind(t, data.comparison.writeTools) === "rule").length);
+window.location.search = "?view=report&example=support";
 
 // Job progress reflects saved evidence, never a timer or a discovery-budget percentage.
 const { JobCard } = await import("../../web/src/components/JobCard.tsx");
@@ -249,3 +270,7 @@ assert.ok(!discoveryJob.includes('role="progressbar"'));
 const completed = jobHtml({ ...jobBase, status: "complete", resultDir: "compare-saved", message: "Comparison saved." });
 assert.ok(completed.includes("Open result"));
 assert.ok(!completed.includes(">Cancel<"));
+
+// The stubbed window makes the query cache think it's in a browser, where it keeps
+// unused queries for a few minutes on a timer; clear it so the process can exit.
+queryClient.clear();

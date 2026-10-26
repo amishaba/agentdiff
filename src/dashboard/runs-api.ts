@@ -8,20 +8,10 @@ import { comparisonFile, readComparison, readComparisonRuns, readExplanation } f
 import { isCompareDirName, type Workspace } from "../storage/workspace.ts";
 import type { Comparison, RunRecord } from "../types.ts";
 import { send, sendJson } from "./http.ts";
+import type { RunSummary } from "./runs-contract.ts";
 
 const TRACE_FIELD_LIMIT = 8000;
 const COMPARISON_ROUTES = ["/api/comparison", "/api/report", "/api/traces", "/api/grades", "/api/explanation"];
-
-export interface RunSummary {
-  dir: string;
-  label: string;
-  agentName?: string;
-  oldFile?: string;
-  newFile?: string;
-  tests?: number;
-  changed?: number;
-  createdAt?: string;
-}
 
 /** Compare directories in the workspace that actually hold a comparison, newest first. */
 export async function listRuns(workspace: Workspace): Promise<RunSummary[]> {
@@ -88,7 +78,9 @@ export function createRunsRoute(workspace: Workspace) {
       return true;
     }
     if (!dir) {
-      sendJson(res, 400, { error: "unknown run" });
+      sendJson(res, 404, {
+        error: "No saved comparison by that name here. Pick one from the list, or run a new comparison.",
+      });
       return true;
     }
 
