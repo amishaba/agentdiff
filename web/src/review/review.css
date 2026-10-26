@@ -15,6 +15,7 @@
 
 /* summary tiles */
 .review .kpis { display: grid; grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 22px; }
+@media (max-width: 800px) { .review .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } .review .kpis > :first-child { grid-column: 1 / -1; } }
 .review .kind-bar { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 4px; }
 .review .kind-bar span { background: var(--k); min-width: 4px; }
 .review .kind-legend { list-style: none; padding: 0; margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 2px 4px; }
@@ -28,6 +29,8 @@
 
 /* the test table: one flat row per test */
 .review .tests-table td { padding-block: 9px; }
+/* On a phone the table scrolls inside its card; the test names keep enough room for whole words. */
+@media (max-width: 800px) { .review .tests-table .row-link { min-width: 170px; } }
 .review .tests-table .num { color: var(--text-2); }
 .review .cell-change { color: var(--text-2); max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .review .tests-table .th-sort { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }

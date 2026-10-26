@@ -1,5 +1,5 @@
 /* The scenarios page and a scenario's side panel. */
-.scenarios-page { display: grid; gap: 16px; }
+.scenarios-page { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .scenarios-page [hidden] { display: none !important; }
 
 /* coverage areas: one colour each, for the dot, the filter and the tag */
@@ -15,6 +15,7 @@
 .page-actions { display: flex; align-items: center; gap: 8px; flex: none; }
 .page-actions select { height: 32px; padding: 0 10px; font-size: 12.5px; border: 1px solid var(--control-border); border-radius: 8px; background: var(--surface); color: var(--ink); }
 .page-actions .dashboard-button { height: 32px; }
+@media (max-width: 800px) { .page-head.with-actions { flex-wrap: wrap; } .page-actions { flex-wrap: wrap; flex: 1 1 auto; } }
 
 .sc-notice { margin: 0; font-size: 13px; color: var(--green); background: var(--green-wash); border: 1px solid #bbf7d0; border-radius: 8px; padding: 8px 12px; }
 .sc-table .sc-check { width: 36px; padding-right: 0; }

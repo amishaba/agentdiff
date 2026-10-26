@@ -26,6 +26,8 @@
 .ov-open a { display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 500; text-decoration: none; color: var(--dim); }
 .ov-open a:hover { color: var(--ink); }
 .ov-step { width: 40px; color: var(--muted); font: 12px var(--mono); }
+/* On a phone the examples table scrolls inside its card rather than breaking words. */
+@media (max-width: 800px) { .ov-examples { min-width: 640px; } }
 
 .ov-finding .card-head { align-items: center; }
 .ov-finding .card-head h2 { display: flex; align-items: center; gap: 10px; font-weight: 500; }

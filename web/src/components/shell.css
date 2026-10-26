@@ -31,7 +31,8 @@
 .app-header-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .header-github { height: 32px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--control-border); border-radius: 7px; background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 500; text-decoration: none; white-space: nowrap; }
 .header-github:hover { background: var(--wash); }
-@media (max-width: 650px) { .header-github { padding: 0 8px; } .header-github span { display: none; } }
+.nav-toggle, .nav-backdrop { display: none; }
+
 .header-badge { font-size: 12px; color: var(--dim); border: 1px solid var(--rule); border-radius: 99px; padding: 3px 10px; background: var(--surface); }
 .run-toolbar { display: flex; align-items: center; }
 .runpick select { height: 32px; min-width: 0; max-width: 460px; padding: 0 10px; font: 12.5px var(--mono); border: 1px solid var(--control-border); border-radius: 8px; background: var(--surface); color: var(--ink); }
@@ -157,3 +158,26 @@
 .kv dt { font: 12px var(--mono); color: var(--dim); overflow-wrap: anywhere; }
 .kv dd { margin: 0; font-size: 13px; line-height: 1.5; min-width: 0; }
 .kv pre { margin: 0; font: 12px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Phones and narrow windows: the sidebar slides in over the page, and the header keeps what fits. */
+@media (max-width: 800px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { position: fixed; z-index: 40; left: 0; width: min(280px, 85vw); height: 100dvh; transform: translateX(-100%); visibility: hidden; transition: transform 0.2s ease, visibility 0s linear 0.2s; }
+  .app.nav-open .sidebar { transform: none; visibility: visible; transition: transform 0.2s ease; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18); }
+  .nav-backdrop { display: block; position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.25); }
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 32px; height: 32px; margin-left: -6px; border: 0; border-radius: 7px; background: none; color: var(--ink); cursor: pointer; }
+  .nav-toggle:hover { background: var(--wash); }
+  .app-header { gap: 10px; padding: 0 16px; }
+  .crumbs { flex: 1; overflow: hidden; }
+  .crumb:not([aria-current]) { display: none; }
+  .crumb[aria-current] .icon { display: none; }
+  .app-header .copy-command { display: none; }
+  .app-header-actions, .run-toolbar, .runpick { min-width: 0; }
+  .runpick select { width: 100%; }
+  .header-github { padding: 0 8px; }
+  .header-github span { display: none; }
+  .app-content { padding: 20px 16px 48px; }
+  .r-tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .r-tabs button { flex: none; padding: 9px 8px; white-space: nowrap; }
+  .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

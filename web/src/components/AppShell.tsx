@@ -1,4 +1,4 @@
-import type { MouseEvent, ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { EXAMPLES } from "../data/examples.ts";
 import { exampleRoute, isSampleWorkspace, routes } from "../data/navigation.ts";
 import { dashboardTabs, type DashboardTab } from "../data/dashboard.ts";
@@ -35,11 +35,41 @@ export function AppShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
+  // On a phone the sidebar is a drawer behind the menu button.
+  const [navOpen, setNavOpen] = useState(false);
+  const toggle = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!navOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setNavOpen(false);
+      toggle.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [navOpen]);
+  const switchTab = onTab
+    ? (tab: DashboardTab) => {
+        setNavOpen(false);
+        onTab(tab);
+      }
+    : undefined;
   return (
-    <div className="app">
-      <Sidebar place={place} onTab={onTab} />
+    <div className={navOpen ? "app nav-open" : "app"}>
+      <Sidebar place={place} onTab={switchTab} />
+      {navOpen && <div className="nav-backdrop" onClick={() => setNavOpen(false)} />}
       <div className="app-main">
         <header className="app-header">
+          <button
+            ref={toggle}
+            className="nav-toggle"
+            aria-label="Menu"
+            aria-expanded={navOpen}
+            aria-controls="app-sidebar"
+            onClick={() => setNavOpen(!navOpen)}
+          >
+            <Icon name="menu" />
+          </button>
           <nav className="crumbs" aria-label="Breadcrumb">
             {crumbs.map((crumb, i) => (
               <span key={i} className="crumb" aria-current={i === crumbs.length - 1 ? "page" : undefined}>
@@ -74,7 +104,7 @@ function Sidebar({ place, onTab }: { place: Place; onTab?: (tab: DashboardTab) =
   const plainClick = (event: MouseEvent) =>
     event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" id="app-sidebar">
       <a className="sidebar-brand" href={routes.home} aria-label="agentdiff home">
         <span className="site-mark" aria-hidden="true">
           <i />

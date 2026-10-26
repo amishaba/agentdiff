@@ -46,9 +46,13 @@ interface Opened {
   errors: string[];
 }
 
-/** A fresh page; `live` makes it the local dashboard, and `api` answers its /api calls. */
-async function open(path: string, { live = false, api }: { live?: boolean; api?: (route: Route) => unknown } = {}) {
-  const context = await browser.newContext({ viewport: { width: 1400, height: 900 } });
+/** A fresh page; `live` makes it the local dashboard, `api` answers its /api calls, and `phone` makes it 390px wide. */
+async function open(
+  path: string,
+  { live = false, api, phone = false }: { live?: boolean; api?: (route: Route) => unknown; phone?: boolean } = {},
+) {
+  const viewport = phone ? { width: 390, height: 844 } : { width: 1400, height: 900 };
+  const context = await browser.newContext({ viewport });
   const page = await context.newPage();
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -286,6 +290,48 @@ describe("the local dashboard", () => {
         errors.filter((e) => !e.includes("404")),
         [],
       );
+    } finally {
+      await context.close();
+    }
+  });
+});
+
+describe("on a phone", () => {
+  it("no page scrolls sideways", async () => {
+    const paths = ["", "?view=dashboard", "?view=dashboard&tab=scenarios", "?view=dashboard&tab=check"];
+    for (const name of ["sms", "booking", "support", "clinic"]) paths.push(`?view=report&example=${name}`);
+    for (const path of paths) {
+      const { page: phone, context: phoneContext } = await open(path, { phone: true });
+      try {
+        await phone.locator(".app-content > *").first().waitFor();
+        const width = await settled(
+          () => phone.evaluate("document.documentElement.scrollWidth") as Promise<number>,
+          (w) => w <= 390,
+          1000,
+        );
+        assert.ok(width <= 390, `${path || "home"} is ${width}px wide`);
+      } finally {
+        await phoneContext.close();
+      }
+    }
+  });
+
+  it("opens the sidebar from the menu, and closes it on a pick or Esc", async () => {
+    const { page, context } = await open("?view=dashboard", { phone: true });
+    try {
+      const menu = page.getByRole("button", { name: "Menu" });
+      const sidebar = page.locator(".sidebar");
+      assert.equal(await sidebar.isVisible(), false);
+      await menu.click();
+      await sidebar.waitFor();
+      assert.equal(await menu.getAttribute("aria-expanded"), "true");
+      await tab(page, "Scenarios");
+      await sidebar.waitFor({ state: "hidden" });
+      await menu.click();
+      await sidebar.waitFor();
+      await page.keyboard.press("Escape");
+      await sidebar.waitFor({ state: "hidden" });
+      assert.equal(await page.locator(".nav-toggle:focus").count(), 1);
     } finally {
       await context.close();
     }
